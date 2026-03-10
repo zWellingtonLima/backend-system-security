@@ -2,15 +2,115 @@ package com.group1.gestao_seguranca.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "consumos")
 public class Consumos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_chave")
+    @Column(name = "id_consumo")
     private int id;
 
+    @Column(nullable = false)
     private int valorLeitura;
 
+    private LocalDateTime dataRegisto;
+
+    private String observacoes;
+
+    @Enumerated(EnumType.STRING)
+    private TipoConsumo tipoConsumo;
+
+    private String createUser;
+    private LocalDateTime createDate;
+    private String modifyUser;
+    private LocalDateTime modifyDate;
+
+    public Consumos(){}
+
+    public Consumos(int valorLeitura, LocalDateTime dataRegisto, String observacoes, TipoConsumo tipoConsumo) {
+        this.valorLeitura = valorLeitura;
+        this.dataRegisto = dataRegisto;
+        this.observacoes = observacoes;
+        this.tipoConsumo = tipoConsumo;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getValorLeitura() {
+        return valorLeitura;
+    }
+
+    public void setValorLeitura(int valorLeitura) {
+        this.valorLeitura = valorLeitura;
+    }
+
+    public LocalDateTime getDataRegisto() {
+        return dataRegisto;
+    }
+
+    public void setDataRegisto(LocalDateTime dataRegisto) {
+        this.dataRegisto = dataRegisto;
+    }
+
+    public String getObservacoes() {
+        return observacoes;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
+
+    public TipoConsumo getTipoConsumo() {
+        return tipoConsumo;
+    }
+
+    public void setTipoConsumo(TipoConsumo tipoConsumo) {
+        this.tipoConsumo = tipoConsumo;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(String modifyUser) {
+        this.modifyUser = modifyUser;
+    }
+
+    public LocalDateTime getModifyDate() {
+        return modifyDate;
+    }
+
+    public void setModifyDate(LocalDateTime modifyDate) {
+        this.modifyDate = modifyDate;
+    }
+}
+
+
+enum TipoConsumo {
+    AGUA, LUZ, GAS
 }

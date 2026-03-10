@@ -30,6 +30,10 @@ public class Chaves {
     private String modify_user;
     private LocalDateTime modify_date;
 
+    // Mostra o historico de entregas de uma chave
+    @OneToMany(mappedBy = "chave", fetch = FetchType.LAZY)
+    private List<EntregaChaves> historicoEntregas;
+
     public Chaves() {
     }
 

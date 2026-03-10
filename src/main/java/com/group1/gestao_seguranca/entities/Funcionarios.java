@@ -25,6 +25,12 @@ public class Funcionarios {
     private String modifyUser;
     private LocalDateTime modifyDate;
 
+    @OneToMany(mappedBy = "funcionario", fetch = FetchType.LAZY)
+    private List<Movimentacoes> funcionarioMovimentacoes;
+
+    @OneToMany(mappedBy = "funcionarioComChave", fetch = FetchType.LAZY)
+    private List<EntregaChaves> chavesRecebidasFuncionario;
+
     @OneToMany(mappedBy = "funcionarioResponsavel", fetch = FetchType.LAZY)
     private List<Visitas> visitasResponsavel;
 

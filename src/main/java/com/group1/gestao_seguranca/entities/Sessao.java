@@ -17,7 +17,7 @@ public class Sessao {
     private LocalDateTime horaEntrada;
     private LocalDateTime horaSaida;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
     private Users user;
 

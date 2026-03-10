@@ -5,40 +5,33 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "entrega_chaves")
-public class EntregaChaves {
-
+@Table(name = "rondas")
+public class Rondas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_entrega")
+    @Column(name = "id_ronda")
     private int id;
 
-    private LocalDateTime horaEntrega;
-    private LocalDateTime horaDevolucao;
+    private LocalDateTime horaRonda;
+
+    private String ocorrencias;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_chave", nullable = false)
-    private Chaves chave;
+    @JoinColumn(name = "id_user", nullable = false)
+    private Users seguranca;
 
     private String createUser;
     private LocalDateTime createDate;
     private String modifyUser;
     private LocalDateTime modifyDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_funcionario")
-    private Funcionarios funcionarioComChave;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_visita")
-    private Visitas visitaComChave;
-
-    public EntregaChaves() {
+    public Rondas() {
     }
 
-    public EntregaChaves(LocalDateTime horaEntrega, Chaves chave) {
-        this.horaEntrega = horaEntrega;
-        this.chave = chave;
+    public Rondas(LocalDateTime horaRonda, String ocorrencias, Users seguranca) {
+        this.horaRonda = horaRonda;
+        this.ocorrencias = ocorrencias;
+        this.seguranca = seguranca;
     }
 
     public int getId() {
@@ -49,28 +42,28 @@ public class EntregaChaves {
         this.id = id;
     }
 
-    public LocalDateTime getHoraEntrega() {
-        return horaEntrega;
+    public LocalDateTime getHoraRonda() {
+        return horaRonda;
     }
 
-    public void setHoraEntrega(LocalDateTime horaEntrega) {
-        this.horaEntrega = horaEntrega;
+    public void setHoraRonda(LocalDateTime horaRonda) {
+        this.horaRonda = horaRonda;
     }
 
-    public LocalDateTime getHoraDevolucao() {
-        return horaDevolucao;
+    public String getOcorrencias() {
+        return ocorrencias;
     }
 
-    public void setHoraDevolucao(LocalDateTime horaDevolucao) {
-        this.horaDevolucao = horaDevolucao;
+    public void setOcorrencias(String ocorrencias) {
+        this.ocorrencias = ocorrencias;
     }
 
-    public Chaves getChave() {
-        return chave;
+    public Users getSeguranca() {
+        return seguranca;
     }
 
-    public void setChave(Chaves chave) {
-        this.chave = chave;
+    public void setSeguranca(Users seguranca) {
+        this.seguranca = seguranca;
     }
 
     public String getCreateUser() {

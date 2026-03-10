@@ -3,6 +3,7 @@ package com.group1.gestao_seguranca.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "visitas")
@@ -31,6 +32,12 @@ public class Visitas {
     private LocalDateTime createDate;
     private String modifyUser;
     private LocalDateTime modifyDate;
+
+    @OneToMany(mappedBy = "visita", fetch = FetchType.LAZY)
+    private List<Movimentacoes> visitaMovimentacoes;
+
+    @OneToMany(mappedBy = "visitaComChave", fetch = FetchType.LAZY)
+    private List<EntregaChaves> chavesRecebidasVisita;
 
     public Visitas() {
     }

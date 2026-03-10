@@ -156,3 +156,6 @@ E essa registra a hora_devolucao
 # Observações: 
 - Nenhum desses endpoints, da forma como foi planejado aqui, possibilita que a pessoa altere alguma informação. Por exemplo, se o segurança
 errar na hora de colocar um consumo ele não tem como alterar. Isso acontece em vários outros casos.
+
+# Possíveis melhorias
+Podemos adicionar a questão de CASCADE, UPDATE, RESTRICT, implementar índices nas tabelas que forem mais buscadas no sistema.
