@@ -37,6 +37,16 @@ public class EntregaChaves {
     @JoinColumn(name = "id_visita")
     private Visitas visitaComChave;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.modifyDate = LocalDateTime.now();
+    }
+
     public EntregaChaves() {
     }
 

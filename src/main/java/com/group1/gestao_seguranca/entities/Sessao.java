@@ -30,6 +30,16 @@ public class Sessao {
     @Column(name="modify_date")
     private LocalDateTime modifyDate;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.modifyDate = LocalDateTime.now();
+    }
+
     public Sessao() {
     }
 

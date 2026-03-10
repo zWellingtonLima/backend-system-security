@@ -22,7 +22,7 @@ public class Users {
     private String password;
 
     @OneToMany(mappedBy = "seguranca", fetch = FetchType.LAZY)
-    private List<Rondas> rondas;
+    private List<Ocorrencias> rondas;
     @Column(name="create_user")
     private String createUser;
     @Column(name="create_date")
@@ -31,6 +31,16 @@ public class Users {
     private String modifyUser;
     @Column(name="modify_date")
     private LocalDateTime modifyDate;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.modifyDate = LocalDateTime.now();
+    }
 
     public Users() {
     }
@@ -41,11 +51,11 @@ public class Users {
         this.password = password;
     }
 
-    public List<Rondas> getRondas() {
+    public List<Ocorrencias> getRondas() {
         return rondas;
     }
 
-    public void setRondas(List<Rondas> rondas) {
+    public void setRondas(List<Ocorrencias> rondas) {
         this.rondas = rondas;
     }
 

@@ -38,6 +38,16 @@ public class Funcionarios {
     @OneToMany(mappedBy = "funcionarioResponsavel", fetch = FetchType.LAZY)
     private List<Visitas> visitasResponsavel;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.modifyDate = LocalDateTime.now();
+    }
+
     public Funcionarios() {
     }
 

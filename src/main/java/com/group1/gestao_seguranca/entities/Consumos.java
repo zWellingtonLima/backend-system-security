@@ -32,6 +32,16 @@ public class Consumos {
     @Column(name="modify_date")
     private LocalDateTime modifyDate;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.modifyDate = LocalDateTime.now();
+    }
+
     public Consumos(){}
 
     public Consumos(int valorLeitura, LocalDateTime dataRegisto, String observacoes, TipoConsumo tipoConsumo) {

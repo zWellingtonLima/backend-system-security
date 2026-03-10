@@ -21,7 +21,11 @@ public class Salas {
     private Piso piso;
 
     @OneToMany(mappedBy = "sala", fetch = FetchType.LAZY)
-    private List<TipoChave> tiposChave;
+    private List<Chaves> chaves;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sala", nullable = false)
+    private Salas sala;
 
     public Salas() {
     }
@@ -45,14 +49,6 @@ public class Salas {
 
     public void setNumeroSala(int numeroSala) {
         this.numeroSala = numeroSala;
-    }
-
-    public List<TipoChave> getTiposChave() {
-        return tiposChave;
-    }
-
-    public void setTiposChave(List<TipoChave> tiposChave) {
-        this.tiposChave = tiposChave;
     }
 
     public Piso getPiso() {

@@ -43,6 +43,16 @@ public class Visitas {
     @OneToMany(mappedBy = "visitaComChave", fetch = FetchType.LAZY)
     private List<EntregaChaves> chavesRecebidasVisita;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.modifyDate = LocalDateTime.now();
+    }
+
     public Visitas() {
     }
 
