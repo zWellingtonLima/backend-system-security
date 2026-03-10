@@ -13,9 +13,11 @@ public class Chaves {
     @Column(name = "id_chave")
     private int id;
 
+    @Column(name = "codigo_chave")
     private String codigoChave;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status_chave")
     private StatusChave statusChave;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,10 +27,14 @@ public class Chaves {
     @OneToMany(mappedBy = "chave", fetch = FetchType.LAZY)
     private List<EntregaChaves> emprestimosDeChaves;
 
-    private String create_user;
-    private LocalDateTime create_date;
-    private String modify_user;
-    private LocalDateTime modify_date;
+    @Column(name = "create_user")
+    private String createUser;
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
+    @Column(name = "modify_user")
+    private String modifyUser;
+    @Column(name = "modify_date")
+    private LocalDateTime modifyDate;
 
     // Mostra o historico de entregas de uma chave
     @OneToMany(mappedBy = "chave", fetch = FetchType.LAZY)
@@ -77,36 +83,44 @@ public class Chaves {
         this.tipoChave = tipoChave;
     }
 
-    public String getCreate_user() {
-        return create_user;
+    public String getCreateUser() {
+        return createUser;
     }
 
-    public void setCreate_user(String create_user) {
-        this.create_user = create_user;
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
     }
 
-    public LocalDateTime getCreate_date() {
-        return create_date;
+    public LocalDateTime getCreateDate() {
+        return createDate;
     }
 
-    public void setCreate_date(LocalDateTime create_date) {
-        this.create_date = create_date;
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
 
-    public String getModify_user() {
-        return modify_user;
+    public String getModifyUser() {
+        return modifyUser;
     }
 
-    public void setModify_user(String modify_user) {
-        this.modify_user = modify_user;
+    public void setModifyUser(String modifyUser) {
+        this.modifyUser = modifyUser;
     }
 
-    public LocalDateTime getModify_date() {
-        return modify_date;
+    public LocalDateTime getModifyDate() {
+        return modifyDate;
     }
 
-    public void setModify_date(LocalDateTime modify_date) {
-        this.modify_date = modify_date;
+    public void setModifyDate(LocalDateTime modifyDate) {
+        this.modifyDate = modifyDate;
+    }
+
+    public List<EntregaChaves> getHistoricoEntregas() {
+        return historicoEntregas;
+    }
+
+    public void setHistoricoEntregas(List<EntregaChaves> historicoEntregas) {
+        this.historicoEntregas = historicoEntregas;
     }
 }
 

@@ -11,11 +11,11 @@ public class Visitas {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_chave")
+    @Column(name = "id_visita")
     private int id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, name = "tipo_visita")
     private TipoVisita tipoVisita;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,9 +28,13 @@ public class Visitas {
 
     private String observacoes;
 
+    @Column(name="create_user")
     private String createUser;
+    @Column(name="create_date")
     private LocalDateTime createDate;
+    @Column(name="modify_user")
     private String modifyUser;
+    @Column(name="modify_date")
     private LocalDateTime modifyDate;
 
     @OneToMany(mappedBy = "visita", fetch = FetchType.LAZY)

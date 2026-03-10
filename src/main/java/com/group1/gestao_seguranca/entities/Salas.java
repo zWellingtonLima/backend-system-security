@@ -13,7 +13,7 @@ public class Salas {
     @Column(name = "id_sala")
     private int id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "numero_sala", nullable = false, unique = true)
     private int numeroSala;
 
     @Enumerated(EnumType.STRING)

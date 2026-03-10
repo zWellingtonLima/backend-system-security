@@ -23,9 +23,13 @@ public class Consumos {
     @Enumerated(EnumType.STRING)
     private TipoConsumo tipoConsumo;
 
+    @Column(name="create_user")
     private String createUser;
+    @Column(name="create_date")
     private LocalDateTime createDate;
+    @Column(name="modify_user")
     private String modifyUser;
+    @Column(name="modify_date")
     private LocalDateTime modifyDate;
 
     public Consumos(){}

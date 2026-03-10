@@ -20,9 +20,13 @@ public class Funcionarios {
     @Column(nullable = false, length = 50)
     private String setor;
 
+    @Column(name="create_user")
     private String createUser;
+    @Column(name="create_date")
     private LocalDateTime createDate;
+    @Column(name="modify_user")
     private String modifyUser;
+    @Column(name="modify_date")
     private LocalDateTime modifyDate;
 
     @OneToMany(mappedBy = "funcionario", fetch = FetchType.LAZY)
