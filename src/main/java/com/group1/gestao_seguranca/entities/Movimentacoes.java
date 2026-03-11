@@ -14,7 +14,9 @@ public class Movimentacoes {
     @Column(name = "id_movimentacao")
     private int id;
 
+    @Column(name = "hora_entrada")
     private LocalDateTime horaEntrada;
+    @Column(name = "hora_saida")
     private LocalDateTime horaSaida;
     private String observacoes;
 
@@ -51,16 +53,14 @@ public class Movimentacoes {
     public Movimentacoes() {
     }
 
-    public Movimentacoes(LocalDateTime horaEntrada, LocalDateTime horaSaida, String observacoes, Funcionarios funcionario) {
+    public Movimentacoes(LocalDateTime horaEntrada, String observacoes, Funcionarios funcionario) {
         this.horaEntrada = horaEntrada;
-        this.horaSaida = horaSaida;
         this.observacoes = observacoes;
         this.funcionario = funcionario;
     }
 
-    public Movimentacoes(LocalDateTime horaEntrada, LocalDateTime horaSaida, String observacoes, Visitas visita) {
+    public Movimentacoes(LocalDateTime horaEntrada, String observacoes, Visitas visita) {
         this.horaEntrada = horaEntrada;
-        this.horaSaida = horaSaida;
         this.observacoes = observacoes;
         this.visita = visita;
     }

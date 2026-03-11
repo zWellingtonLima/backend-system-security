@@ -4,27 +4,35 @@ import com.group1.gestao_seguranca.entities.Sessao;
 import com.group1.gestao_seguranca.entities.Users;
 import com.group1.gestao_seguranca.repositories.SessaoRepository;
 import com.group1.gestao_seguranca.repositories.UsersRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/auth/")
+@RequestMapping("/api/auth/")
 public class AuthController {
 
-    private final UsersRepository usersRepository;
-    private final SessaoRepository sessaoRepository;
+    @Autowired
+    UsersRepository usersRepository;
+    @Autowired
+    SessaoRepository sessaoRepository;
 
-    public AuthController(UsersRepository usersRepository, SessaoRepository sessaoRepository) {
-        this.usersRepository = usersRepository;
-        this.sessaoRepository = sessaoRepository;
+    /* /api/auth/teste
+    * Endpoint para ver e testar users criados
+    * */
+    @GetMapping("/teste")
+    public List<Users> getUsers() {
+        return usersRepository.findAll();
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> userRegister(@RequestBody Users user) {
 
+        // Verifica se o usuário já existe
         if (usersRepository.findByNumeroSeguranca(user.getNumeroSeguranca()).isPresent()) {
             return ResponseEntity.badRequest().body("Número de segurança já registado.");
         }
@@ -42,6 +50,7 @@ public class AuthController {
         Optional<Users> optUser = usersRepository.findByNumeroSeguranca(loginRequest.getNumeroSeguranca());
 
         if (optUser.isEmpty() || !optUser.get().getPassword().equals(loginRequest.getPassword())) {
+            //                           401 é Unauthorized
             return ResponseEntity.status(401).body("Número de Segurança ou Password incorretos.");
         }
 
@@ -58,12 +67,9 @@ public class AuthController {
         sessao.setCreateUser(user.getNomeSeguranca());
         sessaoRepository.save(sessao);
 
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok().body(sessao.getId());
     }
 
-    // -------------------------
-    // POST /auth/logout/{idSessao}
-    // -------------------------
     @PostMapping("/logout/{idSessao}")
     public ResponseEntity<?> logout(@PathVariable Integer idSessao) {
 

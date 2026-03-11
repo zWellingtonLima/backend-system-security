@@ -3,6 +3,7 @@ package com.group1.gestao_seguranca.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "sessao")
@@ -13,8 +14,10 @@ public class Sessao {
     @Column(name = "id_sessao")
     private int id;
 
-    @Column(nullable = false)
+    @Column(name = "hora_entrada", nullable = false)
     private LocalDateTime horaEntrada;
+
+    @Column(name = "hora_saida")
     private LocalDateTime horaSaida;
 
     @ManyToOne(fetch = FetchType.LAZY)
