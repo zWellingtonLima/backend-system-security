@@ -12,12 +12,12 @@ public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_user")
-    private int id;
+    private Integer id;
 
     @Column(name="nome_seguranca",nullable = false, length = 150)
     private String nomeSeguranca;
     @Column(name="numero_seguranca", nullable = false, unique = true)
-    private int numeroSeguranca;
+    private Integer numeroSeguranca;
     @Column(nullable = false, length = 30)
     private String password;
 

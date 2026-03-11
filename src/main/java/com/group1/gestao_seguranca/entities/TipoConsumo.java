@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class TipoConsumo {
     private String tipo;
 
     @OneToMany(mappedBy = "tipoConsumo", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Consumos> consumos;
 
     public TipoConsumo() {

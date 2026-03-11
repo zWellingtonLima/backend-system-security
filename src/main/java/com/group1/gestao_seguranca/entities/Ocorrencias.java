@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -10,15 +11,17 @@ public class Ocorrencias {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_ocorrencia")
-    private int id;
-
+    private Integer id;
     @Column(name = "hora_ocorrencia")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime horaOcorrencia;
 
+    @Column(name = "ocorrencia")
     private String ocorrencia;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
+
     private Users seguranca;
 
     @Column(name="create_user")

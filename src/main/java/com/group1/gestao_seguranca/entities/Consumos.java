@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.entities;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class Consumos {
     @Enumerated(EnumType.STRING)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_tipo_consumo", nullable = false)
+    @JsonManagedReference
     private TipoConsumo tipoConsumo;
 
     @Column(name = "create_user")

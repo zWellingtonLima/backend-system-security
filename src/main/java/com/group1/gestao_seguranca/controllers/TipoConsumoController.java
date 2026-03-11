@@ -29,7 +29,6 @@ import java.util.List;
             return tipoConsumoRepo.findById(id).orElse(null);
         }
 
-
         @DeleteMapping("/{id}")
         public void delete(@PathVariable Integer id) {
             tipoConsumoRepo.deleteById(id);
