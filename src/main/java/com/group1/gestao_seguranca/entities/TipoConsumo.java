@@ -12,7 +12,7 @@ public class TipoConsumo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tipo_consumo")
     private Integer id;
-
+    @Column(name = "tipo")
     private String tipo;
 
     @OneToMany(mappedBy = "tipoConsumo", fetch = FetchType.LAZY)

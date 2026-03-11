@@ -13,11 +13,11 @@ public class Consumos {
     @Column(name = "id_consumo")
     private int id;
 
-    @Column(nullable = false)
+    @Column(name="valor_leitura" ,nullable = false)
     private int valorLeitura;
-
+    @Column(name="data_registo")
     private LocalDateTime dataRegisto;
-
+    @Column(name="observacao")
     private String observacao;
 
     @Enumerated(EnumType.STRING)
