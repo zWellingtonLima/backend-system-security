@@ -24,8 +24,6 @@ Pra encerrar, /sessoes/12/encerrar
 - GET /funcionarios
 - GET /funcionarios/:id
 - POST /funcionarios
-- PATCH /funcionarios/:id
-- DELETE /funcionarios/:id
 
 ## Visitantes
 - GET /visitantes

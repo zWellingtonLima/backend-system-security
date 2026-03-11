@@ -43,9 +43,8 @@ public class Sessao {
     public Sessao() {
     }
 
-    public Sessao(LocalDateTime horaEntrada, LocalDateTime horaSaida, Users user) {
+    public Sessao(LocalDateTime horaEntrada, Users user) {
         this.horaEntrada = horaEntrada;
-        this.horaSaida = horaSaida;
         this.user = user;
     }
 
