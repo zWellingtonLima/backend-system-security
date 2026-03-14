@@ -1,6 +1,8 @@
 package com.group1.gestao_seguranca.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class RegisterRequestDTO {
@@ -8,7 +10,7 @@ public class RegisterRequestDTO {
     @NotBlank(message = "Nome do segurança é obrigatório")
     @Size(max = 150)
     private String nomeSeguranca;
-    @NotBlank(message = "Número do segurança é obrigatório")
+    @NotNull(message = "Número do segurança é obrigatório")
     private Integer numeroSeguranca;
     @NotBlank(message = "Palavra-passe é obrigatória")
     private String password;
