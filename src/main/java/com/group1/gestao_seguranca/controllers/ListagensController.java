@@ -1,5 +1,11 @@
 package com.group1.gestao_seguranca.controllers;
 
+import com.group1.gestao_seguranca.enums.LabeledEnum;
+import com.group1.gestao_seguranca.enums.TipoChaveEnum;
+import com.group1.gestao_seguranca.enums.TipoConsumoEnum;
+import com.group1.gestao_seguranca.enums.TipoOcorrenciaEnum;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +18,23 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/lists/")
 public class ListagensController {
+    // GET /lookups/tipos-consumo
+    @GetMapping("/tipos-consumo")
+    public ResponseEntity<?> getTiposConsumo() {
+        return ResponseEntity.ok(buildList(TipoConsumoEnum.values()));
+    }
+
+    // GET /lookups/tipos-chave
+    @GetMapping("/tipos-chave")
+    public ResponseEntity<?> getTiposChave() {
+        return ResponseEntity.ok(buildList(TipoChaveEnum.values()));
+    }
+
+    // GET /lookups/tipos-ocorrencia
+    @GetMapping("/tipos-ocorrencia")
+    public ResponseEntity<?> getTiposOcorrencia() {
+        return ResponseEntity.ok(buildList(TipoOcorrenciaEnum.values()));
+    }
 
     private <T extends Enum<T>> List<Map<String, String>> buildList(T[] values) {
         return Arrays.stream(values)
