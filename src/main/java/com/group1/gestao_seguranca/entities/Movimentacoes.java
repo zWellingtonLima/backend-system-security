@@ -14,7 +14,10 @@ public class Movimentacoes {
     @Column(name = "id_movimentacao")
     private int id;
 
+    @Column(name = "hora_entrada")
     private LocalDateTime horaEntrada;
+
+    @Column(name = "hora_saida")
     private LocalDateTime horaSaida;
     private String observacoes;
 

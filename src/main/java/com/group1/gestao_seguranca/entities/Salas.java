@@ -1,5 +1,7 @@
 package com.group1.gestao_seguranca.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.group1.gestao_seguranca.enums.PisoEnum;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -18,15 +20,16 @@ public class Salas {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
-    private Piso piso;
+    private PisoEnum piso;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "sala", fetch = FetchType.LAZY)
     private List<Chaves> chaves;
 
     public Salas() {
     }
 
-    public Salas(int numeroSala, Piso piso) {
+    public Salas(int numeroSala, PisoEnum piso) {
         this.numeroSala = numeroSala;
         this.piso = piso;
     }
@@ -55,15 +58,11 @@ public class Salas {
         this.numeroSala = numeroSala;
     }
 
-    public Piso getPiso() {
+    public PisoEnum getPiso() {
         return piso;
     }
 
-    public void setPiso(Piso piso) {
+    public void setPiso(PisoEnum piso) {
         this.piso = piso;
     }
-}
-
-enum Piso {
-    PRIMEIRO, SEGUNDO, TERCEIRO;
 }

@@ -1,9 +1,15 @@
 package com.group1.gestao_seguranca.controllers;
 
+import com.group1.gestao_seguranca.dto.consumos.ConsumosRequestDTO;
+import com.group1.gestao_seguranca.dto.consumos.ConsumosResponseDTO;
 import com.group1.gestao_seguranca.entities.Consumos;
+import com.group1.gestao_seguranca.entities.TipoConsumo;
 import com.group1.gestao_seguranca.repositories.ConsumosRepository;
 import com.group1.gestao_seguranca.repositories.TipoConsumoRepository;
+import com.group1.gestao_seguranca.services.ConsumosService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,28 +18,36 @@ import java.util.List;
 @RequestMapping("/api/consumos")
 public class ConsumosController {
 
-    @Autowired
-    private ConsumosRepository consumosRepo;
+    private final ConsumosService consumosService;
 
-    @Autowired
-    private TipoConsumoRepository tipoConsumoRepo;
-
+    public ConsumosController(ConsumosService consumosService) {
+        this.consumosService = consumosService;
+    }
 
     @GetMapping
-    public List<Consumos> listar() {
-        return consumosRepo.findAll();
+    public ResponseEntity<List<ConsumosResponseDTO>> listConsumos() {
+        return ResponseEntity.ok(consumosService.listConsumos());
     }
-    @PostMapping
-    public Consumos create(@RequestBody Consumos consumo) {
-        return consumosRepo.save(consumo);
-    }
+
     @GetMapping("/{id}")
-    public Consumos search(@PathVariable Integer id) {
-        return consumosRepo.findById(id).orElse(null);
+    public ResponseEntity<?> searchById(@PathVariable Integer id) {
+        return ResponseEntity.ok(consumosService.searchById(id));
     }
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
-        consumosRepo.deleteById(id);
+
+    @PostMapping
+    public ResponseEntity<?> createConsumo(@RequestBody ConsumosRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(consumosService.createConsumos(dto));
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateConsumo(@PathVariable Integer id, @RequestBody ConsumosRequestDTO dto) {
+        return ResponseEntity.ok((consumosService.updateConsumo(id, dto)));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteConsumo(@PathVariable Integer id) {
+        consumosService.deleteConsumo(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

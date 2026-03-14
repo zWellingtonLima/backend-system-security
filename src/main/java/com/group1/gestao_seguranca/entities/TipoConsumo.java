@@ -1,6 +1,6 @@
 package com.group1.gestao_seguranca.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.group1.gestao_seguranca.enums.TipoConsumoEnum;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -13,18 +13,32 @@ public class TipoConsumo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tipo_consumo")
     private Integer id;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo")
-    private String tipo;
+    private TipoConsumoEnum tipoConsumo;
 
     @OneToMany(mappedBy = "tipoConsumo", fetch = FetchType.LAZY)
-    @JsonBackReference
     private List<Consumos> consumos;
 
     public TipoConsumo() {
     }
 
-    public TipoConsumo(String tipo) {
-        this.tipo = tipo;
+    public TipoConsumo(TipoConsumoEnum tipoConsumo, List<Consumos> consumos) {
+        this.tipoConsumo = tipoConsumo;
+        this.consumos = consumos;
+    }
+
+    public TipoConsumoEnum getTipoConsumo() {
+        return tipoConsumo;
+    }
+
+    public String getLabel() {
+        return this.tipoConsumo.getLabel();
+    }
+
+    public void setTipoConsumo(TipoConsumoEnum tipoConsumo) {
+        this.tipoConsumo = tipoConsumo;
     }
 
     public Integer getId() {
@@ -33,14 +47,6 @@ public class TipoConsumo {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
     }
 
     public List<Consumos> getConsumos() {

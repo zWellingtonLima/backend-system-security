@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.entities;
 
+import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -117,6 +118,3 @@ public class TipoChave {
     }
 }
 
-enum TipoChaveEnum {
-    PRINCIPAL, RESERVA, MESTRA
-}

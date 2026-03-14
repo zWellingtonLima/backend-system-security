@@ -13,21 +13,25 @@ public class Sessao {
     @Column(name = "id_sessao")
     private int id;
 
-    @Column(nullable = false)
+    @Column(name = "hora_entrada", nullable = false)
     private LocalDateTime horaEntrada;
+    @Column(name = "hora_saida")
     private LocalDateTime horaSaida;
+
+    @Column(nullable = false, unique = true)
+    private String token;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
     private Users user;
 
-    @Column(name="create_user")
+    @Column(name = "create_user")
     private String createUser;
-    @Column(name="create_date")
+    @Column(name = "create_date")
     private LocalDateTime createDate;
-    @Column(name="modify_user")
+    @Column(name = "modify_user")
     private String modifyUser;
-    @Column(name="modify_date")
+    @Column(name = "modify_date")
     private LocalDateTime modifyDate;
 
     @PrePersist
@@ -54,6 +58,14 @@ public class Sessao {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public LocalDateTime getHoraEntrada() {

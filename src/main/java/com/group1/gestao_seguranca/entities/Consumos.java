@@ -14,18 +14,21 @@ public class Consumos {
     @Column(name = "id_consumo")
     private int id;
 
-    @Column(name="valor_leitura" ,nullable = false)
+    @Column(name = "valor_leitura", nullable = false)
     private int valorLeitura;
-    @Column(name="data_registo")
+    @Column(name = "data_registo")
     private LocalDateTime dataRegisto;
-    @Column(name="observacao")
     private String observacao;
+    @Column(nullable = false)
+    private boolean ativo = true;
 
-    @Enumerated(EnumType.STRING)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_tipo_consumo", nullable = false)
-    @JsonManagedReference
     private TipoConsumo tipoConsumo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user", nullable = false)
+    private Users user;
 
     @Column(name = "create_user")
     private String createUser;
@@ -54,6 +57,30 @@ public class Consumos {
         this.dataRegisto = dataRegisto;
         this.observacao = observacao;
         this.tipoConsumo = tipoConsumo;
+    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 
     public int getId() {

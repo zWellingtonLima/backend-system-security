@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.entities;
 
+import com.group1.gestao_seguranca.enums.TipoVisitaEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ public class Visitas {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "tipo_visita")
-    private TipoVisita tipoVisita;
+    private TipoVisitaEnum tipoVisita;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_visitante", nullable = false)
@@ -28,13 +29,13 @@ public class Visitas {
 
     private String observacoes;
 
-    @Column(name="create_user")
+    @Column(name = "create_user")
     private String createUser;
-    @Column(name="create_date")
+    @Column(name = "create_date")
     private LocalDateTime createDate;
-    @Column(name="modify_user")
+    @Column(name = "modify_user")
     private String modifyUser;
-    @Column(name="modify_date")
+    @Column(name = "modify_date")
     private LocalDateTime modifyDate;
 
     @OneToMany(mappedBy = "visita", fetch = FetchType.LAZY)
@@ -56,14 +57,14 @@ public class Visitas {
     public Visitas() {
     }
 
-    public Visitas(TipoVisita tipoVisita, Visitantes visitante, Funcionarios funcionarioResponsavel, String observacoes) {
+    public Visitas(TipoVisitaEnum tipoVisita, Visitantes visitante, Funcionarios funcionarioResponsavel, String observacoes) {
         this.tipoVisita = tipoVisita;
         this.visitante = visitante;
         this.funcionarioResponsavel = funcionarioResponsavel;
         this.observacoes = observacoes;
     }
 
-    public Visitas(TipoVisita tipoVisita, Visitantes visitante, String observacoes) {
+    public Visitas(TipoVisitaEnum tipoVisita, Visitantes visitante, String observacoes) {
         this.tipoVisita = tipoVisita;
         this.visitante = visitante;
         this.observacoes = observacoes;
@@ -77,11 +78,11 @@ public class Visitas {
         this.id = id;
     }
 
-    public TipoVisita getTipoVisita() {
+    public TipoVisitaEnum getTipoVisita() {
         return tipoVisita;
     }
 
-    public void setTipoVisita(TipoVisita tipoVisita) {
+    public void setTipoVisita(TipoVisitaEnum tipoVisita) {
         this.tipoVisita = tipoVisita;
     }
 
@@ -140,8 +141,4 @@ public class Visitas {
     public void setModifyDate(LocalDateTime modifyDate) {
         this.modifyDate = modifyDate;
     }
-}
-
-enum TipoVisita {
-    VISITA, ENTREGA, SERVICO, MANUTENCAO, REUNIAO
 }

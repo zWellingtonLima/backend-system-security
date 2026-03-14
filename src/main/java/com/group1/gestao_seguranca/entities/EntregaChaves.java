@@ -13,12 +13,24 @@ public class EntregaChaves {
     @Column(name = "id_entrega")
     private int id;
 
+    @Column(name = "hora_entrega")
     private LocalDateTime horaEntrega;
+
+    @Column(name = "hora_devolucao")
     private LocalDateTime horaDevolucao;
 
+    @Column(name = "devolvida_por", length = 50)
+    private String devolvidaPor;
+
+    private String observacoes;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_chave", nullable = false)
+    @JoinColumn(name = "id_chave")
     private Chaves chave;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_molho")
+    private Molhos molho;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_movimentacao", nullable = false)
@@ -32,13 +44,13 @@ public class EntregaChaves {
     @JoinColumn(name = "id_visita")
     private Visitas visitaComChave;
 
-    @Column(name="create_user")
+    @Column(name = "create_user")
     private String createUser;
-    @Column(name="create_date")
+    @Column(name = "create_date")
     private LocalDateTime createDate;
-    @Column(name="modify_user")
+    @Column(name = "modify_user")
     private String modifyUser;
-    @Column(name="modify_date")
+    @Column(name = "modify_date")
     private LocalDateTime modifyDate;
 
     @PrePersist
@@ -57,6 +69,54 @@ public class EntregaChaves {
     public EntregaChaves(LocalDateTime horaEntrega, Chaves chave) {
         this.horaEntrega = horaEntrega;
         this.chave = chave;
+    }
+
+    public String getDevolvidaPor() {
+        return devolvidaPor;
+    }
+
+    public void setDevolvidaPor(String devolvidaPor) {
+        this.devolvidaPor = devolvidaPor;
+    }
+
+    public String getObservacoes() {
+        return observacoes;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
+
+    public Molhos getMolho() {
+        return molho;
+    }
+
+    public void setMolho(Molhos molho) {
+        this.molho = molho;
+    }
+
+    public Movimentacoes getMovimentacao() {
+        return movimentacao;
+    }
+
+    public void setMovimentacao(Movimentacoes movimentacao) {
+        this.movimentacao = movimentacao;
+    }
+
+    public Funcionarios getFuncionarioComChave() {
+        return funcionarioComChave;
+    }
+
+    public void setFuncionarioComChave(Funcionarios funcionarioComChave) {
+        this.funcionarioComChave = funcionarioComChave;
+    }
+
+    public Visitas getVisitaComChave() {
+        return visitaComChave;
+    }
+
+    public void setVisitaComChave(Visitas visitaComChave) {
+        this.visitaComChave = visitaComChave;
     }
 
     public int getId() {

@@ -1,14 +1,13 @@
 package com.group1.gestao_seguranca.enums;
 
-public enum StatusChaveEnum implements LabeledEnum {
+public enum StatusMolhoEnum implements LabeledEnum {
     DISPONIVEL("Disponível"),
-    EMPRESTADA("Emprestada"),
     PERDIDA("Perdida"),
-    MANUTENCAO("Manutenção");
+    EM_USO("Em uso");
 
     private final String label;
 
-    StatusChaveEnum(String label) {
+    StatusMolhoEnum(String label) {
         this.label = label;
     }
 
@@ -17,3 +16,4 @@ public enum StatusChaveEnum implements LabeledEnum {
         return label;
     }
 }
+
