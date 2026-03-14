@@ -2,12 +2,7 @@ package com.group1.gestao_seguranca.controllers;
 
 import com.group1.gestao_seguranca.dto.consumos.ConsumosRequestDTO;
 import com.group1.gestao_seguranca.dto.consumos.ConsumosResponseDTO;
-import com.group1.gestao_seguranca.entities.Consumos;
-import com.group1.gestao_seguranca.entities.TipoConsumo;
-import com.group1.gestao_seguranca.repositories.ConsumosRepository;
-import com.group1.gestao_seguranca.repositories.TipoConsumoRepository;
 import com.group1.gestao_seguranca.services.ConsumosService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
