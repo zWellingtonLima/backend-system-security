@@ -7,13 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "visitantes")
-public class Visitantes {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_visitante")
-    private int id;
-
+public class Visitantes extends Pessoa {
     @Column(name = "nome_visitante", nullable = false, length = 150)
     private String nomeVisitante;
 
