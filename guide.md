@@ -200,16 +200,36 @@ Então em todos os serviços seria preciso saber quem é o utilizador que dever�
 Uma forma que encontramos de fazer a verificação antes mesmo dos dados chegarem ao Controller foi a de usar um **Interceptor**. 
 Dessa maneira a gente consegue tanto proteger já as rotas que precisam de autenticação quanto inserir os dados necessários como idSessao e idUsuario, tornando reutilizável em quaisquer outros serviços porventura criados.
 
-## Usar um Inteiro como Sessão
+## Usar um Inteiro como ID da Sessão
 > É suscetível a **IDOR** (Insecure Direct Object Reference)
 
 Um utilizador mal-intencionado ao descobrir que o id da sessão que é retornado do _login_ é apenas um inteiro, pode simplesmente enviar diversas solicitações com o id crescente até que ache uma válida.
+
+> A mesma coisa acontece com o id de qualquer outra das entidades.
 
 ### Para resolver
 - Alterar o tipo de dado para um UUID.
 - Implementar um campo **token** na tabela de sessão.
 
-## Links de Apoio
+## Tabela Visitantes
+- É uma tabela desnecessária caso não haja um histórico por visitante, ou seja, o Jessé da empresa Jessezinho entrou 4 vezes.
+- Não existe um controle de acesso prévio por visitante, tal como, "O Jessé da empresa Jessezinho está agendado e permitido de entrar hoje para realizar tal serviço."
+- Ou se esses dados não sirvam para o guarda reutilizar numa próxima visita da mesma pessoa.
+
+> A ideia da tabela Visitantes é justamente tornar mais simples o procedimento do guarda registrar visitas que ocorrem com uma frequência regular como um serviço de café que vem a cada semana, uma limpeza que tambbém pode ocorrer semanalmente etc.
+
+## Listagens de problemas já identificados
+- Cadastro Funcionario Permite enviar numero como parâmetro de setor e o sistema o salva como string.
+- Criação de Movimentações não verifica o tipo de documento. Aceita qualquer valor.
+- Sessão não tem tempo de expiração no Backend (no front vai ser SessionStorage).
+
+
+# Para fazer: 
+- Incluir todo o fluxo de chaves e molhos: criação, histórico, controle.
+- Verificar os createUser e createDate em todos os endpoints
+- Fazer algo com o Tipo Chave (Principal, Reserva)
+
+# Links de Apoio
 > Interceptors
 - [Como interceptors funcionam e como criar](https://medium.com/@AlexanderObregon/how-spring-boot-configures-and-executes-interceptors-52238f6081d1)
 - [Spring Boot Interceptors](https://www.geeksforgeeks.org/advance-java/spring-boot-interceptor/)
