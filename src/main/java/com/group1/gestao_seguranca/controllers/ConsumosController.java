@@ -13,35 +13,35 @@ import java.util.List;
 @RequestMapping("/api/consumos")
 public class ConsumosController {
 
-    private final ConsumosService consumosService;
+    private final ConsumosService service;
 
     public ConsumosController(ConsumosService consumosService) {
-        this.consumosService = consumosService;
+        this.service = consumosService;
     }
 
     @GetMapping
     public ResponseEntity<List<ConsumosResponseDTO>> listConsumos() {
-        return ResponseEntity.ok(consumosService.listConsumos());
+        return ResponseEntity.ok(service.listConsumos());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> searchById(@PathVariable Integer id) {
-        return ResponseEntity.ok(consumosService.searchById(id));
+        return ResponseEntity.ok(service.searchById(id));
     }
 
     @PostMapping
     public ResponseEntity<?> createConsumo(@RequestBody ConsumosRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(consumosService.createConsumos(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createConsumos(dto));
     }
 
     @PutMapping
     public ResponseEntity<?> updateConsumo(@PathVariable Integer id, @RequestBody ConsumosRequestDTO dto) {
-        return ResponseEntity.ok((consumosService.updateConsumo(id, dto)));
+        return ResponseEntity.ok((service.updateConsumo(id, dto)));
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteConsumo(@PathVariable Integer id) {
-        consumosService.deleteConsumo(id);
+        service.deleteConsumo(id);
         return ResponseEntity.noContent().build();
     }
 }
