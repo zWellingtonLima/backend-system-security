@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -9,44 +10,26 @@ import java.util.List;
 @Table(name = "funcionarios")
 public class Funcionarios extends Pessoa {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_funcionario")
-    private int id;
-
-    @Column(nullable = false, length = 150)
+    @Column(name = "nome_funcionario", nullable = false, length = 150)
     private String nomeFuncionario;
+
+    @Column(name = "numero_funcionario", nullable = false, unique = true)
+    private String numeroFuncionario;
 
     @Column(nullable = false, length = 50)
     private String setor;
 
-    @Column(name="create_user")
-    private String createUser;
-    @Column(name="create_date")
-    private LocalDateTime createDate;
-    @Column(name="modify_user")
-    private String modifyUser;
-    @Column(name="modify_date")
-    private LocalDateTime modifyDate;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "funcionario", fetch = FetchType.LAZY)
-    private List<Movimentacoes> funcionarioMovimentacoes;
+    private List<Movimentacoes> movimentacoes;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "funcionarioComChave", fetch = FetchType.LAZY)
-    private List<EntregaChaves> chavesRecebidasFuncionario;
+    private List<EntregaChaves> chavesRecebidas;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "funcionarioResponsavel", fetch = FetchType.LAZY)
-    private List<Visitas> visitasResponsavel;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createDate = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.modifyDate = LocalDateTime.now();
-    }
+    private List<Movimentacoes> movimentacoesComoResponsavel;
 
     public Funcionarios() {
     }
@@ -56,20 +39,36 @@ public class Funcionarios extends Pessoa {
         this.setor = setor;
     }
 
-    public List<Visitas> getVisitasResponsavel() {
-        return visitasResponsavel;
+    public List<Movimentacoes> getMovimentacoes() {
+        return movimentacoes;
     }
 
-    public void setVisitasResponsavel(List<Visitas> visitasResponsavel) {
-        this.visitasResponsavel = visitasResponsavel;
+    public void setMovimentacoes(List<Movimentacoes> movimentacoes) {
+        this.movimentacoes = movimentacoes;
     }
 
-    public int getId() {
-        return id;
+    public List<EntregaChaves> getChavesRecebidas() {
+        return chavesRecebidas;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setChavesRecebidas(List<EntregaChaves> chavesRecebidas) {
+        this.chavesRecebidas = chavesRecebidas;
+    }
+
+    public List<Movimentacoes> getMovimentacoesComoResponsavel() {
+        return movimentacoesComoResponsavel;
+    }
+
+    public void setMovimentacoesComoResponsavel(List<Movimentacoes> movimentacoesComoResponsavel) {
+        this.movimentacoesComoResponsavel = movimentacoesComoResponsavel;
+    }
+
+    public String getNumeroFuncionario() {
+        return numeroFuncionario;
+    }
+
+    public void setNumeroFuncionario(String numeroFuncionario) {
+        this.numeroFuncionario = numeroFuncionario;
     }
 
     public String getNomeFuncionario() {
@@ -88,35 +87,4 @@ public class Funcionarios extends Pessoa {
         this.setor = setor;
     }
 
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(String modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyDate() {
-        return modifyDate;
-    }
-
-    public void setModifyDate(LocalDateTime modifyDate) {
-        this.modifyDate = modifyDate;
-    }
 }
