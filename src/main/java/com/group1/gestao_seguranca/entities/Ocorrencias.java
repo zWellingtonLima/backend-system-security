@@ -24,13 +24,13 @@ public class Ocorrencias {
 
     private Users seguranca;
 
-    @Column(name="create_user")
+    @Column(name = "create_user")
     private String createUser;
-    @Column(name="create_date")
+    @Column(name = "create_date")
     private LocalDateTime createDate;
-    @Column(name="modify_user")
+    @Column(name = "modify_user")
     private String modifyUser;
-    @Column(name="modify_date")
+    @Column(name = "modify_date")
     private LocalDateTime modifyDate;
 
     @PrePersist
@@ -60,6 +60,25 @@ public class Ocorrencias {
         this.id = id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getHoraOcorrencia() {
+        return horaOcorrencia;
+    }
+
+    public void setHoraOcorrencia(LocalDateTime horaOcorrencia) {
+        this.horaOcorrencia = horaOcorrencia;
+    }
+
+    public String getOcorrencia() {
+        return ocorrencia;
+    }
+
+    public void setOcorrencia(String ocorrencia) {
+        this.ocorrencia = ocorrencia;
+    }
 
     public Users getSeguranca() {
         return seguranca;
