@@ -2,11 +2,25 @@
 
 ---
 
+## Anotações Usadas
+### @Transactional
+> Abre uma transação no BD.
+
+Foi usado em alguns serviços onde o foco era a **escrita de dados**, logo, em métodos que usavam de save(), update() ou delete, ou quando múltiplas operações no banco eram realizadas dentro do mesmo método.
+
+Ele garante se algo der errado, um rollback vai ser lançado, garantindo consistências dos dados da DB.
+
+Em métodos de leitura não é necessário mas podemos anotar com @Transactional(readOnly = true)
+
+---
+
 ## Users user = (Users) request.getAttribute("usuarioAutenticado"); 
 > Usado no Consumos Service.
 
 ## Wrapper Integer vs primitivo int como parâmetro de Controllers ou Services
 O Spring já garante que o _{id}_ que chega no método é o tipo de valor esperado, caso não, lança um **MethodArgumentTypeMismatchException**.
+
+Em momentos do código quando estamos trabalhando com as entidades JPA é mais seguro usar Wrappers porque esses possibilitam trabalhar com a ausência de valor.
 
 > O Wrapper Integer foi escolhido porque podemos trabalhar com a possibilidade de um valor Null.
 
@@ -51,6 +65,42 @@ String name = optionalUser
 
 ---
 
+## Method Reference
+> O Method Reference é uma forma mais concisa de se escrever uma expressão Lambda.
+```java
+ .map(User::getName) // É a mesma coisa de .map(user -> user.getName());
+
+```
+
+A utilização disso é comum em algumas API mais recentes que implementar interfaces funcionais, ou as Collections ou as Streams.
+
+---
+
+## Streams
+
+> Uma Stream é uma sequência de elementos que permite operações funcionais tais como o map, filter, reduce. Isso é usado para evitar iterar manualmente usando um for, por exemplo.
+
+```java
+    public List<ConsumosResponseDTO> listConsumos() {
+    return consumosRepo.findAll()
+            .stream() 
+            .map(ConsumosResponseDTO::from)
+            .toList();
+}
+```
+O **.map()** transforma cada elemento da stream, ou seja, para cada objeto retornado do banco, ele aplica o método **from**
+
+> Entra um Consumos -> sai o ConsumosResponseDTO através do método from() existente dentro do ConsumosResponseDTO. Por fim, o toList() coleta todos os elementos do stream e transforma novamente em uma List, finalizando a stream.
+
+---
+
+## ConsumosResponseDTO.from()
+> O método from é basicamente um método de fábrica, ou seja, serve para construir um objeto, recebendo certas características e transformando-o em outro formato.
+
+Usando esse mesmo exemplo, o ConsumosResponseDTO.from recebe um Objeto do tipo Consumos, pega em todas as propriedades que ele possui e internamente converte-o para um tipo definido pelo ConsumosResponseDTO.
+
+---
+
 ## @JsonIgnore
 Não tentar aceder a lista de chaves dentro da Entidade Classe por causa do Lazy Loading. 
 JSON ignore usado para evitar que o JPA fosse buscar essa lista.
@@ -58,7 +108,71 @@ Posso fazer a busca através do Repositório de Chaves invés de buscar usando o
 
 ---
 
-## RuntimeException
+## Exceptions
+### RuntimeException
+> Essa é a classe base das Exceções não verificadas (unchecked)
+
+- Usando ela não somos obrigados a declarar no método ou classe o _throws_
+- Geralmente elas indicam um erro de programação ou quando uma regra de negócio é violada
+- Usamos isso quando não faz sentido tratar o erro.
+
+### IllegalArgumentException
+> Usar quando um argumento passado para um método é inválido
+
+A usabilidade aqui é clara: quando o problema está na entrada do método
+```java
+if (idade < 0) {
+    throw new IllegalArgumentException("Idade nao pode ser negativa");
+        }
+```
+
+### IllegalStateException
+> Quando o estado atual do sistema não permite a operação
+
+No nosso caso, verificar se um funcionário ou visitante já existe com base no ID dele.
+```java
+if (funcionarioRepo.existsByNumeroFuncionario(...)) {
+    throw new IllegalStateException("Ja existe um funcionario com esse numero")
+        }
+```
+
+> Diferenças com o IllegalArgumentException:
+> - O input pode ser válido.
+> - Mas o sistema já está num estado que impede essa ação.
+
+### EntityNotFoundException
+> Esse é comum no JPA. Usado quando buscamos pela existência de uma entidade que, por algum motivo, não existe.
+
+---
+
+## private <T extends Enum<T>> List<Map<String, String>> buildList(T[] values)
+> Usado no controller de listagens
+
+```java
+private <T extends Enum<T>> List<Map<String, String>> buildList(T[] values) {
+        return Arrays.stream(values)
+                .map(v -> {
+                    Map<String, String> item = new LinkedHashMap<>();
+                    item.put("valor", v.name());
+                    item.put("label", ((LabeledEnum) v).getLabel());
+                    return item;
+                })
+                .collect(Collectors.toList());
+    }
+```
+
+Possui como assinatura o <T extends Enum<T>>, ou seja, ele aceita qualquer lista de Enums.
+Aceita como parâmetro (T[] values) -> que significa um array de enums.
+
+O fluxo  interno desse código é:
+1. Arrays.stream(values) -> converte para Stream
+2. .map() -> Pra cada enum (v)
+3. Map<String, String> item = new LinkedHashMap<> -> Cria um Map e o LinkedHashMap mantém a ordem em que eles foram inseridos.
+4. item.pu("valor", v.name()) e item.put("label", ((LabeledEnum) v).getLabel()) -> Cria as propriedades valor e label e, no label, faz o Cast pra essa LabeledEnum usando esse método getLabel criado lá.
+5. retorna o map
+6. Junta tudo numa lista com o collect(Collectors.toList())
+
+> OBS: No ponto 6 foi usado o collect(Collectors.toList()) invés de apenas toList() porque queremos que essa lista seja mutável, ou seja, posteriormente será possível adicionar ou remover algum item dessa lista.
 
 ---
 
@@ -179,18 +293,49 @@ public ConsumosResponseDTO searchById(Integer id) {
     }
 ```
 
-
 ---
 
+## Nome de métodos em repository JPA
+- [QueryDerivation Baeldung](https://www.baeldung.com/spring-data-derived-queries)
+- [JPA Query Methods - Spring](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html)
 
+> findTopByTipoConsumoAndAtivoTrueOrderByDataRegistoDesc
 
+Isso é chamado de **query derivation** do Spring Data JPA. Quebrando isso em partes fica:
+- findTopBy -> pega 1 resultado
+- TipoConsumo -> é o campo
+- AndAtivoTrue -> ativo = true
+- OrderByDataRegistoDesc -> ordena de forma decrescente
 
+O equivalente em SQL seria algo como:
+```sql
+SELECT *
+FROM consumos
+WHERE tipo_consumo = ?
+  AND ativo = true
+ORDER BY data_registo DESC
+LIMIT 1;
+```
 
-
-
-
-
-
+### Regras Principais pra fazer a Query Derivation
+- Prefixos
+  - findBy
+  - findTopBy
+  - findFirstBy
+  - existsBy
+  - countBy
+- Operadores
+  - And
+  - Or
+- Condições
+  - True, False
+  - IsNull, IsNotNull
+  - LessThan, GreaterThan
+- Ordenação
+  - OrderByNomedoCampAsc ou Desc
+- Limitação
+  - Top
+  - First
 
 
 # Problemas no desenvolvimento e da atual usabilidade do sistema
@@ -228,6 +373,7 @@ Um utilizador mal-intencionado ao descobrir que o id da sessão que é retornado
 - Incluir todo o fluxo de chaves e molhos: criação, histórico, controle.
 - Verificar os createUser e createDate em todos os endpoints
 - Fazer algo com o Tipo Chave (Principal, Reserva)
+- Analisar adição de @Transactional em algumas operações no ConsumosService 
 
 # Links de Apoio
 > Interceptors
