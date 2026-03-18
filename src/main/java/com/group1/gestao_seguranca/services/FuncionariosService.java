@@ -3,11 +3,14 @@ package com.group1.gestao_seguranca.services;
 import com.group1.gestao_seguranca.dto.funcionarios.FuncionariosRequestDTO;
 import com.group1.gestao_seguranca.dto.funcionarios.FuncionariosResponseDTO;
 import com.group1.gestao_seguranca.entities.Funcionarios;
+import com.group1.gestao_seguranca.entities.Users;
 import com.group1.gestao_seguranca.repositories.FuncionariosRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -15,9 +18,18 @@ public class FuncionariosService {
 
     private final FuncionariosRepository funcionariosRepo;
 
-    public FuncionariosService(FuncionariosRepository funcionariosRepo) {
+    private final HttpServletRequest request;
+
+    public FuncionariosService(FuncionariosRepository funcionariosRepo, HttpServletRequest request) {
         this.funcionariosRepo = funcionariosRepo;
+        this.request = request;
     }
+
+    // Metodo auxilar Obter usuario
+    private Users getUserAutenticado() {
+        return (Users) request.getAttribute("usuarioAutenticado");
+    }
+
 
     @Transactional
     public FuncionariosResponseDTO criar(FuncionariosRequestDTO dto) {
@@ -26,10 +38,14 @@ public class FuncionariosService {
                     "Já existe um funcionário com o número: " + dto.getNumeroFuncionario());
         }
 
+        Users user = getUserAutenticado();
+
         Funcionarios funcionario = new Funcionarios();
         funcionario.setNomeFuncionario(dto.getNomeFuncionario());
         funcionario.setNumeroFuncionario(dto.getNumeroFuncionario());
         funcionario.setSetor(dto.getSetor());
+        funcionario.setCreateDate(LocalDateTime.now());
+        funcionario.setCreateUser(user.getCreateUser());
 
         return FuncionariosResponseDTO.from(funcionariosRepo.save(funcionario));
     }
