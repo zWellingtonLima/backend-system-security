@@ -374,6 +374,7 @@ Um utilizador mal-intencionado ao descobrir que o id da sessão que é retornado
 - Verificar os createUser e createDate em todos os endpoints
 - Fazer algo com o Tipo Chave (Principal, Reserva)
 - Analisar adição de @Transactional em algumas operações no ConsumosService 
+- Enviar campo "Criado em" na Lista Funcionarios
 
 # Links de Apoio
 > Interceptors
