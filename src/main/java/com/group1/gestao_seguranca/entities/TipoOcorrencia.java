@@ -13,6 +13,7 @@ public class TipoOcorrencia {
     private int id;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo", nullable = false)
     private TipoOcorrenciaEnum tipoOcorrencia;
 
     public TipoOcorrencia() {
@@ -20,6 +21,10 @@ public class TipoOcorrencia {
 
     public TipoOcorrencia(TipoOcorrenciaEnum tipoOcorrencia) {
         this.tipoOcorrencia = tipoOcorrencia;
+    }
+
+    public String getLabel() {
+        return tipoOcorrencia.getLabel();
     }
 
     public int getId() {

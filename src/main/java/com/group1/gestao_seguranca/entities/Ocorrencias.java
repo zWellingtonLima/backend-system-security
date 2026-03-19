@@ -1,6 +1,7 @@
 package com.group1.gestao_seguranca.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ public class Ocorrencias {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_ocorrencia")
     private Integer id;
+
     @Column(name = "hora_ocorrencia")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime horaOcorrencia;
@@ -21,8 +23,13 @@ public class Ocorrencias {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
-
+    @JsonIgnore
     private Users seguranca;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tipo_ocorrencia", nullable = false)
+    @JsonIgnore
+    private TipoOcorrencia tipoOcorrencia;
 
     @Column(name = "create_user")
     private String createUser;
@@ -46,18 +53,21 @@ public class Ocorrencias {
     public Ocorrencias() {
     }
 
-    public Ocorrencias(LocalDateTime horaOcorrencia, String ocorrencia, Users seguranca) {
-        this.horaOcorrencia = horaOcorrencia;
+    public Ocorrencias(String ocorrencia, Users seguranca) {
         this.ocorrencia = ocorrencia;
         this.seguranca = seguranca;
     }
 
-    public int getId() {
-        return id;
+    public TipoOcorrencia getTipoOcorrencia() {
+        return tipoOcorrencia;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setTipoOcorrencia(TipoOcorrencia tipoOcorrencia) {
+        this.tipoOcorrencia = tipoOcorrencia;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void setId(Integer id) {

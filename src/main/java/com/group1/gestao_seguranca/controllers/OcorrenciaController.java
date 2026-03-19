@@ -1,8 +1,11 @@
 package com.group1.gestao_seguranca.controllers;
 
-import com.group1.gestao_seguranca.entities.*;
-import com.group1.gestao_seguranca.repositories.OcorrenciasRepository;
-import com.group1.gestao_seguranca.repositories.UsersRepository;
+import com.group1.gestao_seguranca.dto.ocorrencias.OcorrenciasRequestDTO;
+import com.group1.gestao_seguranca.dto.ocorrencias.OcorrenciasResponseDTO;
+import com.group1.gestao_seguranca.services.OcorrenciasService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,24 +14,19 @@ import java.util.List;
 @RequestMapping("/api/ocorrencias")
 public class OcorrenciaController {
 
-    private final OcorrenciasRepository ocorrenciasRepo;
-    private final UsersRepository usersRepo;
+    private final OcorrenciasService service;
 
-    public OcorrenciaController(OcorrenciasRepository ocorrenciasRepo, UsersRepository usersRepo) {
-        this.ocorrenciasRepo = ocorrenciasRepo;
-        this.usersRepo = usersRepo;
+    public OcorrenciaController(OcorrenciasService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Ocorrencias> list() {
-        return ocorrenciasRepo.findAll();
+    public ResponseEntity<List<OcorrenciasResponseDTO>> listarOcorrencias() {
+        return ResponseEntity.ok(service.listarTodos());
     }
 
     @PostMapping
-    public Ocorrencias create(@RequestBody Ocorrencias ocorrencias) {
-        Users user = usersRepo.findById(ocorrencias.getSeguranca().getId())
-                .orElseThrow();
-        ocorrencias.setSeguranca(user);
-        return ocorrenciasRepo.save(ocorrencias);
+    public ResponseEntity<OcorrenciasResponseDTO> criar(@Valid @RequestBody OcorrenciasRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(dto));
     }
 }

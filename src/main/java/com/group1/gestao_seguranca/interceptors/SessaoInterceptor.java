@@ -19,15 +19,21 @@ public class SessaoInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
-        String header = request.getHeader("X-Sessao-Id");
+        // Preflight do CORS — deixa passar sempre
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return true;
+        }
 
-        if (header == null) {
+        String token = request.getHeader("X-Sessao-Id");
+
+        if (token == null) {
             response.setStatus(401);
             response.getWriter().write("Sessão não fornecida");
             return false;
         }
 
-        Sessao sessao = sessaoRepo.findByToken(header).orElse(null);
+        Sessao sessao = sessaoRepo.findByToken(token).orElse(null);
 
         if (sessao == null || sessao.getHoraSaida() != null) {
             response.setStatus(401);
