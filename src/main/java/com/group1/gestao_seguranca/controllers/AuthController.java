@@ -71,10 +71,9 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponseDTO(sessao.getToken(), user.getId(), user.getNomeSeguranca()));
     }
 
-    @PostMapping("/logout/{idSessao}")
-    public ResponseEntity<?> logout(@PathVariable Integer idSessao) {
-
-        Optional<Sessao> optSessao = sessaoRepo.findById(idSessao);
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("X-Sessao-Id") String token) {
+        Optional<Sessao> optSessao = sessaoRepo.findByToken(token);
 
         if (optSessao.isEmpty()) {
             return ResponseEntity.badRequest().body("Sessão não encontrada.");
@@ -95,9 +94,9 @@ public class AuthController {
     }
 
     // Endpoint para recuperar sessao atual
-    @GetMapping("/sessao/{idSessao}")
-    public ResponseEntity<?> getSessao(@PathVariable Integer idSessao) {
-        Optional<Sessao> optSessao = sessaoRepo.findById(idSessao);
+    @GetMapping("/sessao")
+    public ResponseEntity<?> getSessao(@RequestHeader("X-Sessao-Id") String token) {
+        Optional<Sessao> optSessao = sessaoRepo.findByToken(token);
 
         if (optSessao.isEmpty()) {
             return ResponseEntity.status(404).body("Sessão não encontrada.");
@@ -110,7 +109,6 @@ public class AuthController {
         }
 
         Users user = sessao.getUser();
-
         return ResponseEntity.ok(new LoginResponseDTO(sessao.getToken(), user.getId(), user.getNomeSeguranca()));
     }
 }
