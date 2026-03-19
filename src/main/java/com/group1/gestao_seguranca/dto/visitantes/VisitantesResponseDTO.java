@@ -1,7 +1,8 @@
 package com.group1.gestao_seguranca.dto.visitantes;
 
 import com.group1.gestao_seguranca.entities.Visitantes;
-import com.group1.gestao_seguranca.enums.TipoVisitanteEnum;
+
+import java.time.LocalDateTime;
 
 public class VisitantesResponseDTO {
 
@@ -10,6 +11,7 @@ public class VisitantesResponseDTO {
     private String documentoIdentificacao;
     private String empresa;
     private String observacoes;
+    private LocalDateTime registadoEm;
 
     public static VisitantesResponseDTO from(Visitantes v) {
         VisitantesResponseDTO dto = new VisitantesResponseDTO();
@@ -18,13 +20,17 @@ public class VisitantesResponseDTO {
         dto.documentoIdentificacao = v.getDocumentoIdentificacao();
         dto.empresa = v.getEmpresa();
         dto.observacoes = v.getObservacoes();
+        dto.registadoEm = v.getCreateDate();
 
         return dto;
     }
 
-    // getters
     public int getId() {
         return id;
+    }
+
+    public LocalDateTime getRegistadoEm() {
+        return registadoEm;
     }
 
     public String getNomeVisitante() {
