@@ -1,6 +1,7 @@
 package com.group1.gestao_seguranca.entities;
 
 import com.group1.gestao_seguranca.enums.StatusChaveEnum;
+import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -17,9 +18,14 @@ public class Chaves {
     @Column(name = "codigo_chave")
     private String codigoChave;
 
+    @Column(name = "codigo_molho")
+    private String codigoMolho;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "status_chave")
-    private StatusChaveEnum statusChave;
+    private StatusChaveEnum status;
+
+    @Column(length = 100)
+    private String observacoes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_tipo_chave", nullable = false)
@@ -29,11 +35,6 @@ public class Chaves {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_sala")
     private Salas sala;
-
-    // Chave de molho
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_molho")
-    private Molhos molho;
 
     // Histórico de entregas de uma chave
     @OneToMany(mappedBy = "chave", fetch = FetchType.LAZY)
@@ -63,9 +64,33 @@ public class Chaves {
 
     public Chaves(String codigoChave, StatusChaveEnum statusChave, TipoChave tipoChave, Salas sala) {
         this.codigoChave = codigoChave;
-        this.statusChave = statusChave;
+        this.status = statusChave;
         this.tipoChave = tipoChave;
         this.sala = sala;
+    }
+
+    public StatusChaveEnum getStatus() {
+        return status;
+    }
+
+    public String getCodigoMolho() {
+        return codigoMolho;
+    }
+
+    public void setCodigoMolho(String codigoMolho) {
+        this.codigoMolho = codigoMolho;
+    }
+
+    public void setStatus(StatusChaveEnum status) {
+        this.status = status;
+    }
+
+    public String getObservacoes() {
+        return observacoes;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
     }
 
     public int getId() {
@@ -77,23 +102,15 @@ public class Chaves {
     }
 
     public StatusChaveEnum getStatusChave() {
-        return statusChave;
+        return status;
     }
 
     public void setStatusChave(StatusChaveEnum statusChave) {
-        this.statusChave = statusChave;
+        this.status = statusChave;
     }
 
     public String getChaveLabel(StatusChaveEnum statusChave) {
         return statusChave.getLabel();
-    }
-
-    public Molhos getMolho() {
-        return molho;
-    }
-
-    public void setMolho(Molhos molho) {
-        this.molho = molho;
     }
 
     public Salas getSala() {
@@ -112,8 +129,8 @@ public class Chaves {
         this.codigoChave = codigoChave;
     }
 
-    public TipoChave getTipoChave() {
-        return tipoChave;
+    public TipoChaveEnum getTipoChave() {
+        return tipoChave.getTipoChave();
     }
 
     public void setTipoChave(TipoChave tipoChave) {

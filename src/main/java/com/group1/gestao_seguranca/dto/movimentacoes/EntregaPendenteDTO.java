@@ -1,13 +1,15 @@
 package com.group1.gestao_seguranca.dto.movimentacoes;
 
+import com.group1.gestao_seguranca.enums.TipoChaveEnum;
+
 public class EntregaPendenteDTO {
 
     private int idEntrega;
     private String descricao;   // ex: "CHV-101-P" ou "Molho TI"
-    private String tipo;        // "CHAVE" ou "MOLHO"
+    private TipoChaveEnum tipo;        // "CHAVE" ou "MOLHO"
     private String observacoes;
 
-    public EntregaPendenteDTO(int idEntrega, String descricao, String tipo, String observacoes) {
+    public EntregaPendenteDTO(int idEntrega, String descricao, TipoChaveEnum tipo, String observacoes) {
         this.idEntrega = idEntrega;
         this.descricao = descricao;
         this.tipo = tipo;
@@ -31,11 +33,11 @@ public class EntregaPendenteDTO {
         this.descricao = descricao;
     }
 
-    public String getTipo() {
+    public TipoChaveEnum getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(TipoChaveEnum tipo) {
         this.tipo = tipo;
     }
 

@@ -17,9 +17,12 @@ public class Consumos {
 
     @Column(name = "valor_leitura", nullable = false)
     private int valorLeitura;
+
     @Column(name = "data_registo")
     private LocalDateTime dataRegisto;
+
     private String observacao;
+
     @Column(nullable = false)
     private boolean ativo = true;
 

@@ -1,15 +1,14 @@
 package com.group1.gestao_seguranca.dto.movimentacoes;
 
 import com.group1.gestao_seguranca.entities.EntregaChaves;
+import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 
 import java.time.LocalDateTime;
 
 public class DevolucaoResponseDTO {
 
-    private int idEntrega;
-    private String codigoChave;   // null se for molho
-    private String nomeMolho;     // null se for chave
-    private String tipo;          // "CHAVE" ou "MOLHO"
+    private int idEntrega;    // null se for chave
+    private TipoChaveEnum tipo;          // "CHAVE" ou "MOLHO"
     private LocalDateTime horaEntrega;
     private LocalDateTime horaDevolucao;
     private String devolvidaPor;
@@ -22,14 +21,7 @@ public class DevolucaoResponseDTO {
         dto.horaDevolucao = entrega.getHoraDevolucao();
         dto.devolvidaPor = entrega.getDevolvidaPor();
         dto.observacoes = entrega.getObservacoes();
-
-        if (entrega.getChave() != null) {
-            dto.tipo = "CHAVE";
-            dto.codigoChave = entrega.getChave().getCodigoChave();
-        } else if (entrega.getMolho() != null) {
-            dto.tipo = "MOLHO";
-            dto.nomeMolho = entrega.getMolho().getNomeMolho();
-        }
+        dto.tipo = entrega.getChave().getTipoChave();
 
         return dto;
     }
@@ -39,15 +31,7 @@ public class DevolucaoResponseDTO {
         return idEntrega;
     }
 
-    public String getCodigoChave() {
-        return codigoChave;
-    }
-
-    public String getNomeMolho() {
-        return nomeMolho;
-    }
-
-    public String getTipo() {
+    public TipoChaveEnum getTipo() {
         return tipo;
     }
 

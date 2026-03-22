@@ -29,10 +29,6 @@ public class EntregaChaves {
     private Chaves chave;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_molho")
-    private Molhos molho;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_movimentacao", nullable = false)
     private Movimentacoes movimentacao;
 
@@ -85,14 +81,6 @@ public class EntregaChaves {
 
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
-    }
-
-    public Molhos getMolho() {
-        return molho;
-    }
-
-    public void setMolho(Molhos molho) {
-        this.molho = molho;
     }
 
     public Movimentacoes getMovimentacao() {

@@ -4,6 +4,7 @@ import com.group1.gestao_seguranca.dto.movimentacoes.*;
 import com.group1.gestao_seguranca.entities.*;
 import com.group1.gestao_seguranca.enums.StatusChaveEnum;
 import com.group1.gestao_seguranca.enums.StatusMolhoEnum;
+import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 import com.group1.gestao_seguranca.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,16 +21,14 @@ public class MovimentacoesService {
     private final FuncionariosRepository funcionariosRepo;
     private final VisitantesRepository visitantesRepo;
     private final ChavesRepository chavesRepo;
-    private final MolhosRepository molhosRepo;
     private final EntregaChavesRepository entregaChavesRepo;
 
-    public MovimentacoesService(HttpServletRequest request, MovimentacoesRepository movimentacoesRepo, FuncionariosRepository funcionariosRepo, VisitantesRepository visitantesRepo, ChavesRepository chavesRepo, MolhosRepository molhosRepo, EntregaChavesRepository entregaChavesRepo) {
+    public MovimentacoesService(HttpServletRequest request, MovimentacoesRepository movimentacoesRepo, FuncionariosRepository funcionariosRepo, VisitantesRepository visitantesRepo, ChavesRepository chavesRepo, EntregaChavesRepository entregaChavesRepo) {
         this.request = request;
         this.movimentacoesRepo = movimentacoesRepo;
         this.funcionariosRepo = funcionariosRepo;
         this.visitantesRepo = visitantesRepo;
         this.chavesRepo = chavesRepo;
-        this.molhosRepo = molhosRepo;
         this.entregaChavesRepo = entregaChavesRepo;
     }
 
@@ -66,7 +65,7 @@ public class MovimentacoesService {
             if (dto.getIdFuncionarioResponsavel() != null) {
                 Funcionarios responsavel = funcionariosRepo
                         .findById(dto.getIdFuncionarioResponsavel())
-                        .orElseThrow(() -> new EntityNotFoundException("Funcionário responsável não encontrado"));
+                        .orElseThrow(() -> new EntityNotFoundException("Funcionário não foi encontrado."));
                 movimentacao.setFuncionarioResponsavel(responsavel);
             }
         }
@@ -78,6 +77,7 @@ public class MovimentacoesService {
 
         return MovimentacaoResponseDTO.from(movimentacao);
     }
+
 
     @Transactional
     public MovimentacaoResponseDTO registrarSaida(int idMovimentacao) {
@@ -100,11 +100,16 @@ public class MovimentacoesService {
 
         List<EntregaPendenteDTO> pendentesDTO = pendentes.stream()
                 .map(entregasChave -> {
-                    boolean isChave = entregasChave.getChave() != null;
-                    String descricao = isChave
-                            ? entregasChave.getChave().getCodigoChave()
-                            : entregasChave.getMolho().getNomeMolho();
-                    String tipo = isChave ? "CHAVE" : "MOLHO";
+                    TipoChaveEnum tipo = entregasChave.getChave().getTipoChave();
+                    String descricao;
+
+                    // Verifica de qual tipo e a chave para colocar a descricao adequada
+                    if (tipo == TipoChaveEnum.CHAVE) {
+                        descricao = entregasChave.getChave().getCodigoChave();
+                    } else {
+                        descricao = entregasChave.getChave().getCodigoMolho();
+                    }
+
                     return new EntregaPendenteDTO(entregasChave.getId(), descricao, tipo, entregasChave.getObservacoes());
                 })
                 .toList();
@@ -121,7 +126,7 @@ public class MovimentacoesService {
 
         EntregaChaves entrega = entregaChavesRepo.findById(idEntrega)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Entrega não encontrada: id=" + idEntrega));
+                        "Entrega de chave não encontrada: id=" + idEntrega));
 
         if (entrega.getHoraDevolucao() != null) {
             throw new IllegalStateException("Esta chave/molho já foi devolvido.");
@@ -135,12 +140,6 @@ public class MovimentacoesService {
             Chaves chave = entrega.getChave();
             chave.setStatusChave(StatusChaveEnum.DISPONIVEL);
             chavesRepo.save(chave);
-        }
-
-        if (entrega.getMolho() != null) {
-            Molhos molho = entrega.getMolho();
-            molho.setStatusMolho(StatusMolhoEnum.DISPONIVEL);
-            molhosRepo.save(molho);
         }
 
         return DevolucaoResponseDTO.from(entregaChavesRepo.save(entrega));
@@ -193,8 +192,11 @@ public class MovimentacoesService {
     }
 
     private void registrarEntregaChave(EntregaChaveDTO entregaDTO, Movimentacoes mov) {
+        Users user = getUserAutenticado();
 
         EntregaChaves entrega = new EntregaChaves();
+        entrega.setCreateUser(user.getNomeSeguranca());
+        entrega.setCreateDate(LocalDateTime.now());
         entrega.setMovimentacao(mov);
         entrega.setHoraEntrega(LocalDateTime.now());
         entrega.setObservacoes(entregaDTO.getObservacoes());
@@ -208,7 +210,7 @@ public class MovimentacoesService {
                     .orElseThrow(() -> new EntityNotFoundException(
                             "Chave não encontrada: id=" + entregaDTO.getIdChave()));
 
-            // erifica se a chave esta disponivel
+            // Verifica se a chave esta disponivel
             if (StatusChaveEnum.DISPONIVEL != chave.getStatusChave()) {
                 throw new IllegalStateException(
                         "A chave " + chave.getCodigoChave() + " não está disponível.");
@@ -217,20 +219,6 @@ public class MovimentacoesService {
             chave.setStatusChave(StatusChaveEnum.EMPRESTADA);
             chavesRepo.save(chave);
             entrega.setChave(chave);
-
-        } else {
-            Molhos molho = molhosRepo.findById(entregaDTO.getIdMolho())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Molho não encontrado: id=" + entregaDTO.getIdMolho()));
-
-            if (StatusMolhoEnum.DISPONIVEL != molho.getStatusMolho()) {
-                throw new IllegalStateException(
-                        "Molho " + molho.getNomeMolho() + " não está disponível.");
-            }
-
-            molho.setStatusMolho(StatusMolhoEnum.EM_USO);
-            molhosRepo.save(molho);
-            entrega.setMolho(molho);
         }
 
         entregaChavesRepo.save(entrega);

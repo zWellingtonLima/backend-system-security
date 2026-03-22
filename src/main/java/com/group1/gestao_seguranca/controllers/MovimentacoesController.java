@@ -12,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/movimentacoes")
 public class MovimentacoesController {
@@ -67,8 +65,8 @@ public class MovimentacoesController {
             throw new IllegalArgumentException("Funcionários não têm funcionário responsável");
 
         EntregaChaveDTO entrega = dto.getEntregaChave();
-        if (entrega != null && entrega.getIdChave() == null && entrega.getIdMolho() == null)
-            throw new IllegalArgumentException("Entrega de chave requer idChave ou idMolho");
+        if (entrega != null && entrega.getIdChave() == null)
+            throw new IllegalArgumentException("Entrega de chave requer a identificação da Chave.");
 
     }
 }

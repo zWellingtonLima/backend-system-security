@@ -2,11 +2,8 @@ package com.group1.gestao_seguranca.enums;
 
 public enum TipoChaveEnum implements LabeledEnum {
 
-    PRINCIPAL("Principal"),
-    RESERVA("Reserva"),
-    MESTRA("Mestra"),
-    CADEADO("Cadeado");
-
+    CHAVE("Chave"),
+    MOLHO("Molho");
     private final String label;
 
     TipoChaveEnum(String label) {
