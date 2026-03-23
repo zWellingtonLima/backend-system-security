@@ -15,6 +15,8 @@ public class MovimentacaoRequestDTO {
 
     private Integer idFuncionarioResponsavel;
 
+    private String setorDestino;
+
     private String observacoes;
 
     private EntregaChaveDTO entregaChave;
@@ -33,6 +35,14 @@ public class MovimentacaoRequestDTO {
 
     public void setIdFuncionarioResponsavel(Integer idFuncionarioResponsavel) {
         this.idFuncionarioResponsavel = idFuncionarioResponsavel;
+    }
+
+    public String getSetorDestino() {
+        return setorDestino;
+    }
+
+    public void setSetorDestino(String setorDestino) {
+        this.setorDestino = setorDestino;
     }
 
     public void setObservacoes(String observacoes) {

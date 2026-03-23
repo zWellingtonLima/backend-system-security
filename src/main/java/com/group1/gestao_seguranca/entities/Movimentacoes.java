@@ -23,6 +23,9 @@ public class Movimentacoes {
     private LocalDateTime horaSaida;
     private String observacoes;
 
+    @Column(name = "setor_destino", length = 30)
+    private String setorDestino;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_funcionario")
     private Funcionarios funcionario;
@@ -91,6 +94,14 @@ public class Movimentacoes {
 
     public void setFuncionarioResponsavel(Funcionarios funcionarioResponsavel) {
         this.funcionarioResponsavel = funcionarioResponsavel;
+    }
+
+    public String getSetorDestino() {
+        return setorDestino;
+    }
+
+    public void setSetorDestino(String setorDestino) {
+        this.setorDestino = setorDestino;
     }
 
     public List<EntregaChaves> getEntregas() {

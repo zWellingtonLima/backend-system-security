@@ -1,6 +1,7 @@
 package com.group1.gestao_seguranca.dto.movimentacoes;
 
 import com.group1.gestao_seguranca.entities.Movimentacoes;
+import com.group1.gestao_seguranca.enums.TipoEntrada;
 import com.group1.gestao_seguranca.enums.TipoVisitanteEnum;
 
 import java.time.LocalDateTime;
@@ -13,9 +14,10 @@ public class MovimentacaoResponseDTO {
     private LocalDateTime horaSaida;
     private String observacoes;
     private boolean ativa; // hora_saida == null
+    private String setorDestino;
 
     // Quem entrou
-    private String tipoPessoa;       // "FUNCIONARIO" ou "VISITANTE"
+    private TipoEntrada tipoPessoa;       // "FUNCIONARIO" ou "VISITANTE"
     private int idPessoa;
     private String nomePessoa;
 
@@ -38,13 +40,14 @@ public class MovimentacaoResponseDTO {
         dto.horaSaida = m.getHoraSaida();
         dto.observacoes = m.getObservacoes();
         dto.ativa = m.getHoraSaida() == null;
+        dto.setorDestino = m.getSetorDestino();
 
         if (m.getFuncionario() != null) {
-            dto.tipoPessoa = "FUNCIONARIO";
+            dto.tipoPessoa = TipoEntrada.FUNCIONARIO;
             dto.idPessoa = m.getFuncionario().getId();
             dto.nomePessoa = m.getFuncionario().getNomeFuncionario();
         } else if (m.getVisitante() != null) {
-            dto.tipoPessoa = "VISITANTE";
+            dto.tipoPessoa = TipoEntrada.VISITANTE;
             dto.idPessoa = m.getVisitante().getId();
             dto.nomePessoa = m.getVisitante().getNomeVisitante();
             dto.tipoVisita = m.getTipoVisitante();
@@ -100,7 +103,15 @@ public class MovimentacaoResponseDTO {
         return ativa;
     }
 
-    public String getTipoPessoa() {
+    public int getId_movimentacao() {
+        return id_movimentacao;
+    }
+
+    public String getSetorDestino() {
+        return setorDestino;
+    }
+
+    public TipoEntrada getTipoPessoa() {
         return tipoPessoa;
     }
 

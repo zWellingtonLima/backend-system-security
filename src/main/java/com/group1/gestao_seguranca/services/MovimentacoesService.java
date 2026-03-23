@@ -3,7 +3,6 @@ package com.group1.gestao_seguranca.services;
 import com.group1.gestao_seguranca.dto.movimentacoes.*;
 import com.group1.gestao_seguranca.entities.*;
 import com.group1.gestao_seguranca.enums.StatusChaveEnum;
-import com.group1.gestao_seguranca.enums.StatusMolhoEnum;
 import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 import com.group1.gestao_seguranca.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,6 +39,7 @@ public class MovimentacoesService {
         movimentacao.setCreateUser(user.getCreateUser());
         movimentacao.setHoraEntrada(LocalDateTime.now());
         movimentacao.setObservacoes(dto.getObservacoes());
+        movimentacao.setSetorDestino(dto.getSetorDestino());
 
         if (dto.getIdFuncionario() != null) {
             Funcionarios func = funcionariosRepo.findById(dto.getIdFuncionario())
@@ -49,6 +49,7 @@ public class MovimentacoesService {
                 throw new IllegalStateException("O funcionário " + func.getNomeFuncionario() + " já possui uma entrada ativa.");
             }
 
+            movimentacao.setSetorDestino(func.getSetor());
             movimentacao.setFuncionario(func);
         } else {
             Visitantes visitante = visitantesRepo.findById(dto.getIdVisitante())
@@ -60,6 +61,7 @@ public class MovimentacoesService {
 
             movimentacao.setVisitante(visitante);
             movimentacao.setTipoVisitante(dto.getTipoVisita());
+            movimentacao.setSetorDestino(dto.getSetorDestino());
 
             //Funciorio responsavel opcional
             if (dto.getIdFuncionarioResponsavel() != null) {
