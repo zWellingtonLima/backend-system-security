@@ -2,6 +2,7 @@ package com.group1.gestao_seguranca.controllers;
 
 import com.group1.gestao_seguranca.dto.chaves.ChaveBuscaDTO;
 import com.group1.gestao_seguranca.dto.funcionarios.FuncionarioBuscaDTO;
+import com.group1.gestao_seguranca.dto.movimentacoes.EntradaAtivaDTO;
 import com.group1.gestao_seguranca.dto.visitantes.VisitanteBuscaDTO;
 import com.group1.gestao_seguranca.services.BuscaService;
 import org.springframework.http.ResponseEntity;
@@ -47,5 +48,14 @@ public class BuscaController {
         if (q.isBlank())
             return ResponseEntity.ok(List.of());
         return ResponseEntity.ok(service.buscarChavesDisponiveis(q));
+    }
+
+    // GET /api/busca/entradas-ativas?nome=je
+    @GetMapping("/entradas-ativas")
+    public ResponseEntity<List<EntradaAtivaDTO>> entradasAtivas(
+            @RequestParam String nome) {
+        if (nome.isBlank() || nome.length() < 2)
+            return ResponseEntity.ok(List.of());
+        return ResponseEntity.ok(service.buscarEntradasAtivas(nome));
     }
 }

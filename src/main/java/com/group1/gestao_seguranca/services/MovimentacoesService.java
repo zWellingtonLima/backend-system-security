@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.services;
 
+import com.group1.gestao_seguranca.dto.chaves.EntregaChaveDTO;
 import com.group1.gestao_seguranca.dto.movimentacoes.*;
 import com.group1.gestao_seguranca.entities.*;
 import com.group1.gestao_seguranca.enums.StatusChaveEnum;
@@ -151,9 +152,27 @@ public class MovimentacoesService {
     // Metodos de Listagem
     @Transactional(readOnly = true)
     public List<MovimentacaoResponseDTO> listarAtivas() {
-        return movimentacoesRepo.findByHoraSaidaIsNullOrderByHoraEntradaDesc()
+        return movimentacoesRepo
+                .findByHoraSaidaIsNullOrderByHoraEntradaDesc()
                 .stream()
-                .map(MovimentacaoResponseDTO::from)
+                .map(m -> {
+                    MovimentacaoResponseDTO dto = MovimentacaoResponseDTO.from(m);
+
+                    List<EntregaPendenteDTO> pendentes = entregaChavesRepo
+                            .findByMovimentacaoAndHoraDevolucaoIsNull(m)
+                            .stream()
+                            .map(e -> {
+                                TipoChaveEnum tipo = e.getChave().getTipoChave();
+                                String descricao = tipo == TipoChaveEnum.CHAVE
+                                        ? e.getChave().getCodigoChave()
+                                        : e.getChave().getCodigoMolho();
+                                return new EntregaPendenteDTO(e.getId(), descricao, tipo, e.getObservacoes());
+                            })
+                            .toList();
+
+                    dto.setEntregasPendentes(pendentes);
+                    return dto;
+                })
                 .toList();
     }
 
@@ -193,36 +212,36 @@ public class MovimentacoesService {
         return (Users) request.getAttribute("usuarioAutenticado");
     }
 
-    private void registrarEntregaChave(EntregaChaveDTO entregaDTO, Movimentacoes mov) {
-        Users user = getUserAutenticado();
+    void processarEntregaChave(Chaves chave, Movimentacoes mov, String observacoes) {
+        if (chave.getStatusChave() != StatusChaveEnum.DISPONIVEL)
+            throw new IllegalStateException(
+                    "A chave " + chave.getCodigoChave() + " não está disponível.");
 
         EntregaChaves entrega = new EntregaChaves();
-        entrega.setCreateUser(user.getNomeSeguranca());
-        entrega.setCreateDate(LocalDateTime.now());
         entrega.setMovimentacao(mov);
+        entrega.setChave(chave);
         entrega.setHoraEntrega(LocalDateTime.now());
-        entrega.setObservacoes(entregaDTO.getObservacoes());
-
-        // Associa o mesmo funcionário OU visitante da movimentação
+        entrega.setObservacoes(observacoes);
         entrega.setFuncionarioComChave(mov.getFuncionario());
         entrega.setVisitanteComChave(mov.getVisitante());
 
-        if (entregaDTO.getIdChave() != null) {
-            Chaves chave = chavesRepo.findById(entregaDTO.getIdChave())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Chave não encontrada: id=" + entregaDTO.getIdChave()));
-
-            // Verifica se a chave esta disponivel
-            if (StatusChaveEnum.DISPONIVEL != chave.getStatusChave()) {
-                throw new IllegalStateException(
-                        "A chave " + chave.getCodigoChave() + " não está disponível.");
-            }
-
-            chave.setStatusChave(StatusChaveEnum.EMPRESTADA);
-            chavesRepo.save(chave);
-            entrega.setChave(chave);
-        }
-
+        chave.setStatusChave(StatusChaveEnum.EMPRESTADA);
+        chavesRepo.save(chave);
         entregaChavesRepo.save(entrega);
+    }
+
+    // registrarEntregaChave continua igual, mas delega para o método acima
+    private void registrarEntregaChave(EntregaChaveDTO entregaDTO, Movimentacoes mov) {
+        boolean jaTemChave = entregaChavesRepo
+                .existsByMovimentacaoAndHoraDevolucaoIsNull(mov);
+        if (jaTemChave)
+            throw new IllegalStateException(
+                    "Esta entrada já possui uma chave por devolver.");
+
+        Chaves chave = chavesRepo.findById(entregaDTO.getIdChave())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Chave não encontrada: id=" + entregaDTO.getIdChave()));
+
+        processarEntregaChave(chave, mov, entregaDTO.getObservacoes());
     }
 }

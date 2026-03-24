@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.dto.movimentacoes;
 
+import com.group1.gestao_seguranca.dto.chaves.EntregaChaveDTO;
 import com.group1.gestao_seguranca.enums.TipoEntrada;
 import com.group1.gestao_seguranca.enums.TipoVisitanteEnum;
 import jakarta.validation.constraints.NotNull;

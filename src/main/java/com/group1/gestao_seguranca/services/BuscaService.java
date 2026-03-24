@@ -2,11 +2,10 @@ package com.group1.gestao_seguranca.services;
 
 import com.group1.gestao_seguranca.dto.chaves.ChaveBuscaDTO;
 import com.group1.gestao_seguranca.dto.funcionarios.FuncionarioBuscaDTO;
+import com.group1.gestao_seguranca.dto.movimentacoes.EntradaAtivaDTO;
 import com.group1.gestao_seguranca.dto.visitantes.VisitanteBuscaDTO;
 import com.group1.gestao_seguranca.enums.StatusChaveEnum;
-import com.group1.gestao_seguranca.repositories.ChavesRepository;
-import com.group1.gestao_seguranca.repositories.FuncionariosRepository;
-import com.group1.gestao_seguranca.repositories.VisitantesRepository;
+import com.group1.gestao_seguranca.repositories.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +17,15 @@ public class BuscaService {
     private final FuncionariosRepository funcionariosRepo;
     private final VisitantesRepository visitantesRepo;
     private final ChavesRepository chavesRepo;
+    private final MovimentacoesRepository movimentacoesRepo;
+    private final EntregaChavesRepository entregaChavesRepo;
 
-    public BuscaService(FuncionariosRepository funcionariosRepo,
-                        VisitantesRepository visitantesRepo,
-                        ChavesRepository chavesRepo) {
+    public BuscaService(FuncionariosRepository funcionariosRepo, VisitantesRepository visitantesRepo, ChavesRepository chavesRepo, MovimentacoesRepository movimentacoesRepo, EntregaChavesRepository entregaChavesRepo) {
         this.funcionariosRepo = funcionariosRepo;
         this.visitantesRepo = visitantesRepo;
         this.chavesRepo = chavesRepo;
+        this.movimentacoesRepo = movimentacoesRepo;
+        this.entregaChavesRepo = entregaChavesRepo;
     }
 
     @Transactional(readOnly = true)
@@ -50,6 +51,18 @@ public class BuscaService {
         return chavesRepo.buscarDisponiveisPorTermo(q.trim(), StatusChaveEnum.DISPONIVEL)
                 .stream()
                 .map(ChaveBuscaDTO::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<EntradaAtivaDTO> buscarEntradasAtivas(String nome) {
+        return movimentacoesRepo.buscarAtivasPorNome(nome)
+                .stream()
+                // Exclui quem já tem uma chave pendente — regra de 1 chave por vez
+                .filter(m -> entregaChavesRepo
+                        .findByMovimentacaoAndHoraDevolucaoIsNull(m)
+                        .isEmpty())
+                .map(EntradaAtivaDTO::from)
                 .toList();
     }
 
