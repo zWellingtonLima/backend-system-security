@@ -1,7 +1,7 @@
 package com.group1.gestao_seguranca.controllers;
 
 import com.group1.gestao_seguranca.dto.movimentacoes.DevolucaoResponseDTO;
-import com.group1.gestao_seguranca.dto.movimentacoes.EntregaChaveDTO;
+import com.group1.gestao_seguranca.dto.chaves.EntregaChaveDTO;
 import com.group1.gestao_seguranca.dto.movimentacoes.MovimentacaoRequestDTO;
 import com.group1.gestao_seguranca.dto.movimentacoes.MovimentacaoResponseDTO;
 import com.group1.gestao_seguranca.services.MovimentacoesService;

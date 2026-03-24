@@ -82,6 +82,10 @@ public class MovimentacaoResponseDTO {
         this.entregasPendentes = pendentes;
     }
 
+    public void setEntregasPendentes(List<EntregaPendenteDTO> entregasPendentes) {
+        this.entregasPendentes = entregasPendentes;
+    }
+
     // getters
     public int getId() {
         return id_movimentacao;
