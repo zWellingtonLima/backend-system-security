@@ -25,4 +25,17 @@ public interface MovimentacoesRepository extends JpaRepository<Movimentacoes, In
 
     // Movimentações de um visitante específico
     List<Movimentacoes> findByVisitanteIdOrderByHoraEntradaDesc(int idVisitante);
+
+    @Query("""
+                SELECT m FROM Movimentacoes m
+                LEFT JOIN m.funcionario f
+                LEFT JOIN m.visitante v
+                WHERE m.horaSaida IS NULL
+                  AND (
+                    LOWER(f.nomeFuncionario) LIKE LOWER(CONCAT('%', :nome, '%'))
+                    OR LOWER(v.nomeVisitante) LIKE LOWER(CONCAT('%', :nome, '%'))
+                  )
+                ORDER BY m.horaEntrada DESC
+            """)
+    List<Movimentacoes> buscarAtivasPorNome(@Param("nome") String nome);
 }
