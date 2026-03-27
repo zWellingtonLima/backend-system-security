@@ -53,16 +53,6 @@ public class MovimentacoesController {
             @RequestBody @Valid MovimentacaoUpdateDTO dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
-
-    // PATCH /api/movimentacoes/{id}/anular?motivo=...
-    @PatchMapping("/{id}/anular")
-    public ResponseEntity<MovimentacaoResponseDTO> anular(
-            @PathVariable int id,
-            @NotBlank(message = "O motivo de anulação é obrigatório")
-            @RequestParam String motivo) {
-        return ResponseEntity.ok(service.anular(id, motivo));
-    }
-
     // GET /api/movimentacoes/ativas
     @GetMapping("/ativas")
     public ResponseEntity<List<MovimentacaoResponseDTO>> listarAtivas() {

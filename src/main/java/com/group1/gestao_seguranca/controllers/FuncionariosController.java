@@ -56,11 +56,4 @@ public class FuncionariosController {
             @Valid @RequestBody FuncionariosRequestDTO dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
-
-    // DELETE /api/funcionarios/{id}
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable int id) {
-        service.eliminar(id);
-        return ResponseEntity.noContent().build();
-    }
 }

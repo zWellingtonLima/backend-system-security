@@ -50,11 +50,4 @@ public class VisitantesController {
             @Valid @RequestBody VisitantesRequestDTO dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
-
-    // DELETE /api/visitantes/{id}
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable int id) {
-        service.eliminar(id);
-        return ResponseEntity.noContent().build();
-    }
 }

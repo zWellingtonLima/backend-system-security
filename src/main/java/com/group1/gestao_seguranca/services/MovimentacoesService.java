@@ -5,6 +5,7 @@ import com.group1.gestao_seguranca.dto.movimentacoes.*;
 import com.group1.gestao_seguranca.entities.*;
 import com.group1.gestao_seguranca.enums.StatusChaveEnum;
 import com.group1.gestao_seguranca.enums.TipoChaveEnum;
+import com.group1.gestao_seguranca.enums.TipoVisitanteEnum;
 import com.group1.gestao_seguranca.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -177,7 +178,7 @@ public class MovimentacoesService {
         if (dto.getTipoVisita() != null) {
             if (mov.getFuncionario() != null)
                 throw new IllegalArgumentException("Funcionários não têm tipo de visita.");
-            mov.setTipoVisitante(dto.getTipoVisita());
+            mov.setTipoVisitante(TipoVisitanteEnum.valueOf(dto.getTipoVisita()));
         }
 
         if (dto.getIdFuncionarioResponsavel() != null) {
@@ -195,31 +196,6 @@ public class MovimentacoesService {
 
         return MovimentacaoResponseDTO.from(movimentacoesRepo.save(mov));
     }
-
-    // ─────────────────────────────────────────────
-    // NOVO — Anular (soft delete)
-    // ─────────────────────────────────────────────
-
-    @Transactional
-    public MovimentacaoResponseDTO anular(int id, String motivo) {
-        Movimentacoes mov = movimentacoesRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Movimentação não encontrada: id=" + id));
-
-        if (!mov.isAtivo())
-            throw new IllegalStateException("Esta movimentação já foi anulada.");
-
-        Users user = getUserAutenticado();
-
-        mov.setAtivo(false);
-        mov.setMotivoAnulacao(motivo);
-        mov.setDataAnulacao(LocalDateTime.now());
-        mov.setAnuladoPor(user.getCreateUser());
-        mov.setModifyUser(user.getCreateUser());
-
-        return MovimentacaoResponseDTO.from(movimentacoesRepo.save(mov));
-    }
-
     // ─────────────────────────────────────────────
     // Listagens
     // ─────────────────────────────────────────────
