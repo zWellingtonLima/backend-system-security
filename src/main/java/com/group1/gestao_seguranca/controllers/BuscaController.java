@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.controllers;
 
+import com.group1.gestao_seguranca.dto.busca.BuscaGeralDTO;
 import com.group1.gestao_seguranca.dto.chaves.ChaveBuscaDTO;
 import com.group1.gestao_seguranca.dto.funcionarios.FuncionarioBuscaDTO;
 import com.group1.gestao_seguranca.dto.movimentacoes.EntradaAtivaDTO;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,6 +23,7 @@ public class BuscaController {
     public BuscaController(BuscaService service) {
         this.service = service;
     }
+
     // GET /api/busca/funcionarios?nome=jo
     @GetMapping("/funcionarios")
     public ResponseEntity<List<FuncionarioBuscaDTO>> funcionarios(
@@ -41,26 +42,10 @@ public class BuscaController {
         return ResponseEntity.ok(service.buscarVisitantes(nome));
     }
 
-// GET /api/busca?nome=jo
-    public record BuscaGeralDTO(Integer id, String nome, TipoPessoa tipo) {}
-    public enum TipoPessoa { FUNCIONARIO, VISITANTE }
-
-    @GetMapping
-    public ResponseEntity<List<BuscaGeralDTO>> buscar(@RequestParam String nome) {
-        if (nome.isBlank() || nome.length() < 2)
-            return ResponseEntity.ok(List.of());
-
-        List<BuscaGeralDTO> resultado = new ArrayList<>();
-
-        service.buscarFuncionarios(nome).stream()
-                .map(f -> new BuscaGeralDTO(f.id(), f.nomeFuncionario(), TipoPessoa.FUNCIONARIO))
-                .forEach(resultado::add);
-
-        service.buscarVisitantes(nome).stream()
-                .map(v -> new BuscaGeralDTO(v.id(), v.nomeVisitante(), TipoPessoa.VISITANTE))
-                .forEach(resultado::add);
-
-        return ResponseEntity.ok(resultado);
+    // GET /api/busca/geral?nome=je // Retorna tanto de funcionarios quanto de visitantes
+    @GetMapping("/geral")
+    public ResponseEntity<List<BuscaGeralDTO>> buscaGeral(@RequestParam String nome) {
+        return ResponseEntity.ok(service.buscaGeral(nome));
     }
 
     // GET /api/busca/chaves?q=CHV

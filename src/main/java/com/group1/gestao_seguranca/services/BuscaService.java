@@ -1,14 +1,17 @@
 package com.group1.gestao_seguranca.services;
 
+import com.group1.gestao_seguranca.dto.busca.BuscaGeralDTO;
 import com.group1.gestao_seguranca.dto.chaves.ChaveBuscaDTO;
 import com.group1.gestao_seguranca.dto.funcionarios.FuncionarioBuscaDTO;
 import com.group1.gestao_seguranca.dto.movimentacoes.EntradaAtivaDTO;
 import com.group1.gestao_seguranca.dto.visitantes.VisitanteBuscaDTO;
 import com.group1.gestao_seguranca.enums.StatusChaveEnum;
+import com.group1.gestao_seguranca.enums.TipoEntrada;
 import com.group1.gestao_seguranca.repositories.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,6 +48,35 @@ public class BuscaService {
                 .map(VisitanteBuscaDTO::from)
                 .toList();
     }
+
+    public List<BuscaGeralDTO> buscaGeral(String nome) {
+        List<BuscaGeralDTO> resultado = new ArrayList<>();
+        String[] t = tokenizar(nome);
+
+        visitantesRepo.procurarNomeVisitante(t[0], t[1], t[2])
+                .stream()
+                .map(v -> new BuscaGeralDTO(
+                        v.getId(),
+                        v.getNomeVisitante(),
+                        TipoEntrada.VISITANTE,
+                        v.getEmpresa()
+                ))
+                .forEach(resultado::add);
+
+        // Adiciona funcionários encontrados
+        funcionariosRepo.procurarNomeFuncionario(t[0], t[1], t[2])
+                .stream()
+                .map(f -> new BuscaGeralDTO(
+                        f.getId(),
+                        f.getNomeFuncionario(),
+                        TipoEntrada.FUNCIONARIO,
+                        f.getSetor()
+                ))
+                .forEach(resultado::add);
+
+        return resultado;
+    }
+
 
     @Transactional(readOnly = true)
     public List<ChaveBuscaDTO> buscarChavesDisponiveis(String q) {
