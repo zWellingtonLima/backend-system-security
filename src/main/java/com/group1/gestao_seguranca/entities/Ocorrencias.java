@@ -3,12 +3,17 @@ package com.group1.gestao_seguranca.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ocorrencias")
+@SQLDelete(sql = "UPDATE ocorrencias SET ativo = false, data_exclusao = CURRENT_TIMESTAMP WHERE id_ocorrencia = ?")
+@SQLRestriction("ativo = true")
 public class Ocorrencias {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_ocorrencia")
@@ -18,7 +23,7 @@ public class Ocorrencias {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime horaOcorrencia;
 
-    @Column(name = "ocorrencia")
+    @Column(name = "ocorrencia", length = 500)
     private String ocorrencia;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,40 +38,35 @@ public class Ocorrencias {
 
     @Column(name = "create_user")
     private String createUser;
+
     @Column(name = "create_date")
     private LocalDateTime createDate;
+
     @Column(name = "modify_user")
     private String modifyUser;
+
     @Column(name = "modify_date")
     private LocalDateTime modifyDate;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createDate = LocalDateTime.now();
-    }
+    @Column(nullable = false)
+    private boolean ativo = true;
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.modifyDate = LocalDateTime.now();
-    }
+    @Column(name = "data_exclusao")
+    private LocalDateTime dataExclusao;
 
+    // ==================== CONSTRUTORES ====================
     public Ocorrencias() {
+        this.ativo = true;
     }
 
     public Ocorrencias(String ocorrencia, Users seguranca) {
         this.ocorrencia = ocorrencia;
         this.seguranca = seguranca;
+        this.ativo = true;
     }
 
-    public TipoOcorrencia getTipoOcorrencia() {
-        return tipoOcorrencia;
-    }
-
-    public void setTipoOcorrencia(TipoOcorrencia tipoOcorrencia) {
-        this.tipoOcorrencia = tipoOcorrencia;
-    }
-
-    public int getId() {
+    // ==================== GETTERS E SETTERS ====================
+    public Integer getId() {
         return id;
     }
 
@@ -96,6 +96,14 @@ public class Ocorrencias {
 
     public void setSeguranca(Users seguranca) {
         this.seguranca = seguranca;
+    }
+
+    public TipoOcorrencia getTipoOcorrencia() {
+        return tipoOcorrencia;
+    }
+
+    public void setTipoOcorrencia(TipoOcorrencia tipoOcorrencia) {
+        this.tipoOcorrencia = tipoOcorrencia;
     }
 
     public String getCreateUser() {
@@ -128,5 +136,21 @@ public class Ocorrencias {
 
     public void setModifyDate(LocalDateTime modifyDate) {
         this.modifyDate = modifyDate;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public LocalDateTime getDataExclusao() {
+        return dataExclusao;
+    }
+
+    public void setDataExclusao(LocalDateTime dataExclusao) {
+        this.dataExclusao = dataExclusao;
     }
 }

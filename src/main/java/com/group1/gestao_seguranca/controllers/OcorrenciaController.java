@@ -21,12 +21,32 @@ public class OcorrenciaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OcorrenciasResponseDTO>> listarOcorrencias() {
+    public ResponseEntity<List<OcorrenciasResponseDTO>> listarTodos() {
         return ResponseEntity.ok(service.listarTodos());
     }
 
     @PostMapping
-    public ResponseEntity<OcorrenciasResponseDTO> criar(@Valid @RequestBody OcorrenciasRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(dto));
+    public ResponseEntity<OcorrenciasResponseDTO> criar(
+            @Valid @RequestBody OcorrenciasRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.criar(dto));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OcorrenciasResponseDTO> buscarPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<OcorrenciasResponseDTO> atualizar(
+            @PathVariable Integer id,
+            @Valid @RequestBody OcorrenciasRequestDTO dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> softDelete(@PathVariable Integer id) {
+        service.softDelete(id);
+        return ResponseEntity.noContent().build();
     }
 }
