@@ -1,5 +1,4 @@
 package com.group1.gestao_seguranca.services;
-
 import com.group1.gestao_seguranca.dto.funcionarios.FuncionariosRequestDTO;
 import com.group1.gestao_seguranca.dto.funcionarios.FuncionariosResponseDTO;
 import com.group1.gestao_seguranca.entities.Funcionarios;
@@ -9,97 +8,97 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FuncionariosService {
-
-    private final FuncionariosRepository funcionariosRepo;
     private final HttpServletRequest request;
+    private final FuncionariosRepository repository;
 
-    public FuncionariosService(FuncionariosRepository funcionariosRepo, HttpServletRequest request) {
-        this.funcionariosRepo = funcionariosRepo;
+    public FuncionariosService(HttpServletRequest request, FuncionariosRepository repository) {
         this.request = request;
+        this.repository = repository;
+    }
+
+    // ====================== CREATE ======================
+    @Transactional
+    public FuncionariosResponseDTO criar(FuncionariosRequestDTO dto) {
+        Funcionarios funcionario = new Funcionarios();
+        funcionario.setNomeFuncionario(dto.getNomeFuncionario());
+        funcionario.setNumeroFuncionario(dto.getNumeroFuncionario());
+        funcionario.setSetor(dto.getSetor());
+        funcionario.setAtivo(true);
+
+        Funcionarios salvo = repository.save(funcionario);
+        return FuncionariosResponseDTO.from(salvo);
+    }
+
+    // ====================== READ ======================
+    public List<FuncionariosResponseDTO> listarTodos() {
+        return repository.findAll().stream()
+                .map(FuncionariosResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
+    public FuncionariosResponseDTO buscarPorId(int id) {
+        Funcionarios funcionario = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário com ID " + id + " não encontrado"));
+
+        return FuncionariosResponseDTO.from(funcionario);
+    }
+
+    public FuncionariosResponseDTO buscarPorNumero(String numero) {
+        Funcionarios funcionario = repository.findByNumeroFuncionario(numero)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário com número " + numero + " não encontrado"));
+
+        return FuncionariosResponseDTO.from(funcionario);
+    }
+
+    public List<FuncionariosResponseDTO> buscarPorSetor(String setor) {
+        List<Funcionarios> lista = repository.findBySetor(setor);
+        return lista.stream()
+                .map(FuncionariosResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
+    // ====================== UPDATE ======================
+    @Transactional
+    public FuncionariosResponseDTO atualizar(int id, FuncionariosRequestDTO dto) {
+        Funcionarios funcionario = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário com ID " + id + " não encontrado"));
+
+        if (!funcionario.isAtivo()) {
+            throw new IllegalStateException("Não é possível atualizar um funcionário excluído.");
+        }
+
+        funcionario.setNomeFuncionario(dto.getNomeFuncionario());
+        funcionario.setNumeroFuncionario(dto.getNumeroFuncionario());
+        funcionario.setSetor(dto.getSetor());
+
+        Funcionarios atualizado = repository.save(funcionario);
+        return FuncionariosResponseDTO.from(atualizado);
+    }
+
+    // ====================== SOFT DELETE ======================
+    @Transactional
+    public void softDelete(int id) {
+        Users user = getUserAutenticado();
+        Funcionarios funcionario = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário com ID " + id + " não encontrado"));
+
+        if (!funcionario.isAtivo()) {
+            throw new IllegalStateException("Funcionário já foi excluído anteriormente.");
+        }
+
+        funcionario.setAtivo(false);
+        funcionario.setDataExclusao(LocalDateTime.now());
+        funcionario.setModifyUser(user.getNomeSeguranca());
+        repository.save(funcionario);
     }
 
     private Users getUserAutenticado() {
         return (Users) request.getAttribute("usuarioAutenticado");
     }
-
-    @Transactional
-    public FuncionariosResponseDTO criar(FuncionariosRequestDTO dto) {
-        if (funcionariosRepo.existsByNumeroFuncionario(dto.getNumeroFuncionario())) {
-            throw new IllegalStateException(
-                    "Já existe um funcionário com o número: " + dto.getNumeroFuncionario());
-        }
-
-        Users user = getUserAutenticado();
-
-        Funcionarios funcionario = new Funcionarios();
-        funcionario.setNomeFuncionario(dto.getNomeFuncionario());
-        funcionario.setNumeroFuncionario(dto.getNumeroFuncionario());
-        funcionario.setSetor(dto.getSetor());
-        funcionario.setCreateDate(LocalDateTime.now());
-        funcionario.setCreateUser(user.getCreateUser());
-
-        return FuncionariosResponseDTO.from(funcionariosRepo.save(funcionario));
-    }
-
-    public List<FuncionariosResponseDTO> listarTodos() {
-        return funcionariosRepo.findAll()
-                .stream()
-                .map(FuncionariosResponseDTO::from)
-                .toList();
-    }
-
-    public FuncionariosResponseDTO buscarPorId(int id) {
-        return funcionariosRepo.findById(id)
-                .map(FuncionariosResponseDTO::from)
-                .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado: id=" + id));
-    }
-
-    public FuncionariosResponseDTO buscarPorNumero(String numero) {
-        return funcionariosRepo.findByNumeroFuncionario(numero)
-                .map(FuncionariosResponseDTO::from)
-                .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado: número=" + numero));
-    }
-
-    public List<FuncionariosResponseDTO> buscarPorSetor(String setor) {
-        return funcionariosRepo.findBySetorIgnoreCase(setor)
-                .stream()
-                .map(FuncionariosResponseDTO::from)
-                .toList();
-    }
-
-    @Transactional
-    public FuncionariosResponseDTO atualizar(int id, FuncionariosRequestDTO dto) {
-        Funcionarios funcionario = funcionariosRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado: id=" + id));
-
-        if (!funcionario.getNumeroFuncionario().equals(dto.getNumeroFuncionario())
-                && funcionariosRepo.existsByNumeroFuncionario(dto.getNumeroFuncionario())) {
-            throw new IllegalStateException(
-                    "Já existe um funcionário com o número: " + dto.getNumeroFuncionario());
-        }
-
-        Users user = getUserAutenticado();
-
-        funcionario.setNomeFuncionario(dto.getNomeFuncionario());
-        funcionario.setNumeroFuncionario(dto.getNumeroFuncionario());
-        funcionario.setSetor(dto.getSetor());
-        funcionario.setModifyDate(LocalDateTime.now());
-        funcionario.setModifyUser(user.getCreateUser());
-
-        return FuncionariosResponseDTO.from(funcionariosRepo.save(funcionario));
-    }
-
-    @Transactional
-    public void eliminar(int id) {
-        if (!funcionariosRepo.existsById(id))
-            throw new EntityNotFoundException("Funcionário não encontrado: id=" + id);
-        funcionariosRepo.deleteById(id);
-    }
-
 }
