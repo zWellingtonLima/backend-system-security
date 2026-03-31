@@ -16,8 +16,8 @@ public class ConsumosController {
 
     private final ConsumosService service;
 
-    public ConsumosController(ConsumosService consumosService) {
-        this.service = consumosService;
+    public ConsumosController(ConsumosService service) {
+        this.service = service;
     }
 
     @GetMapping("/ultimas-leituras")
@@ -31,27 +31,30 @@ public class ConsumosController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> searchById(@PathVariable Integer id) {
+    public ResponseEntity<ConsumosResponseDTO> searchById(@PathVariable Integer id) {
         return ResponseEntity.ok(service.searchById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> createConsumo(@RequestBody ConsumosRequestDTO dto) {
+    public ResponseEntity<ConsumosResponseDTO> createConsumo(@RequestBody ConsumosRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.createConsumos(dto));
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateConsumo(@PathVariable Integer id, @RequestBody ConsumosRequestDTO dto) {
-        return ResponseEntity.ok((service.updateConsumo(id, dto)));
+    // ==================== UPDATE ====================
+    @PutMapping("/{id}")
+    public ResponseEntity<ConsumosResponseDTO> updateConsumo(
+            @PathVariable Integer id,
+            @RequestBody ConsumosRequestDTO dto) {
+        return ResponseEntity.ok(service.updateConsumo(id, dto));
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteConsumo(@PathVariable Integer id) {
+    // ==================== SOFT DELETE ====================
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteConsumo(@PathVariable Integer id) {
         service.deleteConsumo(id);
         return ResponseEntity.noContent().build();
     }
 }
-
 
 
 

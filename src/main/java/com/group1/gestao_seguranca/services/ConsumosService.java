@@ -9,60 +9,58 @@ import com.group1.gestao_seguranca.entities.Users;
 import com.group1.gestao_seguranca.enums.TipoConsumoEnum;
 import com.group1.gestao_seguranca.repositories.ConsumosRepository;
 import com.group1.gestao_seguranca.repositories.TipoConsumoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ConsumosService {
+
     private final ConsumosRepository consumosRepo;
     private final TipoConsumoRepository tipoConsumoRepo;
     private final HttpServletRequest request;
 
-    // Ess e um metodo auxilar para evitar usar a linha abaixo em todos os servicos
-    private Users getUserAutenticado() {
-        return (Users) request.getAttribute("usuarioAutenticado");
-    }
-
-    public ConsumosService(HttpServletRequest request, ConsumosRepository consumosRepo, TipoConsumoRepository tipoConsumoRepo) {
+    public ConsumosService(HttpServletRequest request,
+                           ConsumosRepository consumosRepo,
+                           TipoConsumoRepository tipoConsumoRepo) {
         this.request = request;
         this.consumosRepo = consumosRepo;
         this.tipoConsumoRepo = tipoConsumoRepo;
     }
 
+    private Users getUserAutenticado() {
+        return (Users) request.getAttribute("usuarioAutenticado");
+    }
+
     private Integer calcularConsumo(Consumos consumo) {
-        return consumosRepo
-                .findAnteriorByTipo(
+        return consumosRepo.findAnteriorByTipo(
                         consumo.getTipoConsumo().getTipoConsumo(),
-                        consumo.getDataRegisto()
-                )
+                        consumo.getDataRegisto())
                 .map(anterior -> consumo.getValorLeitura() - anterior.getValorLeitura())
                 .orElse(null);
     }
 
+    // ====================== READ ======================
     public List<ConsumosResponseDTO> listConsumos() {
-        return consumosRepo.findByAtivoTrue()
-                .stream()
+        return consumosRepo.findByAtivoTrue().stream()
                 .map(consumo -> ConsumosResponseDTO.from(consumo, calcularConsumo(consumo)))
                 .toList();
     }
 
     public ConsumosUltimasLeiturasDTO getUltimasLeituras() {
-        Integer agua = consumosRepo
-                .findUltimaLeituraByTipo(TipoConsumoEnum.AGUA)
+        Integer agua = consumosRepo.findUltimaLeituraByTipo(TipoConsumoEnum.AGUA)
                 .map(Consumos::getValorLeitura)
                 .orElse(null);
 
-        Integer eletricidade = consumosRepo
-                .findUltimaLeituraByTipo(TipoConsumoEnum.ELETRICIDADE)
+        Integer eletricidade = consumosRepo.findUltimaLeituraByTipo(TipoConsumoEnum.ELETRICIDADE)
                 .map(Consumos::getValorLeitura)
                 .orElse(null);
 
-        Integer gas = consumosRepo
-                .findUltimaLeituraByTipo(TipoConsumoEnum.GAS)
+        Integer gas = consumosRepo.findUltimaLeituraByTipo(TipoConsumoEnum.GAS)
                 .map(Consumos::getValorLeitura)
                 .orElse(null);
 
@@ -70,16 +68,19 @@ public class ConsumosService {
     }
 
     public ConsumosResponseDTO searchById(Integer id) {
-        return consumosRepo.findById(id)
-                .map(ConsumosResponseDTO::from)
-                .orElseThrow(() -> new RuntimeException("Consumo não encontrado: " + id));
+        Consumos consumo = consumosRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Consumo com ID " + id + " não encontrado"));
+
+        return ConsumosResponseDTO.from(consumo, calcularConsumo(consumo));
     }
 
+    // ====================== CREATE ======================
+    @Transactional
     public ConsumosResponseDTO createConsumos(ConsumosRequestDTO dto) {
         Users user = getUserAutenticado();
 
         TipoConsumo tipoConsumo = tipoConsumoRepo.findByTipoConsumo(dto.getTipoConsumo())
-                .orElseThrow(() -> new RuntimeException("Tipo de consumo não encontrado."));
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de consumo não encontrado"));
 
         Consumos consumo = new Consumos();
         consumo.setValorLeitura(dto.getValorLeitura());
@@ -87,39 +88,62 @@ public class ConsumosService {
         consumo.setObservacao(dto.getObservacao());
         consumo.setTipoConsumo(tipoConsumo);
         consumo.setUser(user);
-        consumo.setCreateUser(user.getCreateUser());
-        consumosRepo.save(consumo);
+        consumo.setCreateUser(user.getNomeSeguranca() != null ? user.getNomeSeguranca() : "Sistema");
+        consumo.setAtivo(true);
 
-        return ConsumosResponseDTO.from(consumo);
+        consumosRepo.save(consumo);
+        return ConsumosResponseDTO.from(consumo, calcularConsumo(consumo));
     }
 
+    // ====================== UPDATE (Todos os campos) ======================
+    @Transactional
     public ConsumosResponseDTO updateConsumo(Integer id, ConsumosRequestDTO dto) {
         Users user = getUserAutenticado();
 
         Consumos consumo = consumosRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Consumo não encontrado."));
-        TipoConsumo tipoConsumo = tipoConsumoRepo.findByTipoConsumo(dto.getTipoConsumo())
-                .orElseThrow(() -> new RuntimeException("Tipo de consumo não encontrado."));
+                .orElseThrow(() -> new EntityNotFoundException("Consumo com ID " + id + " não encontrado"));
 
-        consumo.setValorLeitura(dto.getValorLeitura());
-        consumo.setObservacao(dto.getObservacao());
-        consumo.setTipoConsumo(tipoConsumo);
-        consumo.setModifyUser(user.getNomeSeguranca());
+        if (!consumo.isAtivo()) {
+            throw new IllegalStateException("Não é possível atualizar um consumo excluído.");
+        }
+
+        // Atualização de todos os campos permitidos
+        if (dto.getValorLeitura() != null) {
+            consumo.setValorLeitura(dto.getValorLeitura());
+        }
+        if (dto.getObservacao() != null) {
+            consumo.setObservacao(dto.getObservacao());
+        }
+        if (dto.getTipoConsumo() != null) {
+            TipoConsumo novoTipo = tipoConsumoRepo.findByTipoConsumo(dto.getTipoConsumo())
+                    .orElseThrow(() -> new EntityNotFoundException("Tipo de consumo não encontrado"));
+            consumo.setTipoConsumo(novoTipo);
+        }
+        if (dto.getDataRegisto() != null) {
+            consumo.setDataRegisto(dto.getDataRegisto());
+        }
+
+        // Auditoria
+        consumo.setModifyUser(user.getNomeSeguranca() != null ? user.getNomeSeguranca() : "Sistema");
+        consumo.setModifyDate(LocalDateTime.now());
+
         consumosRepo.save(consumo);
 
-        return ConsumosResponseDTO.from(consumo);
+        return ConsumosResponseDTO.from(consumo, calcularConsumo(consumo));
     }
 
+    // ====================== SOFT DELETE ======================
+    @Transactional
     public void deleteConsumo(Integer id) {
         Users user = getUserAutenticado();
 
         Consumos consumo = consumosRepo.findByIdAndAtivoTrue(id)
-                .orElseThrow(() -> new RuntimeException("Consumo não encontrado ou já eliminado."));
+                .orElseThrow(() -> new EntityNotFoundException("Consumo não encontrado ou já eliminado."));
 
-        // Soft delete, ou seja, marcamos como inativo em vez de apagar
-        // e auditoria para verificar quem `apagou` e quando.
         consumo.setAtivo(false);
-        consumo.setModifyUser(user.getNomeSeguranca());
+        consumo.setModifyUser(user.getNomeSeguranca() != null ? user.getNomeSeguranca() : "Sistema");
+        consumo.setModifyDate(LocalDateTime.now());
+
         consumosRepo.save(consumo);
     }
 }
