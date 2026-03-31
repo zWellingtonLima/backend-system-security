@@ -22,6 +22,9 @@ public class MovimentacoesController {
         this.service = service;
     }
 
+    // ─────────────────────────────────────────────────────────────────────
+    // CREATE
+    // ─────────────────────────────────────────────────────────────────────
     // POST /api/movimentacoes/entrada
     @PostMapping("/entrada")
     public ResponseEntity<MovimentacaoResponseDTO> registrarEntrada(
@@ -30,14 +33,50 @@ public class MovimentacoesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.registrarEntrada(dto));
     }
 
+    // ─────────────────────────────────────────────────────────────────────
+    // UPDATE
+    // ─────────────────────────────────────────────────────────────────────
+    // PATCH /api/movimentacoes/{id}
+    @PatchMapping("/{id}")
+    public ResponseEntity<MovimentacaoResponseDTO> atualizar(
+            @PathVariable int id,
+            @RequestBody @Valid MovimentacaoUpdateDTO dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // SOFT DELETE
+    // ─────────────────────────────────────────────────────────────────────
+    // PATCH /api/movimentacoes/{id}/anular?motivo=...
+    @PatchMapping("/{id}/anular")
+    public ResponseEntity<AnulacaoResponseDTO> anular(
+            @PathVariable int id,
+            @NotBlank(message = "O motivo de anulação é obrigatório")
+            @RequestParam String motivo) {
+        return ResponseEntity.ok(service.anular(id, motivo));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // AÇÕES DE SAÍDA / DEVOLUÇÃO
+    // ─────────────────────────────────────────────────────────────────────
     // PATCH /api/movimentacoes/saida/{id}
+    // Regista apenas a saída (mantido — avisar se há chaves pendentes)
     @PatchMapping("/saida/{id}")
     public ResponseEntity<MovimentacaoResponseDTO> registrarSaida(
             @PathVariable int id) {
         return ResponseEntity.ok(service.registrarSaida(id));
     }
 
+    // PATCH /api/movimentacoes/saida-com-devolucao/{id}
+    // Regista saída E devolve automaticamente todas as chaves pendentes
+    @PatchMapping("/saida-com-devolucao/{id}")
+    public ResponseEntity<SaidaComDevolucaoResponseDTO> registrarSaidaComDevolucao(
+            @PathVariable int id) {
+        return ResponseEntity.ok(service.registrarSaidaComDevolucao(id));
+    }
+
     // PATCH /api/movimentacoes/devolucao/{idEntrega}?devolvidaPor=Nome
+    // Devolução individual de uma chave
     @PatchMapping("/devolucao/{idEntrega}")
     public ResponseEntity<DevolucaoResponseDTO> registrarDevolucao(
             @PathVariable int idEntrega,
@@ -46,13 +85,9 @@ public class MovimentacoesController {
         return ResponseEntity.ok(service.registrarDevolucao(idEntrega, devolvidaPor));
     }
 
-    // PATCH /api/movimentacoes/{id}
-    @PatchMapping("/{id}")
-    public ResponseEntity<MovimentacaoResponseDTO> atualizar(
-            @PathVariable int id,
-            @RequestBody @Valid MovimentacaoUpdateDTO dto) {
-        return ResponseEntity.ok(service.atualizar(id, dto));
-    }
+    // ─────────────────────────────────────────────────────────────────────
+    // LISTAGENS - READ
+    // ─────────────────────────────────────────────────────────────────────
     // GET /api/movimentacoes/ativas
     @GetMapping("/ativas")
     public ResponseEntity<List<MovimentacaoResponseDTO>> listarAtivas() {
@@ -79,12 +114,11 @@ public class MovimentacoesController {
         return ResponseEntity.ok(service.listarPorVisitante(id));
     }
 
-    // ─────────────────────────────────────────────
-    // Método de apoio
-    // ─────────────────────────────────────────────
-
+    // ─────────────────────────────────────────────────────────────────────
+    // Validação de request
+    // ─────────────────────────────────────────────────────────────────────
     private void validarRequest(MovimentacaoRequestDTO dto) {
-        boolean temVisitante   = dto.getIdVisitante() != null;
+        boolean temVisitante = dto.getIdVisitante() != null;
         boolean temFuncionario = dto.getIdFuncionario() != null;
 
         if (!temFuncionario && !temVisitante)

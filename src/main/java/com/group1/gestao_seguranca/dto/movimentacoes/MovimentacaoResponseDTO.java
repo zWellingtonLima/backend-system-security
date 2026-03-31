@@ -27,38 +27,39 @@ public class MovimentacaoResponseDTO {
 
     // Anulação
     private boolean ativo;
-    private String motivoAnulacao;
-    private LocalDateTime dataAnulacao;
-    private String anuladoPor;
+    // private String motivoAnulacao;
+    // private LocalDateTime dataAnulacao;
+    // private String anuladoPor;
 
     // Pendências (usado apenas na resposta da saída)
     private String aviso;
     private List<EntregaPendenteDTO> entregasPendentes;
 
-    MovimentacaoResponseDTO() {}
+    MovimentacaoResponseDTO() {
+    }
 
     public static MovimentacaoResponseDTO from(Movimentacoes m) {
         MovimentacaoResponseDTO dto = new MovimentacaoResponseDTO();
         dto.id_movimentacao = m.getId();
-        dto.horaEntrada     = m.getHoraEntrada();
-        dto.horaSaida       = m.getHoraSaida();
-        dto.observacoes     = m.getObservacoes();
-        dto.ativa           = m.getHoraSaida() == null;
-        dto.setorDestino    = m.getSetorDestino();
+        dto.horaEntrada = m.getHoraEntrada();
+        dto.horaSaida = m.getHoraSaida();
+        dto.observacoes = m.getObservacoes();
+        dto.ativa = m.getHoraSaida() == null;
+        dto.setorDestino = m.getSetorDestino();
 
         // Anulação
-        dto.ativo           = m.isAtivo();
-        dto.motivoAnulacao  = m.getMotivoAnulacao();
-        dto.dataAnulacao    = m.getDataAnulacao();
-        dto.anuladoPor      = m.getAnuladoPor();
+//        dto.ativo = m.isAtivo();
+//        dto.motivoAnulacao  = m.getMotivoAnulacao();
+//        dto.dataAnulacao    = m.getDataAnulacao();
+//        dto.anuladoPor      = m.getAnuladoPor();
 
         if (m.getFuncionario() != null) {
             dto.tipoPessoa = TipoEntrada.FUNCIONARIO;
-            dto.idPessoa   = m.getFuncionario().getId();
+            dto.idPessoa = m.getFuncionario().getId();
             dto.nomePessoa = m.getFuncionario().getNomeFuncionario();
         } else if (m.getVisitante() != null) {
             dto.tipoPessoa = TipoEntrada.VISITANTE;
-            dto.idPessoa   = m.getVisitante().getId();
+            dto.idPessoa = m.getVisitante().getId();
             dto.nomePessoa = m.getVisitante().getNomeVisitante();
             dto.tipoVisita = m.getTipoVisitante();
 
@@ -78,21 +79,21 @@ public class MovimentacaoResponseDTO {
     public MovimentacaoResponseDTO(Movimentacoes m, String aviso, List<EntregaPendenteDTO> pendentes) {
         MovimentacaoResponseDTO base = from(m);
         this.id_movimentacao = base.id_movimentacao;
-        this.horaEntrada     = base.horaEntrada;
-        this.horaSaida       = base.horaSaida;
-        this.observacoes     = base.observacoes;
-        this.ativa           = base.ativa;
-        this.setorDestino    = base.setorDestino;
-        this.tipoPessoa      = base.tipoPessoa;
-        this.idPessoa        = base.idPessoa;
-        this.nomePessoa      = base.nomePessoa;
-        this.tipoVisita      = base.tipoVisita;
+        this.horaEntrada = base.horaEntrada;
+        this.horaSaida = base.horaSaida;
+        this.observacoes = base.observacoes;
+        this.ativa = base.ativa;
+        this.setorDestino = base.setorDestino;
+        this.tipoPessoa = base.tipoPessoa;
+        this.idPessoa = base.idPessoa;
+        this.nomePessoa = base.nomePessoa;
+        this.tipoVisita = base.tipoVisita;
         this.nomeResponsavel = base.nomeResponsavel;
-        this.ativo           = base.ativo;
-        this.motivoAnulacao  = base.motivoAnulacao;
-        this.dataAnulacao    = base.dataAnulacao;
-        this.anuladoPor      = base.anuladoPor;
-        this.aviso           = aviso;
+        this.ativo = base.ativo;
+//        this.motivoAnulacao = base.motivoAnulacao;
+//        this.dataAnulacao = base.dataAnulacao;
+//        this.anuladoPor = base.anuladoPor;
+        this.aviso = aviso;
         this.entregasPendentes = pendentes;
     }
 
@@ -101,24 +102,67 @@ public class MovimentacaoResponseDTO {
     }
 
     // Getters existentes
-    public int getId()                    { return id_movimentacao; }
-    public int getId_movimentacao()       { return id_movimentacao; }
-    public LocalDateTime getHoraEntrada() { return horaEntrada; }
-    public LocalDateTime getHoraSaida()   { return horaSaida; }
-    public String getObservacoes()        { return observacoes; }
-    public boolean isAtiva()              { return ativa; }
-    public String getSetorDestino()       { return setorDestino; }
-    public TipoEntrada getTipoPessoa()    { return tipoPessoa; }
-    public int getIdPessoa()              { return idPessoa; }
-    public String getNomePessoa()         { return nomePessoa; }
-    public TipoVisitanteEnum getTipoVisita()   { return tipoVisita; }
-    public String getNomeResponsavel()    { return nomeResponsavel; }
-    public String getAviso()              { return aviso; }
-    public List<EntregaPendenteDTO> getEntregasPendentes() { return entregasPendentes; }
+    public int getId() {
+        return id_movimentacao;
+    }
+
+    public int getId_movimentacao() {
+        return id_movimentacao;
+    }
+
+    public LocalDateTime getHoraEntrada() {
+        return horaEntrada;
+    }
+
+    public LocalDateTime getHoraSaida() {
+        return horaSaida;
+    }
+
+    public String getObservacoes() {
+        return observacoes;
+    }
+
+    public boolean isAtiva() {
+        return ativa;
+    }
+
+    public String getSetorDestino() {
+        return setorDestino;
+    }
+
+    public TipoEntrada getTipoPessoa() {
+        return tipoPessoa;
+    }
+
+    public int getIdPessoa() {
+        return idPessoa;
+    }
+
+    public String getNomePessoa() {
+        return nomePessoa;
+    }
+
+    public TipoVisitanteEnum getTipoVisita() {
+        return tipoVisita;
+    }
+
+    public String getNomeResponsavel() {
+        return nomeResponsavel;
+    }
+
+    public String getAviso() {
+        return aviso;
+    }
+
+    public List<EntregaPendenteDTO> getEntregasPendentes() {
+        return entregasPendentes;
+    }
 
     // Getters anulação
-    public boolean isAtivo()              { return ativo; }
-    public String getMotivoAnulacao()     { return motivoAnulacao; }
-    public LocalDateTime getDataAnulacao(){ return dataAnulacao; }
-    public String getAnuladoPor()         { return anuladoPor; }
+    public boolean isAtivo() {
+        return ativo;
+    }
+//    public String getMotivoAnulacao()     { return motivoAnulacao; }
+    //  public LocalDateTime getDataAnulacao(){ return dataAnulacao; }
+    //public String getAnuladoPor()         { return anuladoPor; }
 }
