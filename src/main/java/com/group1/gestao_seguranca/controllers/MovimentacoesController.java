@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Validated
 @RestController
@@ -25,7 +27,6 @@ public class MovimentacoesController {
     // ─────────────────────────────────────────────────────────────────────
     // CREATE
     // ─────────────────────────────────────────────────────────────────────
-    // POST /api/movimentacoes/entrada
     @PostMapping("/entrada")
     public ResponseEntity<MovimentacaoResponseDTO> registrarEntrada(
             @Valid @RequestBody MovimentacaoRequestDTO dto) {
@@ -36,7 +37,6 @@ public class MovimentacoesController {
     // ─────────────────────────────────────────────────────────────────────
     // UPDATE
     // ─────────────────────────────────────────────────────────────────────
-    // PATCH /api/movimentacoes/{id}
     @PatchMapping("/{id}")
     public ResponseEntity<MovimentacaoResponseDTO> atualizar(
             @PathVariable int id,
@@ -47,7 +47,6 @@ public class MovimentacoesController {
     // ─────────────────────────────────────────────────────────────────────
     // SOFT DELETE
     // ─────────────────────────────────────────────────────────────────────
-    // PATCH /api/movimentacoes/{id}/anular?motivo=...
     @PatchMapping("/{id}/anular")
     public ResponseEntity<AnulacaoResponseDTO> anular(
             @PathVariable int id,
@@ -59,24 +58,18 @@ public class MovimentacoesController {
     // ─────────────────────────────────────────────────────────────────────
     // AÇÕES DE SAÍDA / DEVOLUÇÃO
     // ─────────────────────────────────────────────────────────────────────
-    // PATCH /api/movimentacoes/saida/{id}
-    // Regista apenas a saída (mantido — avisar se há chaves pendentes)
     @PatchMapping("/saida/{id}")
     public ResponseEntity<MovimentacaoResponseDTO> registrarSaida(
             @PathVariable int id) {
         return ResponseEntity.ok(service.registrarSaida(id));
     }
 
-    // PATCH /api/movimentacoes/saida-com-devolucao/{id}
-    // Regista saída E devolve automaticamente todas as chaves pendentes
     @PatchMapping("/saida-com-devolucao/{id}")
     public ResponseEntity<SaidaComDevolucaoResponseDTO> registrarSaidaComDevolucao(
             @PathVariable int id) {
         return ResponseEntity.ok(service.registrarSaidaComDevolucao(id));
     }
 
-    // PATCH /api/movimentacoes/devolucao/{idEntrega}?devolvidaPor=Nome
-    // Devolução individual de uma chave
     @PatchMapping("/devolucao/{idEntrega}")
     public ResponseEntity<DevolucaoResponseDTO> registrarDevolucao(
             @PathVariable int idEntrega,
@@ -88,26 +81,22 @@ public class MovimentacoesController {
     // ─────────────────────────────────────────────────────────────────────
     // LISTAGENS - READ
     // ─────────────────────────────────────────────────────────────────────
-    // GET /api/movimentacoes/ativas
     @GetMapping("/ativas")
     public ResponseEntity<List<MovimentacaoResponseDTO>> listarAtivas() {
         return ResponseEntity.ok(service.listarAtivas());
     }
 
-    // GET /api/movimentacoes
     @GetMapping
     public ResponseEntity<List<MovimentacaoResponseDTO>> listarTodas() {
         return ResponseEntity.ok(service.listarTodas());
     }
 
-    // GET /api/movimentacoes/funcionario/{id}
     @GetMapping("/funcionario/{id}")
     public ResponseEntity<List<MovimentacaoResponseDTO>> listarPorFuncionario(
             @PathVariable int id) {
         return ResponseEntity.ok(service.listarPorFuncionario(id));
     }
 
-    // GET /api/movimentacoes/visitante/{id}
     @GetMapping("/visitante/{id}")
     public ResponseEntity<List<MovimentacaoResponseDTO>> listarPorVisitante(
             @PathVariable int id) {
@@ -136,7 +125,22 @@ public class MovimentacoesController {
         if (temFuncionario && dto.getIdFuncionarioResponsavel() != null)
             throw new IllegalArgumentException("Funcionários não têm funcionário responsável");
 
-        if (dto.getEntregaChave() != null && dto.getEntregaChave().getIdChave() == null)
-            throw new IllegalArgumentException("Entrega de chave requer a identificação da Chave.");
+        // ── Validação da lista de chaves ─────────────────────────────────
+        if (dto.getEntregasChave() != null && !dto.getEntregasChave().isEmpty()) {
+
+            dto.getEntregasChave().forEach(e -> {
+                if (e.getIdChave() == null)
+                    throw new IllegalArgumentException(
+                            "Cada entrega de chave requer a identificação da Chave.");
+            });
+
+            // Chaves duplicadas na mesma requisição
+            Set<Integer> idsVistos = new HashSet<>();
+            dto.getEntregasChave().forEach(e -> {
+                if (!idsVistos.add(e.getIdChave()))
+                    throw new IllegalArgumentException(
+                            "A chave id=" + e.getIdChave() + " foi indicada mais de uma vez na mesma entrada.");
+            });
+        }
     }
 }

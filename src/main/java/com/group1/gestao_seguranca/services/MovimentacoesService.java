@@ -87,8 +87,12 @@ public class MovimentacoesService {
 
         movimentacao = movimentacoesRepo.save(movimentacao);
 
-        if (dto.getEntregaChave() != null)
-            registrarEntregaChave(dto.getEntregaChave(), movimentacao);
+        // ── Múltiplas chaves — processa cada uma da lista ────────────────
+        if (dto.getEntregasChave() != null && !dto.getEntregasChave().isEmpty()) {
+            for (EntregaChaveDTO entregaDTO : dto.getEntregasChave()) {
+                registrarEntregaChave(entregaDTO, movimentacao);
+            }
+        }
 
         return MovimentacaoResponseDTO.from(movimentacao);
     }
@@ -159,7 +163,6 @@ public class MovimentacoesService {
                     .orElseThrow(() -> new EntityNotFoundException(
                             "Funcionário não encontrado: id=" + dto.getIdFuncionario()));
 
-            // Valida entrada ativa noutra movimentação (ignora a atual)
             boolean outraEntradaAtiva = movimentacoesRepo
                     .existeEntradaAtiva(novoFunc.getId())
                     && novoFunc.getId() != (mov.getFuncionario() != null ? mov.getFuncionario().getId() : -1);
@@ -210,7 +213,6 @@ public class MovimentacoesService {
 
         Users user = getUserAutenticado();
 
-        // Devolve automaticamente todas as chaves pendentes
         List<EntregaChaves> pendentes = entregaChavesRepo
                 .findByMovimentacaoAndHoraDevolucaoIsNull(mov);
 
@@ -218,7 +220,6 @@ public class MovimentacoesService {
                 .map(this::devolverChaveAutomaticamente)
                 .toList();
 
-        // Anula a movimentação
         mov.setAtivo(false);
         mov.setMotivoAnulacao(motivo);
         mov.setDataAnulacao(LocalDateTime.now());
@@ -238,9 +239,8 @@ public class MovimentacoesService {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Saída + devolução automática de chaves (ação combinada)
+    // Saída + devolução automática de todas as chaves pendentes
     // ─────────────────────────────────────────────────────────────────────
-
     @Transactional
     public SaidaComDevolucaoResponseDTO registrarSaidaComDevolucao(int idMovimentacao) {
         Movimentacoes mov = movimentacoesRepo.findById(idMovimentacao)
@@ -274,9 +274,8 @@ public class MovimentacoesService {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Registo de saída simples (mantido para retrocompatibilidade)
+    // Registo de saída simples (avisa se há chaves pendentes)
     // ─────────────────────────────────────────────────────────────────────
-
     @Transactional
     public MovimentacaoResponseDTO registrarSaida(int idMovimentacao) {
         Movimentacoes movimentacao = movimentacoesRepo.findById(idMovimentacao)
@@ -317,7 +316,6 @@ public class MovimentacoesService {
     // ─────────────────────────────────────────────────────────────────────
     // Devolução individual de chave
     // ─────────────────────────────────────────────────────────────────────
-
     @Transactional
     public DevolucaoResponseDTO registrarDevolucao(int idEntrega, String devolvidaPor) {
         EntregaChaves entrega = entregaChavesRepo.findById(idEntrega)
@@ -342,7 +340,6 @@ public class MovimentacoesService {
     // ─────────────────────────────────────────────────────────────────────
     // Listagens
     // ─────────────────────────────────────────────────────────────────────
-
     @Transactional(readOnly = true)
     public List<MovimentacaoResponseDTO> listarAtivas() {
         return movimentacoesRepo
@@ -399,11 +396,6 @@ public class MovimentacoesService {
     // ─────────────────────────────────────────────────────────────────────
     // Métodos de apoio
     // ─────────────────────────────────────────────────────────────────────
-
-    /**
-     * Devolve uma chave automaticamente (usado na anulação e na saída-com-devolução).
-     * Retorna a descrição da chave para incluir no aviso ao utilizador.
-     */
     private String devolverChaveAutomaticamente(EntregaChaves entrega) {
         String devolvidaPor = entrega.getFuncionarioComChave() != null
                 ? entrega.getFuncionarioComChave().getNomeFuncionario()
@@ -446,8 +438,15 @@ public class MovimentacoesService {
     }
 
     private void registrarEntregaChave(EntregaChaveDTO entregaDTO, Movimentacoes mov) {
-        if (entregaChavesRepo.existsByMovimentacaoAndHoraDevolucaoIsNull(mov))
-            throw new IllegalStateException("Esta entrada já possui uma chave por devolver.");
+        // Guarda de chave duplicada na mesma entrada (mesma chave não pode aparecer duas vezes)
+        boolean chaveDuplicada = entregaChavesRepo
+                .findByMovimentacaoAndHoraDevolucaoIsNull(mov)
+                .stream()
+                .anyMatch(e -> e.getChave().getId() == entregaDTO.getIdChave());
+
+        if (chaveDuplicada)
+            throw new IllegalStateException(
+                    "A chave id=" + entregaDTO.getIdChave() + " já está associada a esta entrada.");
 
         Chaves chave = chavesRepo.findById(entregaDTO.getIdChave())
                 .orElseThrow(() -> new EntityNotFoundException(

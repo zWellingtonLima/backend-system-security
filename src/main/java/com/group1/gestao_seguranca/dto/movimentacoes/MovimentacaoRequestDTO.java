@@ -1,26 +1,41 @@
 package com.group1.gestao_seguranca.dto.movimentacoes;
 
 import com.group1.gestao_seguranca.dto.chaves.EntregaChaveDTO;
-import com.group1.gestao_seguranca.enums.TipoEntrada;
 import com.group1.gestao_seguranca.enums.TipoVisitanteEnum;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
+
+import java.util.List;
 
 public class MovimentacaoRequestDTO {
-    @NotNull(message = "Tipo de entrada é obrigatório")
-    private TipoEntrada tipoEntrada;
 
     private Integer idFuncionario;
     private Integer idVisitante;
-
     private TipoVisitanteEnum tipoVisita;
-
     private Integer idFuncionarioResponsavel;
-
     private String setorDestino;
-
     private String observacoes;
+    private String tipoEntrada;
 
-    private EntregaChaveDTO entregaChave;
+    @Valid
+    @Size(max = 10, message = "Não é possível associar mais de 10 chaves a uma entrada.")
+    private List<EntregaChaveDTO> entregasChave;
+
+    public Integer getIdFuncionario() {
+        return idFuncionario;
+    }
+
+    public void setIdFuncionario(Integer idFuncionario) {
+        this.idFuncionario = idFuncionario;
+    }
+
+    public Integer getIdVisitante() {
+        return idVisitante;
+    }
+
+    public void setIdVisitante(Integer idVisitante) {
+        this.idVisitante = idVisitante;
+    }
 
     public TipoVisitanteEnum getTipoVisita() {
         return tipoVisita;
@@ -46,47 +61,27 @@ public class MovimentacaoRequestDTO {
         this.setorDestino = setorDestino;
     }
 
-    public void setObservacoes(String observacoes) {
-        this.observacoes = observacoes;
-    }
-
-    public EntregaChaveDTO getEntregaChave() {
-        return entregaChave;
-    }
-
-    public void setEntregaChave(EntregaChaveDTO entregaChave) {
-        this.entregaChave = entregaChave;
-    }
-
-    public TipoEntrada getTipoEntrada() {
-        return tipoEntrada;
-    }
-
-    public void setTipoEntrada(TipoEntrada tipoEntrada) {
-        this.tipoEntrada = tipoEntrada;
-    }
-
-    public Integer getIdFuncionario() {
-        return idFuncionario;
-    }
-
-    public void setIdFuncionario(Integer idFuncionario) {
-        this.idFuncionario = idFuncionario;
-    }
-
-    public Integer getIdVisitante() {
-        return idVisitante;
-    }
-
-    public void setIdVisitante(Integer idVisitante) {
-        this.idVisitante = idVisitante;
-    }
-
     public String getObservacoes() {
         return observacoes;
     }
 
-    public void setObservacao(String observacoes) {
+    public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
+    }
+
+    public String getTipoEntrada() {
+        return tipoEntrada;
+    }
+
+    public void setTipoEntrada(String tipoEntrada) {
+        this.tipoEntrada = tipoEntrada;
+    }
+
+    public List<EntregaChaveDTO> getEntregasChave() {
+        return entregasChave;
+    }
+
+    public void setEntregasChave(List<EntregaChaveDTO> entregasChave) {
+        this.entregasChave = entregasChave;
     }
 }
