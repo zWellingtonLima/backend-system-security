@@ -21,14 +21,12 @@ public class BuscaService {
     private final VisitantesRepository visitantesRepo;
     private final ChavesRepository chavesRepo;
     private final MovimentacoesRepository movimentacoesRepo;
-    private final EntregaChavesRepository entregaChavesRepo;
 
-    public BuscaService(FuncionariosRepository funcionariosRepo, VisitantesRepository visitantesRepo, ChavesRepository chavesRepo, MovimentacoesRepository movimentacoesRepo, EntregaChavesRepository entregaChavesRepo) {
+    public BuscaService(FuncionariosRepository funcionariosRepo, VisitantesRepository visitantesRepo, ChavesRepository chavesRepo, MovimentacoesRepository movimentacoesRepo) {
         this.funcionariosRepo = funcionariosRepo;
         this.visitantesRepo = visitantesRepo;
         this.chavesRepo = chavesRepo;
         this.movimentacoesRepo = movimentacoesRepo;
-        this.entregaChavesRepo = entregaChavesRepo;
     }
 
     @Transactional(readOnly = true)
@@ -90,10 +88,6 @@ public class BuscaService {
     public List<EntradaAtivaDTO> buscarEntradasAtivas(String nome) {
         return movimentacoesRepo.buscarAtivasPorNome(nome)
                 .stream()
-                // Exclui quem já tem uma chave pendente — regra de 1 chave por vez
-                .filter(m -> entregaChavesRepo
-                        .findByMovimentacaoAndHoraDevolucaoIsNull(m)
-                        .isEmpty())
                 .map(EntradaAtivaDTO::from)
                 .toList();
     }

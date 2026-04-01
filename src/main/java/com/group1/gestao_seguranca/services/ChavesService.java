@@ -53,12 +53,6 @@ public class ChavesService {
         if (mov.getHoraSaida() != null)
             throw new IllegalStateException("Esta pessoa já registou saída.");
 
-        boolean jaTemChave = entregaChavesRepo
-                .existsByMovimentacaoAndHoraDevolucaoIsNull(mov);
-        if (jaTemChave)
-            throw new IllegalStateException(
-                    "Esta pessoa já possui uma chave por devolver.");
-
         Chaves chave = chavesRepo.findById(dto.getIdChave())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Chave não encontrada: id=" + dto.getIdChave()));
