@@ -56,13 +56,11 @@ public class Ocorrencias {
 
     // ==================== CONSTRUTORES ====================
     public Ocorrencias() {
-        this.ativo = true;
     }
 
     public Ocorrencias(String ocorrencia, Users seguranca) {
         this.ocorrencia = ocorrencia;
         this.seguranca = seguranca;
-        this.ativo = true;
     }
 
     // ==================== GETTERS E SETTERS ====================
