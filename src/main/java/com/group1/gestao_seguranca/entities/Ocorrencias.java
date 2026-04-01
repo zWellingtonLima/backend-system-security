@@ -2,6 +2,7 @@ package com.group1.gestao_seguranca.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.group1.gestao_seguranca.enums.EstadoOcorrenciaEnum;
 import jakarta.persistence.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -36,6 +37,10 @@ public class Ocorrencias {
     @JsonIgnore
     private TipoOcorrencia tipoOcorrencia;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", length = 50, nullable = false)
+    private EstadoOcorrenciaEnum estado = EstadoOcorrenciaEnum.PENDENTE;
+
     @Column(name = "create_user")
     private String createUser;
 
@@ -55,8 +60,7 @@ public class Ocorrencias {
     private LocalDateTime dataExclusao;
 
     // ==================== CONSTRUTORES ====================
-    public Ocorrencias() {
-    }
+    public Ocorrencias() {}
 
     public Ocorrencias(String ocorrencia, Users seguranca) {
         this.ocorrencia = ocorrencia;
@@ -64,91 +68,39 @@ public class Ocorrencias {
     }
 
     // ==================== GETTERS E SETTERS ====================
-    public Integer getId() {
-        return id;
-    }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    public LocalDateTime getHoraOcorrencia() { return horaOcorrencia; }
+    public void setHoraOcorrencia(LocalDateTime horaOcorrencia) { this.horaOcorrencia = horaOcorrencia; }
 
-    public LocalDateTime getHoraOcorrencia() {
-        return horaOcorrencia;
-    }
+    public String getOcorrencia() { return ocorrencia; }
+    public void setOcorrencia(String ocorrencia) { this.ocorrencia = ocorrencia; }
 
-    public void setHoraOcorrencia(LocalDateTime horaOcorrencia) {
-        this.horaOcorrencia = horaOcorrencia;
-    }
+    public Users getSeguranca() { return seguranca; }
+    public void setSeguranca(Users seguranca) { this.seguranca = seguranca; }
 
-    public String getOcorrencia() {
-        return ocorrencia;
-    }
+    public TipoOcorrencia getTipoOcorrencia() { return tipoOcorrencia; }
+    public void setTipoOcorrencia(TipoOcorrencia tipoOcorrencia) { this.tipoOcorrencia = tipoOcorrencia; }
 
-    public void setOcorrencia(String ocorrencia) {
-        this.ocorrencia = ocorrencia;
-    }
+    public EstadoOcorrenciaEnum getEstado() { return estado; }
+    public void setEstado(EstadoOcorrenciaEnum estado) { this.estado = estado; }
 
-    public Users getSeguranca() {
-        return seguranca;
-    }
+    public String getCreateUser() { return createUser; }
+    public void setCreateUser(String createUser) { this.createUser = createUser; }
 
-    public void setSeguranca(Users seguranca) {
-        this.seguranca = seguranca;
-    }
+    public LocalDateTime getCreateDate() { return createDate; }
+    public void setCreateDate(LocalDateTime createDate) { this.createDate = createDate; }
 
-    public TipoOcorrencia getTipoOcorrencia() {
-        return tipoOcorrencia;
-    }
+    public String getModifyUser() { return modifyUser; }
+    public void setModifyUser(String modifyUser) { this.modifyUser = modifyUser; }
 
-    public void setTipoOcorrencia(TipoOcorrencia tipoOcorrencia) {
-        this.tipoOcorrencia = tipoOcorrencia;
-    }
+    public LocalDateTime getModifyDate() { return modifyDate; }
+    public void setModifyDate(LocalDateTime modifyDate) { this.modifyDate = modifyDate; }
 
-    public String getCreateUser() {
-        return createUser;
-    }
+    public boolean isAtivo() { return ativo; }
+    public void setAtivo(boolean ativo) { this.ativo = ativo; }
 
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(String modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyDate() {
-        return modifyDate;
-    }
-
-    public void setModifyDate(LocalDateTime modifyDate) {
-        this.modifyDate = modifyDate;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public LocalDateTime getDataExclusao() {
-        return dataExclusao;
-    }
-
-    public void setDataExclusao(LocalDateTime dataExclusao) {
-        this.dataExclusao = dataExclusao;
-    }
-}
+    public LocalDateTime getDataExclusao() { return dataExclusao; }
+    public void setDataExclusao(LocalDateTime dataExclusao) { this.dataExclusao = dataExclusao; }
+}  // ← único fecho da classe

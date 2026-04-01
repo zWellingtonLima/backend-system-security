@@ -11,6 +11,8 @@ public class OcorrenciasResponseDTO {
     private String createUser;
     private String tipoOcorrencia;
     private String ocorrencia;
+    private String estado;
+    private LocalDateTime horaOcorrencia;
 
     public static OcorrenciasResponseDTO from(Ocorrencias ocorrencia) {
         OcorrenciasResponseDTO dto = new OcorrenciasResponseDTO();
@@ -19,46 +21,29 @@ public class OcorrenciasResponseDTO {
         dto.createUser = ocorrencia.getCreateUser();
         dto.tipoOcorrencia = ocorrencia.getTipoOcorrencia().getLabel();
         dto.ocorrencia = ocorrencia.getOcorrencia();
+        dto.estado = ocorrencia.getEstado().getLabel();
+        dto.horaOcorrencia = ocorrencia.getHoraOcorrencia();
         return dto;
     }
 
-    public Integer getId() {
-        return id;
-    }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    public LocalDateTime getCreateDate() { return createDate; }
+    public void setCreateDate(LocalDateTime createDate) { this.createDate = createDate; }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
+    public String getCreateUser() { return createUser; }
+    public void setCreateUser(String createUser) { this.createUser = createUser; }
 
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
+    public String getTipoOcorrencia() { return tipoOcorrencia; }
+    public void setTipoOcorrencia(String tipoOcorrencia) { this.tipoOcorrencia = tipoOcorrencia; }
 
-    public String getCreateUser() {
-        return createUser;
-    }
+    public String getOcorrencia() { return ocorrencia; }
+    public void setOcorrencia(String ocorrencia) { this.ocorrencia = ocorrencia; }
 
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 
-    public String getTipoOcorrencia() {
-        return tipoOcorrencia;
-    }
-
-    public void setTipoOcorrencia(String tipoOcorrencia) {
-        this.tipoOcorrencia = tipoOcorrencia;
-    }
-
-    public String getOcorrencia() {
-        return ocorrencia;
-    }
-
-    public void setOcorrencia(String ocorrencia) {
-        this.ocorrencia = ocorrencia;
-    }
+    public LocalDateTime getHoraOcorrencia() { return horaOcorrencia; }
+    public void setHoraOcorrencia(LocalDateTime horaOcorrencia) { this.horaOcorrencia = horaOcorrencia; }
 }

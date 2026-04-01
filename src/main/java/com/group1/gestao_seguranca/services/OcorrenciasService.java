@@ -5,6 +5,8 @@ import com.group1.gestao_seguranca.dto.ocorrencias.OcorrenciasResponseDTO;
 import com.group1.gestao_seguranca.entities.Ocorrencias;
 import com.group1.gestao_seguranca.entities.TipoOcorrencia;
 import com.group1.gestao_seguranca.entities.Users;
+import com.group1.gestao_seguranca.enums.EstadoOcorrenciaEnum;
+import com.group1.gestao_seguranca.exceptions.AcessoNegadoException;
 import com.group1.gestao_seguranca.repositories.OcorrenciasRepository;
 import com.group1.gestao_seguranca.repositories.TipoOcorrenciaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -51,8 +53,7 @@ public class OcorrenciasService {
         ocorrencia.setCreateUser(user.getNomeSeguranca() != null ? user.getNomeSeguranca() : "Sistema");
         ocorrencia.setAtivo(true);
 
-        Ocorrencias salvo = ocorrenciasRepo.save(ocorrencia);
-        return OcorrenciasResponseDTO.from(salvo);
+        return OcorrenciasResponseDTO.from(ocorrenciasRepo.save(ocorrencia));
     }
 
     // ====================== READ ======================
@@ -72,11 +73,17 @@ public class OcorrenciasService {
     // ====================== UPDATE ======================
     @Transactional
     public OcorrenciasResponseDTO atualizar(Integer id, OcorrenciasRequestDTO dto) {
+        Users user = getUserAutenticado();
+
         Ocorrencias ocorrencia = ocorrenciasRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Ocorrência com ID " + id + " não encontrada"));
 
         if (!ocorrencia.isAtivo()) {
             throw new IllegalStateException("Não é possível atualizar uma ocorrência excluída.");
+        }
+
+        if (ocorrencia.getSeguranca().getId() != user.getId()) {
+            throw new AcessoNegadoException("Apenas o utilizador que registou pode editar esta ocorrência.");
         }
 
         if (dto.getOcorrencia() != null) {
@@ -90,24 +97,47 @@ public class OcorrenciasService {
                     .orElseThrow(() -> new EntityNotFoundException("Tipo de ocorrência inválido"));
             ocorrencia.setTipoOcorrencia(novoTipo);
         }
+        if (dto.getEstado() != null) {
+            ocorrencia.setEstado(dto.getEstado());
+        }
 
-        ocorrencia.setModifyUser(getUserAutenticado().getNomeSeguranca());
+        ocorrencia.setModifyUser(user.getNomeSeguranca());
         ocorrencia.setModifyDate(LocalDateTime.now());
 
-        Ocorrencias atualizada = ocorrenciasRepo.save(ocorrencia);
-        return OcorrenciasResponseDTO.from(atualizada);
+        return OcorrenciasResponseDTO.from(ocorrenciasRepo.save(ocorrencia));
+    }
+
+    // ====================== PATCH ESTADO ======================
+    @Transactional
+    public OcorrenciasResponseDTO atualizarEstado(Integer id, EstadoOcorrenciaEnum novoEstado) {
+        Users user = getUserAutenticado();
+
+        Ocorrencias ocorrencia = ocorrenciasRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Ocorrência com ID " + id + " não encontrada"));
+
+        if (ocorrencia.getSeguranca().getId() != user.getId()) {
+            throw new AcessoNegadoException("Apenas o utilizador que registou pode alterar o estado.");
+        }
+
+        ocorrencia.setEstado(novoEstado);
+        ocorrencia.setModifyUser(user.getNomeSeguranca());
+        ocorrencia.setModifyDate(LocalDateTime.now());
+
+        return OcorrenciasResponseDTO.from(ocorrenciasRepo.save(ocorrencia));
     }
 
     // ====================== SOFT DELETE ======================
     @Transactional
     public void softDelete(Integer id) {
         Users user = getUserAutenticado();
+
         Ocorrencias ocorrencia = ocorrenciasRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Ocorrência com ID " + id + " não encontrada"));
 
         if (!ocorrencia.isAtivo()) {
             throw new IllegalStateException("Ocorrência já foi excluída anteriormente.");
         }
+
         ocorrencia.setAtivo(false);
         ocorrencia.setDataExclusao(LocalDateTime.now());
         ocorrencia.setModifyUser(user.getNomeSeguranca());

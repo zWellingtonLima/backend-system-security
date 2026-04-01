@@ -2,6 +2,7 @@ package com.group1.gestao_seguranca.controllers;
 
 import com.group1.gestao_seguranca.dto.ocorrencias.OcorrenciasRequestDTO;
 import com.group1.gestao_seguranca.dto.ocorrencias.OcorrenciasResponseDTO;
+import com.group1.gestao_seguranca.enums.EstadoOcorrenciaEnum;
 import com.group1.gestao_seguranca.services.OcorrenciasService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -48,5 +49,11 @@ public class OcorrenciaController {
     public ResponseEntity<Void> softDelete(@PathVariable Integer id) {
         service.softDelete(id);
         return ResponseEntity.noContent().build();
+    }
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<OcorrenciasResponseDTO> atualizarEstado(
+            @PathVariable Integer id,
+            @RequestParam EstadoOcorrenciaEnum estado) {
+        return ResponseEntity.ok(service.atualizarEstado(id, estado));
     }
 }
