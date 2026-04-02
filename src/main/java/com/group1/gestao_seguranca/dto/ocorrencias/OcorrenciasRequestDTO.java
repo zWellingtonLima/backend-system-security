@@ -1,16 +1,12 @@
 package com.group1.gestao_seguranca.dto.ocorrencias;
 
-import com.group1.gestao_seguranca.entities.TipoOcorrencia;
-import com.group1.gestao_seguranca.enums.TipoOcorrenciaEnum;
 import com.group1.gestao_seguranca.enums.EstadoOcorrenciaEnum;
-
-import java.time.LocalDateTime;
+import com.group1.gestao_seguranca.enums.TipoOcorrenciaEnum;
 
 public class OcorrenciasRequestDTO {
 
     private TipoOcorrenciaEnum tipoOcorrencia;
     private String ocorrencia;
-    private LocalDateTime horaOcorrencia;   // ← Este campo estava em falta
     private EstadoOcorrenciaEnum estado;
 
     // ==================== GETTERS E SETTERS ====================
@@ -31,13 +27,6 @@ public class OcorrenciasRequestDTO {
         this.ocorrencia = ocorrencia;
     }
 
-    public LocalDateTime getHoraOcorrencia() {
-        return horaOcorrencia;
-    }
-
-    public void setHoraOcorrencia(LocalDateTime horaOcorrencia) {
-        this.horaOcorrencia = horaOcorrencia;
-    }
     public EstadoOcorrenciaEnum getEstado() {
         return estado;
     }

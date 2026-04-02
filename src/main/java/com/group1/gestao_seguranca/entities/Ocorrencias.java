@@ -37,9 +37,10 @@ public class Ocorrencias {
     @JsonIgnore
     private TipoOcorrencia tipoOcorrencia;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado", length = 50, nullable = false)
-    private EstadoOcorrenciaEnum estado = EstadoOcorrenciaEnum.PENDENTE;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_id_tipo_estado_ocorrencia", nullable = false)
+    @JsonIgnore
+    private EstadoOcorrencia estadoOcorrencia;
 
     @Column(name = "create_user")
     private String createUser;
@@ -59,8 +60,20 @@ public class Ocorrencias {
     @Column(name = "data_exclusao")
     private LocalDateTime dataExclusao;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.modifyDate = LocalDateTime.now();
+    }
+
+
     // ==================== CONSTRUTORES ====================
-    public Ocorrencias() {}
+    public Ocorrencias() {
+    }
 
     public Ocorrencias(String ocorrencia, Users seguranca) {
         this.ocorrencia = ocorrencia;
@@ -68,39 +81,99 @@ public class Ocorrencias {
     }
 
     // ==================== GETTERS E SETTERS ====================
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public Integer getId() {
+        return id;
+    }
 
-    public LocalDateTime getHoraOcorrencia() { return horaOcorrencia; }
-    public void setHoraOcorrencia(LocalDateTime horaOcorrencia) { this.horaOcorrencia = horaOcorrencia; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    public String getOcorrencia() { return ocorrencia; }
-    public void setOcorrencia(String ocorrencia) { this.ocorrencia = ocorrencia; }
+    public LocalDateTime getHoraOcorrencia() {
+        return horaOcorrencia;
+    }
 
-    public Users getSeguranca() { return seguranca; }
-    public void setSeguranca(Users seguranca) { this.seguranca = seguranca; }
+    public void setHoraOcorrencia(LocalDateTime horaOcorrencia) {
+        this.horaOcorrencia = horaOcorrencia;
+    }
 
-    public TipoOcorrencia getTipoOcorrencia() { return tipoOcorrencia; }
-    public void setTipoOcorrencia(TipoOcorrencia tipoOcorrencia) { this.tipoOcorrencia = tipoOcorrencia; }
+    public String getOcorrencia() {
+        return ocorrencia;
+    }
 
-    public EstadoOcorrenciaEnum getEstado() { return estado; }
-    public void setEstado(EstadoOcorrenciaEnum estado) { this.estado = estado; }
+    public void setOcorrencia(String ocorrencia) {
+        this.ocorrencia = ocorrencia;
+    }
 
-    public String getCreateUser() { return createUser; }
-    public void setCreateUser(String createUser) { this.createUser = createUser; }
+    public Users getSeguranca() {
+        return seguranca;
+    }
 
-    public LocalDateTime getCreateDate() { return createDate; }
-    public void setCreateDate(LocalDateTime createDate) { this.createDate = createDate; }
+    public void setSeguranca(Users seguranca) {
+        this.seguranca = seguranca;
+    }
 
-    public String getModifyUser() { return modifyUser; }
-    public void setModifyUser(String modifyUser) { this.modifyUser = modifyUser; }
+    public TipoOcorrencia getTipoOcorrencia() {
+        return tipoOcorrencia;
+    }
 
-    public LocalDateTime getModifyDate() { return modifyDate; }
-    public void setModifyDate(LocalDateTime modifyDate) { this.modifyDate = modifyDate; }
+    public void setTipoOcorrencia(TipoOcorrencia tipoOcorrencia) {
+        this.tipoOcorrencia = tipoOcorrencia;
+    }
 
-    public boolean isAtivo() { return ativo; }
-    public void setAtivo(boolean ativo) { this.ativo = ativo; }
+    public EstadoOcorrencia getEstadoOcorrencia() {
+        return estadoOcorrencia;
+    }
 
-    public LocalDateTime getDataExclusao() { return dataExclusao; }
-    public void setDataExclusao(LocalDateTime dataExclusao) { this.dataExclusao = dataExclusao; }
+    public void setEstadoOcorrencia(EstadoOcorrencia estadoOcorrencia) {
+        this.estadoOcorrencia = estadoOcorrencia;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getModifyUser() {
+        return modifyUser;
+    }
+
+    public void setModifyUser(String modifyUser) {
+        this.modifyUser = modifyUser;
+    }
+
+    public LocalDateTime getModifyDate() {
+        return modifyDate;
+    }
+
+    public void setModifyDate(LocalDateTime modifyDate) {
+        this.modifyDate = modifyDate;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public LocalDateTime getDataExclusao() {
+        return dataExclusao;
+    }
+
+    public void setDataExclusao(LocalDateTime dataExclusao) {
+        this.dataExclusao = dataExclusao;
+    }
 }  // ← único fecho da classe
