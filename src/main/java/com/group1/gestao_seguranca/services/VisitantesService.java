@@ -27,12 +27,19 @@ public class VisitantesService {
     // ====================== CREATE ======================
     @Transactional
     public VisitantesResponseDTO criar(VisitantesRequestDTO dto) {
+        if (repository.existsByDocumentoIdentificacao(dto.getDocumentoIdentificacao())) {
+            throw new IllegalStateException(
+                    "Já existe um visitante com o documento: " + dto.getDocumentoIdentificacao());
+        }
+
+        Users user = getUserAutenticado();
+
         Visitantes visitante = new Visitantes();
         visitante.setNomeVisitante(dto.getNomeVisitante());
         visitante.setDocumentoIdentificacao(dto.getDocumentoIdentificacao());
         visitante.setEmpresa(dto.getEmpresa());
         visitante.setObservacoes(dto.getObservacoes() != null ? dto.getObservacoes() : "");
-        visitante.setAtivo(true);
+        visitante.setCreateUser(user.getNomeSeguranca());
 
         Visitantes salvo = repository.save(visitante);
         return VisitantesResponseDTO.from(salvo);
@@ -69,10 +76,13 @@ public class VisitantesService {
             throw new IllegalStateException("Não é possível atualizar um visitante excluído.");
         }
 
+        Users user = getUserAutenticado();
+
         visitante.setNomeVisitante(dto.getNomeVisitante());
         visitante.setDocumentoIdentificacao(dto.getDocumentoIdentificacao());
         visitante.setEmpresa(dto.getEmpresa());
         visitante.setObservacoes(dto.getObservacoes());
+        visitante.setModifyUser(user.getNomeSeguranca());
 
         Visitantes atualizado = repository.save(visitante);
         return VisitantesResponseDTO.from(atualizado);
@@ -81,7 +91,6 @@ public class VisitantesService {
     // ====================== SOFT DELETE ======================
     @Transactional
     public void softDelete(int id) {
-        Users user = getUserAutenticado();
         Visitantes visitante = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Visitante com ID " + id + " não encontrado"));
 
@@ -89,11 +98,14 @@ public class VisitantesService {
             throw new IllegalStateException("Visitante já foi excluído anteriormente.");
         }
 
+        Users user = getUserAutenticado();
+
         visitante.setAtivo(false);
         visitante.setDataExclusao(LocalDateTime.now());
         visitante.setModifyUser(user.getNomeSeguranca());
         repository.save(visitante);
     }
+
     private Users getUserAutenticado() {
         return (Users) request.getAttribute("usuarioAutenticado");
     }
