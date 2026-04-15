@@ -21,11 +21,19 @@ public class OcorrenciaController {
         this.service = service;
     }
 
+    // GET /api/ocorrencias
     @GetMapping
     public ResponseEntity<List<OcorrenciasResponseDTO>> listarTodos() {
         return ResponseEntity.ok(service.listarTodos());
     }
 
+    // NOVO: GET /api/ocorrencias/hoje
+    @GetMapping("/hoje")
+    public ResponseEntity<List<OcorrenciasResponseDTO>> listarDoDia() {
+        return ResponseEntity.ok(service.listarDoDia());
+    }
+
+    // POST /api/ocorrencias
     @PostMapping
     public ResponseEntity<OcorrenciasResponseDTO> criar(
             @Valid @RequestBody OcorrenciasRequestDTO dto) {
@@ -33,11 +41,13 @@ public class OcorrenciaController {
                 .body(service.criar(dto));
     }
 
+    // GET /api/ocorrencias/{id}
     @GetMapping("/{id}")
     public ResponseEntity<OcorrenciasResponseDTO> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
+    // PUT /api/ocorrencias/{id}
     @PutMapping("/{id}")
     public ResponseEntity<OcorrenciasResponseDTO> atualizar(
             @PathVariable Integer id,
@@ -45,15 +55,13 @@ public class OcorrenciaController {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> softDelete(@PathVariable Integer id) {
-        service.softDelete(id);
-        return ResponseEntity.noContent().build();
-    }
+    // PATCH /api/ocorrencias/{id}/estado
     @PatchMapping("/{id}/estado")
     public ResponseEntity<OcorrenciasResponseDTO> atualizarEstado(
             @PathVariable Integer id,
             @RequestParam EstadoOcorrenciaEnum estado) {
         return ResponseEntity.ok(service.atualizarEstado(id, estado));
     }
+
+    // DELETE removido — botão "eliminar" retirado das ocorrências
 }
