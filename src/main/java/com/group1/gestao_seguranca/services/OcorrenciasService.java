@@ -78,9 +78,9 @@ public class OcorrenciasService {
                         "Tipo de ocorrência não encontrado: " + dto.getTipoOcorrencia()));
 
         EstadoOcorrencia estado = estadoOcorrenciaRepo
-                .findByEstadoOcorrencia(dto.getEstado())
+                .findByEstadoOcorrencia(EstadoOcorrenciaEnum.PENDENTE)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Estado de ocorrência não encontrado: " + dto.getEstado()));
+                        "Estado PENDENTE não encontrado na base de dados"));
 
         Ocorrencias ocorrencia = new Ocorrencias();
         ocorrencia.setOcorrencia(dto.getOcorrencia());

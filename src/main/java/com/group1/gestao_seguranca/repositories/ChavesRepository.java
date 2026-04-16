@@ -28,12 +28,15 @@ public interface ChavesRepository extends JpaRepository<Chaves, Integer> {
     // ── Autocomplete para devolução (chaves emprestadas) ─────────────────
     @Query("""
                 SELECT c FROM Chaves c
-                WHERE c.status = 'EMPRESTADA'
+                WHERE c.status = :status
                   AND (
                     LOWER(c.codigoChave) LIKE LOWER(CONCAT('%', :q, '%'))
                     OR LOWER(c.codigoMolho) LIKE LOWER(CONCAT('%', :q, '%'))
                   )
                 ORDER BY c.codigoChave, c.codigoMolho
             """)
-    List<Chaves> buscarEmprestadaspPorTermo(@Param("q") String q);
+    List<Chaves> buscarEmprestadaPorTermo(
+            @Param("q") String q,
+            @Param("status") StatusChaveEnum status
+    );
 }

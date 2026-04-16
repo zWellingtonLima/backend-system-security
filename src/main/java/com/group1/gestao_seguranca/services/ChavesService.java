@@ -70,7 +70,7 @@ public class ChavesService {
     @Transactional(readOnly = true)
     public List<ChaveAutocompleteDTO> autocompleteEmprestadas(String q) {
         String termo = q == null ? "" : q.trim();
-        return chavesRepo.buscarEmprestadaspPorTermo(termo)
+        return chavesRepo.buscarEmprestadaPorTermo(termo, StatusChaveEnum.EMPRESTADA)
                 .stream()
                 .map(ChaveAutocompleteDTO::from)
                 .toList();
