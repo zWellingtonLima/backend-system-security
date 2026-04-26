@@ -47,6 +47,7 @@ public class BuscaService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<BuscaGeralDTO> buscaGeral(String nome) {
         List<BuscaGeralDTO> resultado = new ArrayList<>();
         String[] t = tokenizar(nome);

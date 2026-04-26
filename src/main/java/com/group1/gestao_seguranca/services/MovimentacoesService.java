@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class MovimentacoesService {
@@ -342,14 +344,22 @@ public class MovimentacoesService {
     // ─────────────────────────────────────────────────────────────────────
     @Transactional(readOnly = true)
     public List<MovimentacaoResponseDTO> listarAtivas() {
-        return movimentacoesRepo
-                .findByHoraSaidaIsNullOrderByHoraEntradaDesc()
+        List<Movimentacoes> ativas = movimentacoesRepo.findAtivas();
+
+        if (ativas.isEmpty()) return List.of();
+
+        List<Integer> ids = ativas.stream().map(Movimentacoes::getId).toList();
+
+        Map<Integer, List<EntregaChaves>> pendentesPorMovimentacao = entregaChavesRepo
+                .findPendentesParaMovimentacoes(ids)
                 .stream()
-                .filter(Movimentacoes::isAtivo)
+                .collect(Collectors.groupingBy(e -> e.getMovimentacao().getId()));
+
+        return ativas.stream()
                 .map(m -> {
                     MovimentacaoResponseDTO dto = MovimentacaoResponseDTO.from(m);
-                    List<EntregaPendenteDTO> pendentes = entregaChavesRepo
-                            .findByMovimentacaoAndHoraDevolucaoIsNull(m)
+                    List<EntregaPendenteDTO> pendentes = pendentesPorMovimentacao
+                            .getOrDefault(m.getId(), List.of())
                             .stream()
                             .map(e -> {
                                 TipoChaveEnum tipo = e.getChave().getTipoChave();
