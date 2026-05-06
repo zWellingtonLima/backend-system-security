@@ -15,7 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ConsumosService {
@@ -36,42 +40,62 @@ public class ConsumosService {
         return (Users) request.getAttribute("usuarioAutenticado");
     }
 
-    private Integer calcularConsumo(Consumos consumo) {
+    // Cálculo puro — não faz I/O. O caller fornece o anterior (pode ser null).
+    private Integer calcularConsumo(Consumos consumo, Consumos anterior) {
+        if (anterior == null) return null;
+        return consumo.getValorLeitura() - anterior.getValorLeitura();
+    }
+
+    private Consumos buscarAnterior(Consumos consumo) {
         return consumosRepo.findAnteriorByTipo(
-                        consumo.getTipoConsumo().getTipoConsumo(),
-                        consumo.getDataRegisto())
-                .map(anterior -> consumo.getValorLeitura() - anterior.getValorLeitura())
-                .orElse(null);
+                consumo.getTipoConsumo().getTipoConsumo(),
+                consumo.getDataRegisto()
+        ).orElse(null);
     }
 
     // ====================== READ ======================
     public List<ConsumosResponseDTO> listConsumos() {
-        return consumosRepo.findByAtivoTrue().stream()
-                .map(consumo -> ConsumosResponseDTO.from(consumo, calcularConsumo(consumo)))
-                .toList();
+        // Lista vem ordenada por dataRegisto DESC, com JOIN FETCH em tipoConsumo (1 query).
+        List<Consumos> ativos = consumosRepo.findByAtivoTrue();
+
+        // Para cada tipo, dentro do grupo (DESC) o "anterior" cronológico é o item seguinte na lista.
+        Map<TipoConsumoEnum, List<Consumos>> porTipo = ativos.stream()
+                .collect(Collectors.groupingBy(c -> c.getTipoConsumo().getTipoConsumo()));
+
+        Map<Integer, Consumos> anteriorPorId = new HashMap<>();
+        for (List<Consumos> grupo : porTipo.values()) {
+            for (int i = 0; i < grupo.size() - 1; i++) {
+                anteriorPorId.put(grupo.get(i).getId(), grupo.get(i + 1));
+            }
+        }
+
+        List<ConsumosResponseDTO> resultado = new ArrayList<>(ativos.size());
+        for (Consumos c : ativos) {
+            resultado.add(ConsumosResponseDTO.from(c, calcularConsumo(c, anteriorPorId.get(c.getId()))));
+        }
+        return resultado;
     }
 
     public ConsumosUltimasLeiturasDTO getUltimasLeituras() {
-        Integer agua = consumosRepo.findUltimaLeituraByTipo(TipoConsumoEnum.AGUA)
-                .map(Consumos::getValorLeitura)
-                .orElse(null);
+        Map<TipoConsumoEnum, Integer> leiturasPorTipo = consumosRepo.findUltimasLeiturasPorTipo()
+                .stream()
+                .collect(Collectors.toMap(
+                        c -> c.getTipoConsumo().getTipoConsumo(),
+                        Consumos::getValorLeitura
+                ));
 
-        Integer eletricidade = consumosRepo.findUltimaLeituraByTipo(TipoConsumoEnum.ELETRICIDADE)
-                .map(Consumos::getValorLeitura)
-                .orElse(null);
-
-        Integer gas = consumosRepo.findUltimaLeituraByTipo(TipoConsumoEnum.GAS)
-                .map(Consumos::getValorLeitura)
-                .orElse(null);
-
-        return new ConsumosUltimasLeiturasDTO(agua, eletricidade, gas);
+        return new ConsumosUltimasLeiturasDTO(
+                leiturasPorTipo.get(TipoConsumoEnum.AGUA),
+                leiturasPorTipo.get(TipoConsumoEnum.ELETRICIDADE),
+                leiturasPorTipo.get(TipoConsumoEnum.GAS)
+        );
     }
 
     public ConsumosResponseDTO searchById(Integer id) {
         Consumos consumo = consumosRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Consumo com ID " + id + " não encontrado"));
 
-        return ConsumosResponseDTO.from(consumo, calcularConsumo(consumo));
+        return ConsumosResponseDTO.from(consumo, calcularConsumo(consumo, buscarAnterior(consumo)));
     }
 
     // ====================== CREATE ======================
@@ -92,7 +116,7 @@ public class ConsumosService {
         consumo.setAtivo(true);
 
         consumosRepo.save(consumo);
-        return ConsumosResponseDTO.from(consumo, calcularConsumo(consumo));
+        return ConsumosResponseDTO.from(consumo, calcularConsumo(consumo, buscarAnterior(consumo)));
     }
 
     // ====================== UPDATE (Todos os campos) ======================
@@ -129,7 +153,7 @@ public class ConsumosService {
 
         consumosRepo.save(consumo);
 
-        return ConsumosResponseDTO.from(consumo, calcularConsumo(consumo));
+        return ConsumosResponseDTO.from(consumo, calcularConsumo(consumo, buscarAnterior(consumo)));
     }
 
     // ====================== SOFT DELETE ======================

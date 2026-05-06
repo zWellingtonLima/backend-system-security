@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiError(400, "Erro de validação", erros));
     }
 
-    // Para os lancamentos de erro como EntityNotFound
+    // Para os lançamentos de erro como EntityNotFound
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(EntityNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(404, "Não encontrado", ex.getMessage()));

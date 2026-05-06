@@ -1,0 +1,50 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: gestao_sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Admin@12345!"   # mínimo: 8 chars, maiúscula, minúscula, número, símbolo
+      MSSQL_PID: "Developer"        # edição gratuita para dev/teste
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - gestao_net
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Admin@12345!' -Q 'SELECT 1' -C -b"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 45s   # SQL Server demora a arrancar
+
+  # dbgate — painel web open source, equivalente ao DBeaver mas no browser
+  # Acesso: http://localhost:3000
+  dbgate:
+    image: dbgate/dbgate:latest
+    container_name: gestao_dbgate
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      CONNECTIONS: con1
+
+      LABEL_con1: GestaoSeguranca
+      SERVER_con1: sqlserver          # nome do serviço no docker network
+      PORT_con1: 1433
+      USER_con1: sa
+      PASSWORD_con1: "Admin@12345!"
+      ENGINE_con1: mssql@dbgate-plugin-mssql
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - gestao_net
+
+networks:
+  gestao_net:
+    driver: bridge
+
+volumes:
+  sqlserver_data:

@@ -13,6 +13,7 @@ public interface ChavesRepository extends JpaRepository<Chaves, Integer> {
     // ── Autocomplete para entrega (chaves disponíveis) ───────────────────
     @Query("""
                 SELECT c FROM Chaves c
+                LEFT JOIN FETCH c.tipoChave
                 WHERE c.status = :status
                   AND (
                     LOWER(c.codigoChave) LIKE LOWER(CONCAT('%', :q, '%'))
@@ -28,6 +29,7 @@ public interface ChavesRepository extends JpaRepository<Chaves, Integer> {
     // ── Autocomplete para devolução (chaves emprestadas) ─────────────────
     @Query("""
                 SELECT c FROM Chaves c
+                LEFT JOIN FETCH c.tipoChave
                 WHERE c.status = :status
                   AND (
                     LOWER(c.codigoChave) LIKE LOWER(CONCAT('%', :q, '%'))

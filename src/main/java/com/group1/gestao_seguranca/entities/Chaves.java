@@ -129,6 +129,9 @@ public class Chaves {
         this.codigoChave = codigoChave;
     }
 
+    // Atenção: dispara lazy load do TipoChave se a entidade não foi
+    // carregada com JOIN FETCH em tipoChave. Em listagens, garantir
+    // o JOIN FETCH para evitar N+1.
     public TipoChaveEnum getTipoChave() {
         return tipoChave.getTipoChave();
     }

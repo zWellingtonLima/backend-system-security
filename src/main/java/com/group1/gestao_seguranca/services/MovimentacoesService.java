@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,10 +91,27 @@ public class MovimentacoesService {
 
         movimentacao = movimentacoesRepo.save(movimentacao);
 
-        // ── Múltiplas chaves — processa cada uma da lista ────────────────
+        // ── Múltiplas chaves — valida duplicados no DTO e pré-carrega tudo numa só query ──
         if (dto.getEntregasChave() != null && !dto.getEntregasChave().isEmpty()) {
-            for (EntregaChaveDTO entregaDTO : dto.getEntregasChave()) {
-                registrarEntregaChave(entregaDTO, movimentacao);
+            List<EntregaChaveDTO> entregas = dto.getEntregasChave();
+
+            Set<Integer> idsUnicos = new HashSet<>();
+            for (EntregaChaveDTO e : entregas) {
+                if (!idsUnicos.add(e.getIdChave()))
+                    throw new IllegalStateException(
+                            "A chave id=" + e.getIdChave() + " aparece mais que uma vez nesta entrada.");
+            }
+
+            Map<Integer, Chaves> chavesPorId = chavesRepo.findAllById(idsUnicos)
+                    .stream()
+                    .collect(Collectors.toMap(Chaves::getId, c -> c));
+
+            for (EntregaChaveDTO entregaDTO : entregas) {
+                Chaves chave = chavesPorId.get(entregaDTO.getIdChave());
+                if (chave == null)
+                    throw new EntityNotFoundException(
+                            "Chave não encontrada: id=" + entregaDTO.getIdChave());
+                processarEntregaChave(chave, movimentacao, entregaDTO.getObservacoes());
             }
         }
 
@@ -222,6 +241,8 @@ public class MovimentacoesService {
                 .map(this::devolverChaveAutomaticamente)
                 .toList();
 
+        if (!pendentes.isEmpty()) persistirDevolucoesEmBatch(pendentes);
+
         mov.setAtivo(false);
         mov.setMotivoAnulacao(motivo);
         mov.setDataAnulacao(LocalDateTime.now());
@@ -267,6 +288,8 @@ public class MovimentacoesService {
         List<String> chavesDevolvidas = pendentes.stream()
                 .map(this::devolverChaveAutomaticamente)
                 .toList();
+
+        persistirDevolucoesEmBatch(pendentes);
 
         return new SaidaComDevolucaoResponseDTO(
                 MovimentacaoResponseDTO.from(mov),
@@ -406,6 +429,7 @@ public class MovimentacoesService {
     // ─────────────────────────────────────────────────────────────────────
     // Métodos de apoio
     // ─────────────────────────────────────────────────────────────────────
+    // Apenas muta as entidades. O caller é responsável por saveAll em batch.
     private String devolverChaveAutomaticamente(EntregaChaves entrega) {
         String devolvidaPor = entrega.getFuncionarioComChave() != null
                 ? entrega.getFuncionarioComChave().getNomeFuncionario()
@@ -423,10 +447,16 @@ public class MovimentacoesService {
                 : chave.getCodigoMolho();
 
         chave.setStatusChave(StatusChaveEnum.DISPONIVEL);
-        chavesRepo.save(chave);
-        entregaChavesRepo.save(entrega);
 
         return descricao;
+    }
+
+    private void persistirDevolucoesEmBatch(List<EntregaChaves> pendentes) {
+        List<Chaves> chavesAtualizadas = pendentes.stream()
+                .map(EntregaChaves::getChave)
+                .toList();
+        chavesRepo.saveAll(chavesAtualizadas);
+        entregaChavesRepo.saveAll(pendentes);
     }
 
     void processarEntregaChave(Chaves chave, Movimentacoes mov, String observacoes) {
@@ -447,21 +477,4 @@ public class MovimentacoesService {
         entregaChavesRepo.save(entrega);
     }
 
-    private void registrarEntregaChave(EntregaChaveDTO entregaDTO, Movimentacoes mov) {
-        // Guarda de chave duplicada na mesma entrada (mesma chave não pode aparecer duas vezes)
-        boolean chaveDuplicada = entregaChavesRepo
-                .findByMovimentacaoAndHoraDevolucaoIsNull(mov)
-                .stream()
-                .anyMatch(e -> e.getChave().getId() == entregaDTO.getIdChave());
-
-        if (chaveDuplicada)
-            throw new IllegalStateException(
-                    "A chave id=" + entregaDTO.getIdChave() + " já está associada a esta entrada.");
-
-        Chaves chave = chavesRepo.findById(entregaDTO.getIdChave())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Chave não encontrada: id=" + entregaDTO.getIdChave()));
-
-        processarEntregaChave(chave, mov, entregaDTO.getObservacoes());
-    }
 }
