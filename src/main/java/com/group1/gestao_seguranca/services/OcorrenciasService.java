@@ -32,8 +32,8 @@ public class OcorrenciasService {
         this.request            = request;
     }
 
-    private Users getUserAutenticado() {
-        return (Users) request.getAttribute("usuarioAutenticado");
+    private User getUserAutenticado() {
+        return (User) request.getAttribute("usuarioAutenticado");
     }
 
     // ── Listar todas ─────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ public class OcorrenciasService {
     // ── Criar ────────────────────────────────────────────────────────────
     @Transactional
     public OcorrenciasResponseDTO criar(OcorrenciasRequestDTO dto) {
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         TipoOcorrencia tipo = tipoOcorrenciaRepo
                 .findByTipoOcorrencia(dto.getTipoOcorrencia())
@@ -96,7 +96,7 @@ public class OcorrenciasService {
     // ── Atualizar ────────────────────────────────────────────────────────
     @Transactional
     public OcorrenciasResponseDTO atualizar(Integer id, OcorrenciasRequestDTO dto) {
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         Ocorrencias ocorrencia = ocorrenciasRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -129,7 +129,7 @@ public class OcorrenciasService {
     // ── Atualizar estado ─────────────────────────────────────────────────
     @Transactional
     public OcorrenciasResponseDTO atualizarEstado(Integer id, EstadoOcorrenciaEnum novoEstado) {
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         Ocorrencias ocorrencia = ocorrenciasRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(

@@ -3,6 +3,7 @@ package com.group1.gestao_seguranca.entities;
 import jakarta.persistence.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,7 +11,11 @@ import java.util.List;
 @Table(name = "visitantes")
 @SQLDelete(sql = "UPDATE visitantes SET ativo = false, data_exclusao = CURRENT_TIMESTAMP WHERE id = ?")
 @SQLRestriction("ativo = true")
-public class Visitantes extends Pessoa {
+public class Visitantes extends Auditable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(name = "nome_visitante", nullable = false, length = 150)
     private String nomeVisitante;
@@ -35,7 +40,6 @@ public class Visitantes extends Pessoa {
     @OneToMany(mappedBy = "visitanteComChave", fetch = FetchType.LAZY)
     private List<EntregaChaves> chavesRecebidas;
 
-    // ==================== CONSTRUTORES ====================
     public Visitantes() {
     }
 
@@ -50,7 +54,6 @@ public class Visitantes extends Pessoa {
         this.documentoIdentificacao = documentoIdentificacao;
     }
 
-    // ==================== GETTERS E SETTERS ====================
     public String getNomeVisitante() {
         return nomeVisitante;
     }
@@ -73,6 +76,14 @@ public class Visitantes extends Pessoa {
 
     public void setDocumentoIdentificacao(String documentoIdentificacao) {
         this.documentoIdentificacao = documentoIdentificacao;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getObservacoes() {

@@ -2,7 +2,6 @@ package com.group1.gestao_seguranca.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.group1.gestao_seguranca.enums.EstadoOcorrenciaEnum;
 import jakarta.persistence.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "ocorrencias")
 @SQLDelete(sql = "UPDATE ocorrencias SET ativo = false, data_exclusao = CURRENT_TIMESTAMP WHERE id_ocorrencia = ?")
 @SQLRestriction("ativo = true")
-public class Ocorrencias {
+public class Ocorrencias extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +29,7 @@ public class Ocorrencias {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
     @JsonIgnore
-    private Users seguranca;
+    private User seguranca;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_tipo_ocorrencia", nullable = false)
@@ -42,45 +41,20 @@ public class Ocorrencias {
     @JsonIgnore
     private EstadoOcorrencia estadoOcorrencia;
 
-    @Column(name = "create_user")
-    private String createUser;
-
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @Column(name = "modify_user")
-    private String modifyUser;
-
-    @Column(name = "modify_date")
-    private LocalDateTime modifyDate;
-
     @Column(nullable = false)
     private boolean ativo = true;
 
     @Column(name = "data_exclusao")
     private LocalDateTime dataExclusao;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createDate = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.modifyDate = LocalDateTime.now();
-    }
-
-
-    // ==================== CONSTRUTORES ====================
     public Ocorrencias() {
     }
 
-    public Ocorrencias(String ocorrencia, Users seguranca) {
+    public Ocorrencias(String ocorrencia, User seguranca) {
         this.ocorrencia = ocorrencia;
         this.seguranca = seguranca;
     }
 
-    // ==================== GETTERS E SETTERS ====================
     public Integer getId() {
         return id;
     }
@@ -105,11 +79,11 @@ public class Ocorrencias {
         this.ocorrencia = ocorrencia;
     }
 
-    public Users getSeguranca() {
+    public User getSeguranca() {
         return seguranca;
     }
 
-    public void setSeguranca(Users seguranca) {
+    public void setSeguranca(User seguranca) {
         this.seguranca = seguranca;
     }
 
@@ -127,38 +101,6 @@ public class Ocorrencias {
 
     public void setEstadoOcorrencia(EstadoOcorrencia estadoOcorrencia) {
         this.estadoOcorrencia = estadoOcorrencia;
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(String modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyDate() {
-        return modifyDate;
-    }
-
-    public void setModifyDate(LocalDateTime modifyDate) {
-        this.modifyDate = modifyDate;
     }
 
     public boolean isAtivo() {

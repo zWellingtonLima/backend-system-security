@@ -5,7 +5,7 @@ import com.group1.gestao_seguranca.dto.consumos.ConsumosResponseDTO;
 import com.group1.gestao_seguranca.dto.consumos.ConsumosUltimasLeiturasDTO;
 import com.group1.gestao_seguranca.entities.Consumos;
 import com.group1.gestao_seguranca.entities.TipoConsumo;
-import com.group1.gestao_seguranca.entities.Users;
+import com.group1.gestao_seguranca.entities.User;
 import com.group1.gestao_seguranca.enums.TipoConsumoEnum;
 import com.group1.gestao_seguranca.repositories.ConsumosRepository;
 import com.group1.gestao_seguranca.repositories.TipoConsumoRepository;
@@ -36,8 +36,8 @@ public class ConsumosService {
         this.tipoConsumoRepo = tipoConsumoRepo;
     }
 
-    private Users getUserAutenticado() {
-        return (Users) request.getAttribute("usuarioAutenticado");
+    private User getUserAutenticado() {
+        return (User) request.getAttribute("usuarioAutenticado");
     }
 
     // Cálculo puro — não faz I/O. O caller fornece o anterior (pode ser null).
@@ -101,7 +101,7 @@ public class ConsumosService {
     // ====================== CREATE ======================
     @Transactional
     public ConsumosResponseDTO createConsumos(ConsumosRequestDTO dto) {
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         TipoConsumo tipoConsumo = tipoConsumoRepo.findByTipoConsumo(dto.getTipoConsumo())
                 .orElseThrow(() -> new EntityNotFoundException("Tipo de consumo não encontrado"));
@@ -122,7 +122,7 @@ public class ConsumosService {
     // ====================== UPDATE (Todos os campos) ======================
     @Transactional
     public ConsumosResponseDTO updateConsumo(Integer id, ConsumosRequestDTO dto) {
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         Consumos consumo = consumosRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Consumo com ID " + id + " não encontrado"));
@@ -159,7 +159,7 @@ public class ConsumosService {
     // ====================== SOFT DELETE ======================
     @Transactional
     public void deleteConsumo(Integer id) {
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         Consumos consumo = consumosRepo.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new EntityNotFoundException("Consumo não encontrado ou já eliminado."));

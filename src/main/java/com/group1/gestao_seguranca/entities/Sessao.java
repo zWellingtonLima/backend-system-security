@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "sessao")
-public class Sessao {
+public class Sessao extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,31 +26,12 @@ public class Sessao {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
     @JsonIgnore
-    private Users user;
-
-    @Column(name = "create_user")
-    private String createUser;
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-    @Column(name = "modify_user")
-    private String modifyUser;
-    @Column(name = "modify_date")
-    private LocalDateTime modifyDate;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createDate = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.modifyDate = LocalDateTime.now();
-    }
+    private User user;
 
     public Sessao() {
     }
 
-    public Sessao(LocalDateTime horaEntrada, Users user) {
+    public Sessao(LocalDateTime horaEntrada, User user) {
         this.horaEntrada = horaEntrada;
         this.user = user;
     }
@@ -87,43 +68,12 @@ public class Sessao {
         this.horaSaida = horaSaida;
     }
 
-    public Users getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(Users user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(String modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyDate() {
-        return modifyDate;
-    }
-
-    public void setModifyDate(LocalDateTime modifyDate) {
-        this.modifyDate = modifyDate;
-    }
 }

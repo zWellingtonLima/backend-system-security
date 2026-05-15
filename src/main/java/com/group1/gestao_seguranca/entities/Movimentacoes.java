@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "movimentacoes")
-public class Movimentacoes {
+public class Movimentacoes extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +47,6 @@ public class Movimentacoes {
     @OneToMany(mappedBy = "movimentacao", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<EntregaChaves> entregas;
 
-    // Anulação
     @Column(nullable = false)
     private boolean ativo = true;
 
@@ -59,29 +58,6 @@ public class Movimentacoes {
 
     @Column(name = "anulado_por")
     private String anuladoPor;
-
-    // Auditoria
-    @Column(name = "create_user")
-    private String createUser;
-
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @Column(name = "modify_user")
-    private String modifyUser;
-
-    @Column(name = "modify_date")
-    private LocalDateTime modifyDate;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createDate = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.modifyDate = LocalDateTime.now();
-    }
 
     public Movimentacoes() {
     }
@@ -98,7 +74,6 @@ public class Movimentacoes {
         this.funcionario = funcionario;
     }
 
-    // Getters e Setters existentes
     public int getId() {
         return id;
     }
@@ -177,38 +152,6 @@ public class Movimentacoes {
 
     public void setEntregas(List<EntregaChaves> v) {
         this.entregas = v;
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String v) {
-        this.createUser = v;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime v) {
-        this.createDate = v;
-    }
-
-    public String getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(String v) {
-        this.modifyUser = v;
-    }
-
-    public LocalDateTime getModifyDate() {
-        return modifyDate;
-    }
-
-    public void setModifyDate(LocalDateTime v) {
-        this.modifyDate = v;
     }
 
     public boolean isAtivo() {

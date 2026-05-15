@@ -12,7 +12,11 @@ import java.util.List;
 @Table(name = "funcionarios")
 @SQLDelete(sql = "UPDATE funcionarios SET ativo = false, data_exclusao = CURRENT_TIMESTAMP WHERE id = ?")
 @SQLRestriction("ativo = true")
-public class Funcionarios extends Pessoa {
+public class Funcionarios extends Auditable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(name = "nome_funcionario", nullable = false, length = 150)
     private String nomeFuncionario;
@@ -41,7 +45,6 @@ public class Funcionarios extends Pessoa {
     @OneToMany(mappedBy = "funcionarioResponsavel", fetch = FetchType.LAZY)
     private List<Movimentacoes> movimentacoesComoResponsavel;
 
-    // ==================== CONSTRUTORES ====================
     public Funcionarios(String nomeFuncionario, String setor) {
         this.nomeFuncionario = nomeFuncionario;
         this.setor = setor;
@@ -50,7 +53,14 @@ public class Funcionarios extends Pessoa {
     public Funcionarios() {
     }
 
-    // ==================== GETTERS E SETTERS ====================
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getNomeFuncionario() {
         return nomeFuncionario;
     }

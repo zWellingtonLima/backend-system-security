@@ -1,15 +1,14 @@
 package com.group1.gestao_seguranca.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-public abstract class Pessoa {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
+public abstract class Auditable {
     @Column(name = "create_user")
     private String createUser;
     @Column(name = "create_date")
@@ -27,14 +26,6 @@ public abstract class Pessoa {
     @PreUpdate
     protected void onUpdate() {
         this.modifyDate = LocalDateTime.now();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getCreateUser() {

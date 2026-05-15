@@ -3,7 +3,7 @@ package com.group1.gestao_seguranca.services;
 import com.group1.gestao_seguranca.dto.funcionarios.FuncionariosRequestDTO;
 import com.group1.gestao_seguranca.dto.funcionarios.FuncionariosResponseDTO;
 import com.group1.gestao_seguranca.entities.Funcionarios;
-import com.group1.gestao_seguranca.entities.Users;
+import com.group1.gestao_seguranca.entities.User;
 import com.group1.gestao_seguranca.repositories.FuncionariosRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +32,7 @@ public class FuncionariosService {
                     "Já existe um funcionário com o número: " + dto.getNumeroFuncionario());
         }
 
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         Funcionarios funcionario = new Funcionarios();
         funcionario.setNomeFuncionario(dto.getNomeFuncionario());
@@ -82,7 +82,7 @@ public class FuncionariosService {
             throw new IllegalStateException("Não é possível atualizar um funcionário excluído.");
         }
 
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         funcionario.setNomeFuncionario(dto.getNomeFuncionario());
         funcionario.setNumeroFuncionario(dto.getNumeroFuncionario());
@@ -96,7 +96,7 @@ public class FuncionariosService {
     // ====================== SOFT DELETE ======================
     @Transactional
     public void softDelete(int id) {
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
         Funcionarios funcionario = funcionariosRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário com ID " + id + " não encontrado"));
 
@@ -110,7 +110,7 @@ public class FuncionariosService {
         funcionariosRepo.save(funcionario);
     }
 
-    private Users getUserAutenticado() {
-        return (Users) request.getAttribute("usuarioAutenticado");
+    private User getUserAutenticado() {
+        return (User) request.getAttribute("usuarioAutenticado");
     }
 }

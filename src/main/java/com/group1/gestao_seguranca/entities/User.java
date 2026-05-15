@@ -3,12 +3,11 @@ package com.group1.gestao_seguranca.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class Users {
+public class User extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,29 +31,10 @@ public class Users {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Consumos> consumos;
 
-    @Column(name = "create_user")
-    private String createUser;
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-    @Column(name = "modify_user")
-    private String modifyUser;
-    @Column(name = "modify_date")
-    private LocalDateTime modifyDate;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createDate = LocalDateTime.now();
+    public User() {
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.modifyDate = LocalDateTime.now();
-    }
-
-    public Users() {
-    }
-
-    public Users(String nomeSeguranca, int numeroSeguranca, String password) {
+    public User(String nomeSeguranca, int numeroSeguranca, String password) {
         this.nomeSeguranca = nomeSeguranca;
         this.numeroSeguranca = numeroSeguranca;
         this.password = password;
@@ -114,38 +94,6 @@ public class Users {
 
     public void setNumeroSeguranca(int numeroSeguranca) {
         this.numeroSeguranca = numeroSeguranca;
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(String modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyDate() {
-        return modifyDate;
-    }
-
-    public void setModifyDate(LocalDateTime modifyDate) {
-        this.modifyDate = modifyDate;
     }
 
     public String getPassword() {

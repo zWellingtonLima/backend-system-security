@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "entrega_chaves")
-public class EntregaChaves {
+public class EntregaChaves extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,25 +39,6 @@ public class EntregaChaves {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_visitante")
     private Visitantes visitanteComChave;
-
-    @Column(name = "create_user")
-    private String createUser;
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-    @Column(name = "modify_user")
-    private String modifyUser;
-    @Column(name = "modify_date")
-    private LocalDateTime modifyDate;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createDate = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.modifyDate = LocalDateTime.now();
-    }
 
     public EntregaChaves() {
     }
@@ -139,35 +120,4 @@ public class EntregaChaves {
         this.chave = chave;
     }
 
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(String modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyDate() {
-        return modifyDate;
-    }
-
-    public void setModifyDate(LocalDateTime modifyDate) {
-        this.modifyDate = modifyDate;
-    }
 }

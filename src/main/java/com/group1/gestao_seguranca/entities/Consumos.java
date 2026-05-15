@@ -1,6 +1,5 @@
 package com.group1.gestao_seguranca.entities;
 
-import com.fasterxml.jackson.annotation.*;
 import com.group1.gestao_seguranca.enums.TipoConsumoEnum;
 import jakarta.persistence.*;
 
@@ -8,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "consumos")
-public class Consumos {
+public class Consumos extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,26 +31,7 @@ public class Consumos {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
-    private Users user;
-
-    @Column(name = "create_user")
-    private String createUser;
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-    @Column(name = "modify_user")
-    private String modifyUser;
-    @Column(name = "modify_date")
-    private LocalDateTime modifyDate;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createDate = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.modifyDate = LocalDateTime.now();
-    }
+    private User user;
 
     public Consumos() {
     }
@@ -63,7 +43,7 @@ public class Consumos {
         this.tipoConsumo = tipoConsumo;
     }
 
-    public Users getUser() {
+    public User getUser() {
         return user;
     }
 
@@ -75,7 +55,7 @@ public class Consumos {
         this.ativo = ativo;
     }
 
-    public void setUser(Users user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
@@ -89,10 +69,6 @@ public class Consumos {
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getValorLeitura() {
@@ -129,37 +105,5 @@ public class Consumos {
 
     public void setTipoConsumo(TipoConsumo tipoConsumo) {
         this.tipoConsumo = tipoConsumo;
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(String modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyDate() {
-        return modifyDate;
-    }
-
-    public void setModifyDate(LocalDateTime modifyDate) {
-        this.modifyDate = modifyDate;
     }
 }

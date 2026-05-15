@@ -42,8 +42,8 @@ public class MovimentacoesService {
         this.entregaChavesRepo = entregaChavesRepo;
     }
 
-    private Users getUserAutenticado() {
-        return (Users) request.getAttribute("usuarioAutenticado");
+    private User getUserAutenticado() {
+        return (User) request.getAttribute("usuarioAutenticado");
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -51,7 +51,7 @@ public class MovimentacoesService {
     // ─────────────────────────────────────────────────────────────────────
     @Transactional
     public MovimentacaoResponseDTO registrarEntrada(MovimentacaoRequestDTO dto) {
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
         Movimentacoes movimentacao = new Movimentacoes();
 
         movimentacao.setCreateUser(user.getCreateUser());
@@ -130,7 +130,7 @@ public class MovimentacoesService {
         if (!mov.isAtivo())
             throw new IllegalStateException("Não é possível editar uma movimentação anulada.");
 
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
         boolean temSaida = mov.getHoraSaida() != null;
 
         // ─ Campos editáveis sempre ──────────────────────────────────────
@@ -232,7 +232,7 @@ public class MovimentacoesService {
         if (!mov.isAtivo())
             throw new IllegalStateException("Esta movimentação já foi anulada.");
 
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         List<EntregaChaves> pendentes = entregaChavesRepo
                 .findByMovimentacaoAndHoraDevolucaoIsNull(mov);

@@ -4,7 +4,7 @@ import com.group1.gestao_seguranca.dto.auth.LoginRequestDTO;
 import com.group1.gestao_seguranca.dto.auth.LoginResponseDTO;
 import com.group1.gestao_seguranca.dto.auth.RegisterRequestDTO;
 import com.group1.gestao_seguranca.entities.Sessao;
-import com.group1.gestao_seguranca.entities.Users;
+import com.group1.gestao_seguranca.entities.User;
 import com.group1.gestao_seguranca.repositories.SessaoRepository;
 import com.group1.gestao_seguranca.repositories.UsersRepository;
 import jakarta.validation.Valid;
@@ -34,7 +34,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Número de segurança já registado.");
         }
 
-        Users user = new Users(dto.getNomeSeguranca(), dto.getNumeroSeguranca(), dto.getPassword());
+        User user = new User(dto.getNomeSeguranca(), dto.getNumeroSeguranca(), dto.getPassword());
         user.setCreateDate(LocalDateTime.now());
         user.setCreateUser(user.getNomeSeguranca());
         usersRepo.save(user);
@@ -45,13 +45,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> userLogin(@Valid @RequestBody LoginRequestDTO loginRequest) {
 
-        Optional<Users> optUser = usersRepo.findByNumeroSeguranca(loginRequest.getNumeroSeguranca());
+        Optional<User> optUser = usersRepo.findByNumeroSeguranca(loginRequest.getNumeroSeguranca());
 
         if (optUser.isEmpty() || !optUser.get().getPassword().equals(loginRequest.getPassword())) {
             return ResponseEntity.status(401).body("Número de Segurança ou palavra-passe incorretos.");
         }
 
-        Users user = optUser.get();
+        User user = optUser.get();
 
         Optional<Sessao> sessaoAberta = sessaoRepo.findTopByUserAndHoraSaidaIsNullOrderByCreateDateDesc(user);
         if (sessaoAberta.isPresent()) {
@@ -108,7 +108,7 @@ public class AuthController {
             return ResponseEntity.status(401).body("Sessão expirada.");
         }
 
-        Users user = sessao.getUser();
+        User user = sessao.getUser();
         return ResponseEntity.ok(new LoginResponseDTO(sessao.getToken(), user.getId(), user.getNomeSeguranca()));
     }
 }

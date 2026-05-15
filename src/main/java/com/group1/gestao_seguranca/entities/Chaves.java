@@ -4,12 +4,11 @@ import com.group1.gestao_seguranca.enums.StatusChaveEnum;
 import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "chaves")
-public class Chaves {
+public class Chaves extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_chave")
@@ -39,25 +38,6 @@ public class Chaves {
     // Histórico de entregas de uma chave
     @OneToMany(mappedBy = "chave", fetch = FetchType.LAZY)
     private List<EntregaChaves> historicoEntregas;
-
-    @Column(name = "create_user")
-    private String createUser;
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-    @Column(name = "modify_user")
-    private String modifyUser;
-    @Column(name = "modify_date")
-    private LocalDateTime modifyDate;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createDate = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.modifyDate = LocalDateTime.now();
-    }
 
     public Chaves() {
     }
@@ -138,38 +118,6 @@ public class Chaves {
 
     public void setTipoChave(TipoChave tipoChave) {
         this.tipoChave = tipoChave;
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getModifyUser() {
-        return modifyUser;
-    }
-
-    public void setModifyUser(String modifyUser) {
-        this.modifyUser = modifyUser;
-    }
-
-    public LocalDateTime getModifyDate() {
-        return modifyDate;
-    }
-
-    public void setModifyDate(LocalDateTime modifyDate) {
-        this.modifyDate = modifyDate;
     }
 
     public List<EntregaChaves> getHistoricoEntregas() {

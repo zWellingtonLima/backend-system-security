@@ -2,7 +2,7 @@ package com.group1.gestao_seguranca.services;
 
 import com.group1.gestao_seguranca.dto.visitantes.VisitantesRequestDTO;
 import com.group1.gestao_seguranca.dto.visitantes.VisitantesResponseDTO;
-import com.group1.gestao_seguranca.entities.Users;
+import com.group1.gestao_seguranca.entities.User;
 import com.group1.gestao_seguranca.entities.Visitantes;
 import com.group1.gestao_seguranca.repositories.VisitantesRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,7 +32,7 @@ public class VisitantesService {
                     "Já existe um visitante com o documento: " + dto.getDocumentoIdentificacao());
         }
 
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         Visitantes visitante = new Visitantes();
         visitante.setNomeVisitante(dto.getNomeVisitante());
@@ -76,7 +76,7 @@ public class VisitantesService {
             throw new IllegalStateException("Não é possível atualizar um visitante excluído.");
         }
 
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         visitante.setNomeVisitante(dto.getNomeVisitante());
         visitante.setDocumentoIdentificacao(dto.getDocumentoIdentificacao());
@@ -98,7 +98,7 @@ public class VisitantesService {
             throw new IllegalStateException("Visitante já foi excluído anteriormente.");
         }
 
-        Users user = getUserAutenticado();
+        User user = getUserAutenticado();
 
         visitante.setAtivo(false);
         visitante.setDataExclusao(LocalDateTime.now());
@@ -106,7 +106,7 @@ public class VisitantesService {
         repository.save(visitante);
     }
 
-    private Users getUserAutenticado() {
-        return (Users) request.getAttribute("usuarioAutenticado");
+    private User getUserAutenticado() {
+        return (User) request.getAttribute("usuarioAutenticado");
     }
 }
