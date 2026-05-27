@@ -1,0 +1,26 @@
+@import url("./reset.css");
+
+.container {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.item-list {
+  margin-block: 1rem;
+}
+
+.success {
+  color: green;
+}
+
+/* utilities */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
