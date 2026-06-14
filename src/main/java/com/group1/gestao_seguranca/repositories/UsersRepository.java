@@ -1,6 +1,6 @@
 package com.group1.gestao_seguranca.repositories;
 
-import com.group1.gestao_seguranca.entities.User;
+import com.group1.gestao_seguranca.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

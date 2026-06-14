@@ -1,7 +1,6 @@
 package com.group1.gestao_seguranca.repositories;
 
-import com.group1.gestao_seguranca.entities.Chaves;
-import com.group1.gestao_seguranca.entities.TipoConsumo;
+import com.group1.gestao_seguranca.entity.TipoConsumo;
 import com.group1.gestao_seguranca.enums.TipoConsumoEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 

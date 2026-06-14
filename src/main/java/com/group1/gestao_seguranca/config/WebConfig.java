@@ -1,6 +1,6 @@
 package com.group1.gestao_seguranca.config;
 
-import com.group1.gestao_seguranca.interceptors.SessaoInterceptor;
+import com.group1.gestao_seguranca.interceptor.SessaoInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

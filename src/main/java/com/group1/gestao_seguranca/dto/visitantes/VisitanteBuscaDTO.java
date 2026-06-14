@@ -1,6 +1,6 @@
 package com.group1.gestao_seguranca.dto.visitantes;
 
-import com.group1.gestao_seguranca.entities.Visitantes;
+import com.group1.gestao_seguranca.entity.Visitantes;
 
 public record VisitanteBuscaDTO(
         Integer id,

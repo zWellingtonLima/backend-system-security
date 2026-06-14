@@ -1,6 +1,6 @@
 package com.group1.gestao_seguranca.dto.chaves;
 
-import com.group1.gestao_seguranca.entities.EntregaChaves;
+import com.group1.gestao_seguranca.entity.EntregaChaves;
 import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 
 import java.time.LocalDateTime;

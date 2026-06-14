@@ -1,6 +1,6 @@
 package com.group1.gestao_seguranca.dto.consumos;
 
-import com.group1.gestao_seguranca.entities.Consumos;
+import com.group1.gestao_seguranca.entity.Consumos;
 
 import java.time.LocalDateTime;
 

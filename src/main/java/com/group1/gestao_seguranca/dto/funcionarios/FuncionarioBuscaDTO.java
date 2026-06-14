@@ -1,6 +1,6 @@
 package com.group1.gestao_seguranca.dto.funcionarios;
 
-import com.group1.gestao_seguranca.entities.Funcionarios;
+import com.group1.gestao_seguranca.entity.Funcionarios;
 
 public record FuncionarioBuscaDTO(
         Integer id,

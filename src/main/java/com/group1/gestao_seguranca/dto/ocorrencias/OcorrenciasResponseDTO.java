@@ -1,8 +1,8 @@
 package com.group1.gestao_seguranca.dto.ocorrencias;
 
-import com.group1.gestao_seguranca.entities.EstadoOcorrencia;
-import com.group1.gestao_seguranca.entities.Ocorrencias;
-import com.group1.gestao_seguranca.entities.TipoOcorrencia;
+import com.group1.gestao_seguranca.entity.EstadoOcorrencia;
+import com.group1.gestao_seguranca.entity.Ocorrencias;
+import com.group1.gestao_seguranca.entity.TipoOcorrencia;
 
 import java.time.LocalDateTime;
 

@@ -1,6 +1,6 @@
 package com.group1.gestao_seguranca.repositories;
 
-import com.group1.gestao_seguranca.entities.Chaves;
+import com.group1.gestao_seguranca.entity.Chaves;
 import com.group1.gestao_seguranca.enums.StatusChaveEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

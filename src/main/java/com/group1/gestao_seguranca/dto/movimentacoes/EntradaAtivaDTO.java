@@ -1,6 +1,6 @@
 package com.group1.gestao_seguranca.dto.movimentacoes;
 
-import com.group1.gestao_seguranca.entities.Movimentacoes;
+import com.group1.gestao_seguranca.entity.Movimentacoes;
 
 public record EntradaAtivaDTO(
         int idMovimentacao,

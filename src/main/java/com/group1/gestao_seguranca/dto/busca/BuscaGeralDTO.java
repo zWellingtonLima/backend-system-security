@@ -1,7 +1,7 @@
 package com.group1.gestao_seguranca.dto.busca;
 
-import com.group1.gestao_seguranca.entities.Funcionarios;
-import com.group1.gestao_seguranca.entities.Visitantes;
+import com.group1.gestao_seguranca.entity.Funcionarios;
+import com.group1.gestao_seguranca.entity.Visitantes;
 import com.group1.gestao_seguranca.enums.TipoEntrada;
 
 public record BuscaGeralDTO(

@@ -1,6 +1,6 @@
 package com.group1.gestao_seguranca.dto.chaves;
 
-import com.group1.gestao_seguranca.entities.Chaves;
+import com.group1.gestao_seguranca.entity.Chaves;
 import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 
 public class ChaveAutocompleteDTO {
