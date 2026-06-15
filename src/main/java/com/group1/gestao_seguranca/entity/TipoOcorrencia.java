@@ -12,34 +12,26 @@ public class TipoOcorrencia {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo", nullable = false)
-    private TipoOcorrenciaEnum tipoOcorrencia;
+    @Column(nullable = false, length = 60)
+    private TipoOcorrenciaEnum tipo;
 
     public TipoOcorrencia() {
     }
 
-    public TipoOcorrencia(TipoOcorrenciaEnum tipoOcorrencia) {
-        this.tipoOcorrencia = tipoOcorrencia;
-    }
-
-    public String getLabel() {
-        return tipoOcorrencia.getLabel();
-    }
-
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public TipoOcorrenciaEnum getTipoOcorrencia() {
-        return tipoOcorrencia;
+    public String getTipo() {
+        return tipo.toString();
     }
 
-    public void setTipoOcorrencia(TipoOcorrenciaEnum tipoOcorrencia) {
-        this.tipoOcorrencia = tipoOcorrencia;
+    public void setTipo(TipoOcorrenciaEnum tipo) {
+        this.tipo = tipo;
     }
 }
 

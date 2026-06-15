@@ -1,21 +1,22 @@
 package com.group1.gestao_seguranca.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "visitantes")
 public class Visitantes extends Auditable {
 
-    @Column(name = "nome_visitante", nullable = false, length = 150)
-    private String nomeVisitante;
+    @Column(nullable = false, length = 150)
+    private String nome;
 
-    @Column(name = "empresa", length = 100)
+    @Column(length = 100)
     private String empresa;
 
-    @Column(name = "documento_identificacao", unique = true, nullable = false, length = 30)
+    @Column(name = "doc_identificacao", unique = true, nullable = false, length = 30)
     private String documentoIdentificacao;
 
     private String observacoes;
@@ -26,32 +27,33 @@ public class Visitantes extends Auditable {
     @Column(name = "data_exclusao")
     private LocalDateTime dataExclusao;
 
-    @OneToMany(mappedBy = "visitante", fetch = FetchType.LAZY)
-    private List<Movimentacoes> movimentacoes;
-
-    @OneToMany(mappedBy = "visitanteComChave", fetch = FetchType.LAZY)
-    private List<EntregaChaves> chavesRecebidas;
-
     public Visitantes() {
     }
 
-    public Visitantes(String nomeVisitante, String documentoIdentificacao) {
-        this.nomeVisitante = nomeVisitante;
-        this.documentoIdentificacao = documentoIdentificacao;
+    public boolean isAtivo() {
+        return ativo;
     }
 
-    public Visitantes(String nomeVisitante, String empresa, String documentoIdentificacao) {
-        this.nomeVisitante = nomeVisitante;
-        this.empresa = empresa;
-        this.documentoIdentificacao = documentoIdentificacao;
+    public LocalDateTime getDataExclusao() {
+        return dataExclusao;
     }
 
-    public String getNomeVisitante() {
-        return nomeVisitante;
+    public void desativar() {
+        this.ativo = false;
+        this.dataExclusao = LocalDateTime.now();
     }
 
-    public void setNomeVisitante(String nomeVisitante) {
-        this.nomeVisitante = nomeVisitante;
+    public void reativar() {
+        this.ativo = true;
+        this.dataExclusao = null;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nomeVisitante) {
+        this.nome = nomeVisitante;
     }
 
     public String getEmpresa() {
@@ -76,37 +78,5 @@ public class Visitantes extends Auditable {
 
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public LocalDateTime getDataExclusao() {
-        return dataExclusao;
-    }
-
-    public void setDataExclusao(LocalDateTime dataExclusao) {
-        this.dataExclusao = dataExclusao;
-    }
-
-    public List<Movimentacoes> getMovimentacoes() {
-        return movimentacoes;
-    }
-
-    public void setMovimentacoes(List<Movimentacoes> movimentacoes) {
-        this.movimentacoes = movimentacoes;
-    }
-
-    public List<EntregaChaves> getChavesRecebidas() {
-        return chavesRecebidas;
-    }
-
-    public void setChavesRecebidas(List<EntregaChaves> chavesRecebidas) {
-        this.chavesRecebidas = chavesRecebidas;
     }
 }

@@ -1,7 +1,7 @@
 package com.group1.gestao_seguranca.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.group1.gestao_seguranca.enums.EstadoOcorrenciaEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -10,11 +10,10 @@ import java.time.LocalDateTime;
 @Table(name = "ocorrencias")
 public class Ocorrencias extends Auditable {
 
-    @Column(name = "hora_ocorrencia")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "hora_ocorrencia", nullable = false)
     private LocalDateTime horaOcorrencia;
 
-    @Column(name = "ocorrencia", length = 500)
+    @Column(length = 500, nullable = false) // TODO: tornar campo obrigatorio na BD
     private String ocorrencia;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,7 +27,7 @@ public class Ocorrencias extends Auditable {
     private TipoOcorrencia tipoOcorrencia;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_id_tipo_estado_ocorrencia", nullable = false)
+    @JoinColumn(name = "id_estado_ocorrencia", nullable = false)
     @JsonIgnore
     private EstadoOcorrencia estadoOcorrencia;
 
@@ -41,9 +40,22 @@ public class Ocorrencias extends Auditable {
     public Ocorrencias() {
     }
 
-    public Ocorrencias(String ocorrencia, User seguranca) {
-        this.ocorrencia = ocorrencia;
-        this.seguranca = seguranca;
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public LocalDateTime getDataExclusao() {
+        return dataExclusao;
+    }
+
+    public void desativar() {
+        this.ativo = false;
+        this.dataExclusao = LocalDateTime.now();
+    }
+
+    public void reativar() {
+        this.ativo = true;
+        this.dataExclusao = null;
     }
 
     public LocalDateTime getHoraOcorrencia() {
@@ -70,35 +82,11 @@ public class Ocorrencias extends Auditable {
         this.seguranca = seguranca;
     }
 
-    public TipoOcorrencia getTipoOcorrencia() {
-        return tipoOcorrencia;
+    public String getEstadoOcorrencia() {
+        return estadoOcorrencia.getEstadoOcorrencia();
     }
 
-    public void setTipoOcorrencia(TipoOcorrencia tipoOcorrencia) {
-        this.tipoOcorrencia = tipoOcorrencia;
+    public void setEstadoOcorrencia(EstadoOcorrenciaEnum estado) {
+        estadoOcorrencia.setEstadoOcorrencia(estado);
     }
-
-    public EstadoOcorrencia getEstadoOcorrencia() {
-        return estadoOcorrencia;
-    }
-
-    public void setEstadoOcorrencia(EstadoOcorrencia estadoOcorrencia) {
-        this.estadoOcorrencia = estadoOcorrencia;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public LocalDateTime getDataExclusao() {
-        return dataExclusao;
-    }
-
-    public void setDataExclusao(LocalDateTime dataExclusao) {
-        this.dataExclusao = dataExclusao;
-    }
-}  // ← único fecho da classe
+}

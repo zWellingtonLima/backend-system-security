@@ -1,91 +1,48 @@
 package com.group1.gestao_seguranca.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
-import java.util.List;
 
 @Entity
 @Table(name = "users")
 public class User extends Auditable {
 
-    @Column(name = "nome_seguranca", nullable = false, length = 150)
-    private String nomeSeguranca;
-    @Column(name = "numero_seguranca", nullable = false, unique = true)
-    private Integer numeroSeguranca;
-    @Column(nullable = false, length = 30)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_role", nullable = false)
+    private Roles role;
+
+    @Column(nullable = false, length = 150)
+    private String nome;
+
+    @Column(name = "numero_identificacao", nullable = false, unique = true)
+    private String numeroIdentificacao; // TODO: verificar que tipo de identificação os seguranças possuem
+
+    @Column(nullable = false)
     private String password;
-
-    @OneToMany(mappedBy = "seguranca", fetch = FetchType.LAZY)
-    private List<Ocorrencias> ocorrencias;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Sessao> sessoes;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Consumos> consumos;
 
     public User() {
     }
 
-    public User(String nomeSeguranca, int numeroSeguranca, String password) {
-        this.nomeSeguranca = nomeSeguranca;
-        this.numeroSeguranca = numeroSeguranca;
-        this.password = password;
+    public String getRole() {
+        return role.toString();
     }
 
-    public List<Sessao> getSessoes() {
-        return sessoes;
+    public void setRole(Roles role) {
+        this.role = role;
     }
 
-    public void setSessoes(List<Sessao> sessoes) {
-        this.sessoes = sessoes;
+    public String getNome() {
+        return nome;
     }
 
-    public List<Consumos> getConsumos() {
-        return consumos;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public void setConsumos(List<Consumos> consumos) {
-        this.consumos = consumos;
+    public String getNumeroIdentificacao() {
+        return numeroIdentificacao;
     }
 
-
-    public void setNumeroSeguranca(Integer numeroSeguranca) {
-        this.numeroSeguranca = numeroSeguranca;
+    public void setNumeroIdentificacao(String numeroIdentificacao) {
+        this.numeroIdentificacao = numeroIdentificacao;
     }
-
-    public List<Ocorrencias> getOcorrencias() {
-        return ocorrencias;
-    }
-
-    public void setOcorrencias(List<Ocorrencias> ocorrencias) {
-        this.ocorrencias = ocorrencias;
-    }
-
-    public String getNomeSeguranca() {
-        return nomeSeguranca;
-    }
-
-    public void setNomeSeguranca(String nomeSeguranca) {
-        this.nomeSeguranca = nomeSeguranca;
-    }
-
-    public int getNumeroSeguranca() {
-        return numeroSeguranca;
-    }
-
-    public void setNumeroSeguranca(int numeroSeguranca) {
-        this.numeroSeguranca = numeroSeguranca;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
 }

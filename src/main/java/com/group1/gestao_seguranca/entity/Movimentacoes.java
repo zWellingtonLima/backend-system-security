@@ -1,11 +1,8 @@
 package com.group1.gestao_seguranca.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.group1.gestao_seguranca.enums.TipoVisitanteEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "movimentacoes")
@@ -24,12 +21,8 @@ public class Movimentacoes extends Auditable {
     private Funcionarios funcionario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_visitante")
-    private Visitantes visitante; // TODO: criar tabela Visita
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "movimentacao", fetch = FetchType.LAZY)
-    private List<EntregaChaves> entregas;
+    @JoinColumn(name = "id_visita")
+    private Visitas visita;
 
     @Column(nullable = false)
     private boolean ativo = true;
@@ -47,16 +40,22 @@ public class Movimentacoes extends Auditable {
     public Movimentacoes() {
     }
 
-    public Movimentacoes(LocalDateTime horaEntrada, String observacoes, Visitantes visitante) {
-        this.horaEntrada = horaEntrada;
-        this.observacoes = observacoes;
-        this.visitante = visitante;
+    public boolean isAtivo() {
+        return ativo;
     }
 
-    public Movimentacoes(LocalDateTime horaEntrada, String observacoes, Funcionarios funcionario) {
-        this.horaEntrada = horaEntrada;
-        this.observacoes = observacoes;
-        this.funcionario = funcionario;
+    public LocalDateTime getDataAnulacao() {
+        return dataAnulacao;
+    }
+
+    public void anularMovimentacao() {
+        this.ativo = false;
+        this.dataAnulacao = LocalDateTime.now();
+    }
+
+    public void reativarMovimentacao() {
+        this.ativo = true;
+        this.dataAnulacao = null;
     }
 
     public LocalDateTime getHoraEntrada() {
@@ -91,43 +90,11 @@ public class Movimentacoes extends Auditable {
         this.funcionario = v;
     }
 
-    public Visitantes getVisitante() {
-        return visitante;
-    }
-
-    public void setVisitante(Visitantes v) {
-        this.visitante = v;
-    }
-
-    public List<EntregaChaves> getEntregas() {
-        return entregas;
-    }
-
-    public void setEntregas(List<EntregaChaves> v) {
-        this.entregas = v;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
     public String getMotivoAnulacao() {
         return motivoAnulacao;
     }
 
     public void setMotivoAnulacao(String motivoAnulacao) {
         this.motivoAnulacao = motivoAnulacao;
-    }
-
-    public LocalDateTime getDataAnulacao() {
-        return dataAnulacao;
-    }
-
-    public void setDataAnulacao(LocalDateTime dataAnulacao) {
-        this.dataAnulacao = dataAnulacao;
     }
 }

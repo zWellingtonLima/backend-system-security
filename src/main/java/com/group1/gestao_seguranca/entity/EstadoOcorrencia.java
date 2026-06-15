@@ -29,4 +29,8 @@ public class EstadoOcorrencia {
     public String getEstadoOcorrencia() {
         return estadoOcorrencia.toString();
     }
+
+    public void setEstadoOcorrencia(EstadoOcorrenciaEnum estado) {
+        this.estadoOcorrencia = estado;
+    }
 }

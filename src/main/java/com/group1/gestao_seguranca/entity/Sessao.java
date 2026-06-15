@@ -15,9 +15,6 @@ public class Sessao extends Auditable {
     @Column(name = "hora_saida")
     private LocalDateTime horaSaida;
 
-    @Column(nullable = false, unique = true)
-    private String token;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
     @JsonIgnore
@@ -29,14 +26,6 @@ public class Sessao extends Auditable {
     public Sessao(LocalDateTime horaEntrada, User user) {
         this.horaEntrada = horaEntrada;
         this.user = user;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public LocalDateTime getHoraEntrada() {
