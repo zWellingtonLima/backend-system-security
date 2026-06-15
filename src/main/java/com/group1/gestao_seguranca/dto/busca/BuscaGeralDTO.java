@@ -22,7 +22,7 @@ public record BuscaGeralDTO(
     public static BuscaGeralDTO fromFuncionario(Funcionarios f) {
         return new BuscaGeralDTO(
                 f.getId(),
-                f.getNomeFuncionario(),
+                f.getNome(),
                 TipoEntrada.FUNCIONARIO,
                 f.getSetor()
         );

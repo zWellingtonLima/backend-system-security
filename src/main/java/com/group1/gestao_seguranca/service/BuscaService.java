@@ -67,7 +67,7 @@ public class BuscaService {
                 .stream()
                 .map(f -> new BuscaGeralDTO(
                         f.getId(),
-                        f.getNomeFuncionario(),
+                        f.getNome(),
                         TipoEntrada.FUNCIONARIO,
                         f.getSetor()
                 ))

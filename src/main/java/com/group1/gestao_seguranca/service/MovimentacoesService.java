@@ -63,7 +63,7 @@ public class MovimentacoesService {
 
             if (movimentacoesRepo.existeEntradaAtiva(func.getId()))
                 throw new IllegalStateException(
-                        "O funcionário " + func.getNomeFuncionario() + " já possui uma entrada ativa.");
+                        "O funcionário " + func.getNome() + " já possui uma entrada ativa.");
 
             movimentacao.setSetorDestino(func.getSetor());
             movimentacao.setFuncionario(func);
@@ -188,7 +188,7 @@ public class MovimentacoesService {
 
             if (outraEntradaAtiva)
                 throw new IllegalStateException(
-                        "O funcionário " + novoFunc.getNomeFuncionario() + " já possui uma entrada ativa.");
+                        "O funcionário " + novoFunc.getNome() + " já possui uma entrada ativa.");
 
             mov.setFuncionario(novoFunc);
             mov.setSetorDestino(novoFunc.getSetor());
@@ -426,7 +426,7 @@ public class MovimentacoesService {
     // Apenas muta as entidades. O caller é responsável por saveAll em batch.
     private String devolverChaveAutomaticamente(EntregaChaves entrega) {
         String devolvidaPor = entrega.getFuncionarioComChave() != null
-                ? entrega.getFuncionarioComChave().getNomeFuncionario()
+                ? entrega.getFuncionarioComChave().getNome()
                 : entrega.getVisitanteComChave() != null
                 ? entrega.getVisitanteComChave().getNomeVisitante()
                 : "Desconhecido";

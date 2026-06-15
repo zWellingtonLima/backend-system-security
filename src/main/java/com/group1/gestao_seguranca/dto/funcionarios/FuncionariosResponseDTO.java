@@ -15,7 +15,7 @@ public class FuncionariosResponseDTO {
     public static FuncionariosResponseDTO from(Funcionarios f) {
         FuncionariosResponseDTO dto = new FuncionariosResponseDTO();
         dto.id = f.getId();
-        dto.nomeFuncionario = f.getNomeFuncionario();
+        dto.nomeFuncionario = f.getNome();
         dto.numeroFuncionario = f.getNumeroFuncionario();
         dto.setor = f.getSetor();
         dto.registadoEm = f.getCreateDate();

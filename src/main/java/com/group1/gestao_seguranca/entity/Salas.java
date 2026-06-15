@@ -25,18 +25,6 @@ public class Salas {
     public Salas() {
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getCodigoSala() {
         return codigoSala;
     }
@@ -45,8 +33,8 @@ public class Salas {
         this.codigoSala = codigoSala;
     }
 
-    public PisoEnum getPiso() {
-        return piso;
+    public String getPiso() {
+        return piso.name();
     }
 
     public void setPiso(PisoEnum piso) {

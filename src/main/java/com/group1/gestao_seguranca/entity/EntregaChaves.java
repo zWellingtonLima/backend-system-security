@@ -13,9 +13,6 @@ public class EntregaChaves extends Auditable {
     @Column(name = "hora_devolucao")
     private LocalDateTime horaDevolucao;
 
-    @Column(name = "devolvida_por", length = 50)
-    private String devolvidaPor;
-
     private String observacoes;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,6 +22,10 @@ public class EntregaChaves extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_movimentacao", nullable = false)
     private Movimentacoes movimentacao;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_devolvida_por", nullable = false)
+    private User devolvidaPor; // Seguranca logado que registou a devolucao da chave
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_funcionario")
@@ -37,17 +38,9 @@ public class EntregaChaves extends Auditable {
     public EntregaChaves() {
     }
 
-    public EntregaChaves(LocalDateTime horaEntrega, Chaves chave) {
-        this.horaEntrega = horaEntrega;
-        this.chave = chave;
-    }
-
-    public String getDevolvidaPor() {
-        return devolvidaPor;
-    }
-
-    public void setDevolvidaPor(String devolvidaPor) {
-        this.devolvidaPor = devolvidaPor;
+    public void registarDevolucao(User segurancaAtual) {
+        this.horaDevolucao = LocalDateTime.now();
+        this.devolvidaPor = segurancaAtual;
     }
 
     public String getObservacoes() {

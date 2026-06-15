@@ -20,7 +20,7 @@ public class ConsumosResponseDTO {
         dto.id = consumo.getId();
         dto.valorLeitura = consumo.getValorLeitura();
         dto.dataRegisto = consumo.getDataRegisto();
-        dto.observacao = consumo.getObservacao();
+        dto.observacao = consumo.getObservacoes();
         dto.tipoConsumo = consumo.getTipoConsumo().getLabel();
         dto.consumoCalculado = consumoCalculado;
         dto.createUser = consumo.getCreateUser();

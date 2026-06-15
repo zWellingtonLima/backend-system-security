@@ -109,7 +109,7 @@ public class ConsumosService {
         Consumos consumo = new Consumos();
         consumo.setValorLeitura(dto.getValorLeitura());
         consumo.setDataRegisto(LocalDateTime.now());
-        consumo.setObservacao(dto.getObservacao());
+        consumo.setObservacoes(dto.getObservacao());
         consumo.setTipoConsumo(tipoConsumo);
         consumo.setUser(user);
         consumo.setCreateUser(user.getNomeSeguranca() != null ? user.getNomeSeguranca() : "Sistema");
@@ -136,7 +136,7 @@ public class ConsumosService {
             consumo.setValorLeitura(dto.getValorLeitura());
         }
         if (dto.getObservacao() != null) {
-            consumo.setObservacao(dto.getObservacao());
+            consumo.setObservacoes(dto.getObservacao());
         }
         if (dto.getTipoConsumo() != null) {
             TipoConsumo novoTipo = tipoConsumoRepo.findByTipoConsumo(dto.getTipoConsumo())

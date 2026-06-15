@@ -1,6 +1,5 @@
 package com.group1.gestao_seguranca.entity;
 
-import com.group1.gestao_seguranca.enums.TipoConsumoEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -14,14 +13,22 @@ public class Consumos extends Auditable {
     @Column(name = "data_registo")
     private LocalDateTime dataRegisto;
 
-    private String observacao;
+    @Column(length = 255)
+    private String observacoes;
 
     @Column(nullable = false)
     private boolean ativo = true;
 
+    @Column(name = "data_exclusao")
+    private LocalDateTime dataExclusao;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_tipo_consumo", nullable = false)
     private TipoConsumo tipoConsumo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_edificio", nullable = false)
+    private Edificio edificio;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
@@ -30,35 +37,29 @@ public class Consumos extends Auditable {
     public Consumos() {
     }
 
-    public Consumos(int valorLeitura, LocalDateTime dataRegisto, String observacao, TipoConsumo tipoConsumo) {
+    public Consumos(int valorLeitura, LocalDateTime dataRegisto, String observacoes, TipoConsumo tipoConsumo) {
         this.valorLeitura = valorLeitura;
         this.dataRegisto = dataRegisto;
-        this.observacao = observacao;
+        this.observacoes = observacoes;
         this.tipoConsumo = tipoConsumo;
-    }
-
-    public User getUser() {
-        return user;
     }
 
     public boolean isAtivo() {
         return ativo;
     }
 
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
+    public LocalDateTime getDataExclusao() {
+        return dataExclusao;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void desativar() {
+        this.ativo = false;
+        this.dataExclusao = LocalDateTime.now();
     }
 
-    public String getObservacao() {
-        return observacao;
-    }
-
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
+    public void reativar() {
+        this.ativo = true;
+        this.dataExclusao = null;
     }
 
     public int getValorLeitura() {
@@ -78,22 +79,22 @@ public class Consumos extends Auditable {
     }
 
     public String getObservacoes() {
-        return observacao;
+        return observacoes;
     }
 
     public void setObservacoes(String observacoes) {
-        this.observacao = observacao;
+        this.observacoes = observacoes;
     }
 
-    public TipoConsumo getTipoConsumo() {
-        return tipoConsumo;
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 
-    public TipoConsumoEnum getTipoConsumoEnum() {
+    public void setDataExclusao(LocalDateTime dataExclusao) {
+        this.dataExclusao = dataExclusao;
+    }
+
+    public String getTipoConsumo() {
         return tipoConsumo.getTipoConsumo();
-    }
-
-    public void setTipoConsumo(TipoConsumo tipoConsumo) {
-        this.tipoConsumo = tipoConsumo;
     }
 }

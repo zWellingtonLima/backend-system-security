@@ -19,40 +19,30 @@ public class Movimentacoes extends Auditable {
 
     private String observacoes;
 
-    @Column(name = "setor_destino", length = 30)
-    private String setorDestino;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_funcionario")
     private Funcionarios funcionario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_visitante")
-    private Visitantes visitante;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_visitante")
-    private TipoVisitanteEnum tipoVisitante;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_funcionario_responsavel")
-    private Funcionarios funcionarioResponsavel;
+    private Visitantes visitante; // TODO: criar tabela Visita
 
     @JsonIgnore
-    @OneToMany(mappedBy = "movimentacao", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "movimentacao", fetch = FetchType.LAZY)
     private List<EntregaChaves> entregas;
 
     @Column(nullable = false)
     private boolean ativo = true;
 
     @Column(name = "motivo_anulacao")
-    private String motivoAnulacao;
+    private String motivoAnulacao; // TODO: verificar possibilidade de obrigar a insercao de um motivo
 
-    @Column(name = "data_anulacao")
+    @Column(name = "data_anulacao", nullable = false)
     private LocalDateTime dataAnulacao;
 
-    @Column(name = "anulado_por")
-    private String anuladoPor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_anulado_por", nullable = false)
+    private User anuladoPor; // Seguranca que anulou a movimentacao
 
     public Movimentacoes() {
     }
@@ -93,14 +83,6 @@ public class Movimentacoes extends Auditable {
         this.observacoes = v;
     }
 
-    public String getSetorDestino() {
-        return setorDestino;
-    }
-
-    public void setSetorDestino(String v) {
-        this.setorDestino = v;
-    }
-
     public Funcionarios getFuncionario() {
         return funcionario;
     }
@@ -115,22 +97,6 @@ public class Movimentacoes extends Auditable {
 
     public void setVisitante(Visitantes v) {
         this.visitante = v;
-    }
-
-    public TipoVisitanteEnum getTipoVisitante() {
-        return tipoVisitante;
-    }
-
-    public void setTipoVisitante(TipoVisitanteEnum v) {
-        this.tipoVisitante = v;
-    }
-
-    public Funcionarios getFuncionarioResponsavel() {
-        return funcionarioResponsavel;
-    }
-
-    public void setFuncionarioResponsavel(Funcionarios v) {
-        this.funcionarioResponsavel = v;
     }
 
     public List<EntregaChaves> getEntregas() {
@@ -163,13 +129,5 @@ public class Movimentacoes extends Auditable {
 
     public void setDataAnulacao(LocalDateTime dataAnulacao) {
         this.dataAnulacao = dataAnulacao;
-    }
-
-    public String getAnuladoPor() {
-        return anuladoPor;
-    }
-
-    public void setAnuladoPor(String anuladoPor) {
-        this.anuladoPor = anuladoPor;
     }
 }

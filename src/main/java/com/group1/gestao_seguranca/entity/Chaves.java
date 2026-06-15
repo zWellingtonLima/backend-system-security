@@ -27,6 +27,9 @@ public class Chaves extends Auditable {
     @Column(name = "data_exclusao")
     private LocalDateTime dataExclusao;
 
+    public Chaves() {
+    }
+
     public boolean isAtivo() {
         return ativo;
     }
@@ -43,9 +46,6 @@ public class Chaves extends Auditable {
     public void reativar() {
         this.ativo = true;
         this.dataExclusao = null;
-    }
-
-    public Chaves() {
     }
 
     public String getCodigo() {

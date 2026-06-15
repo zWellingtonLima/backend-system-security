@@ -35,7 +35,7 @@ public class FuncionariosService {
         User user = getUserAutenticado();
 
         Funcionarios funcionario = new Funcionarios();
-        funcionario.setNomeFuncionario(dto.getNomeFuncionario());
+        funcionario.setNome(dto.getNomeFuncionario());
         funcionario.setNumeroFuncionario(dto.getNumeroFuncionario());
         funcionario.setSetor(dto.getSetor());
         funcionario.setCreateUser(user.getNomeSeguranca());
@@ -84,7 +84,7 @@ public class FuncionariosService {
 
         User user = getUserAutenticado();
 
-        funcionario.setNomeFuncionario(dto.getNomeFuncionario());
+        funcionario.setNome(dto.getNomeFuncionario());
         funcionario.setNumeroFuncionario(dto.getNumeroFuncionario());
         funcionario.setSetor(dto.getSetor());
         funcionario.setModifyUser(user.getNomeSeguranca());

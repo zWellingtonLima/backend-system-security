@@ -56,7 +56,7 @@ public class MovimentacaoResponseDTO {
         if (m.getFuncionario() != null) {
             dto.tipoPessoa = TipoEntrada.FUNCIONARIO;
             dto.idPessoa = m.getFuncionario().getId();
-            dto.nomePessoa = m.getFuncionario().getNomeFuncionario();
+            dto.nomePessoa = m.getFuncionario().getNome();
         } else if (m.getVisitante() != null) {
             dto.tipoPessoa = TipoEntrada.VISITANTE;
             dto.idPessoa = m.getVisitante().getId();
@@ -64,7 +64,7 @@ public class MovimentacaoResponseDTO {
             dto.tipoVisita = m.getTipoVisitante();
 
             if (m.getFuncionarioResponsavel() != null)
-                dto.nomeResponsavel = m.getFuncionarioResponsavel().getNomeFuncionario();
+                dto.nomeResponsavel = m.getFuncionarioResponsavel().getNome();
         }
 
         return dto;

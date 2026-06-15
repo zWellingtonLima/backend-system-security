@@ -9,7 +9,7 @@ public record EntradaAtivaDTO(
 ) {
     public static EntradaAtivaDTO from(Movimentacoes m) {
         String nome = m.getFuncionario() != null
-                ? m.getFuncionario().getNomeFuncionario()
+                ? m.getFuncionario().getNome()
                 : m.getVisitante().getNomeVisitante();
 
         return new EntradaAtivaDTO(

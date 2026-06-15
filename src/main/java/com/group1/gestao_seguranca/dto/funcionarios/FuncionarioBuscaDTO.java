@@ -8,6 +8,6 @@ public record FuncionarioBuscaDTO(
         String setor
 ) {
     public static FuncionarioBuscaDTO from(Funcionarios f) {
-        return new FuncionarioBuscaDTO(f.getId(), f.getNomeFuncionario(), f.getSetor());
+        return new FuncionarioBuscaDTO(f.getId(), f.getNome(), f.getSetor());
     }
 }
