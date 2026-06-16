@@ -13,7 +13,7 @@ public record BuscaGeralDTO(
     public static BuscaGeralDTO fromVisitante(Visitantes v) {
         return new BuscaGeralDTO(
                 v.getId(),
-                v.getNomeVisitante(),
+                v.getNome(),
                 TipoEntrada.VISITANTE,
                 v.getEmpresa()
         );

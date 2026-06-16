@@ -73,7 +73,7 @@ public class MovimentacoesService {
 
             if (movimentacoesRepo.existeEntradaAtivaVisitante(visitante.getId()))
                 throw new IllegalStateException(
-                        "O visitante " + visitante.getNomeVisitante() + " já possui uma entrada ativa.");
+                        "O visitante " + visitante.getNome() + " já possui uma entrada ativa.");
 
             movimentacao.setVisitante(visitante);
             movimentacao.setTipoVisitante(dto.getTipoVisita());
@@ -209,7 +209,7 @@ public class MovimentacoesService {
 
             if (outraEntradaAtiva)
                 throw new IllegalStateException(
-                        "O visitante " + novoVisitante.getNomeVisitante() + " já possui uma entrada ativa.");
+                        "O visitante " + novoVisitante.getNome() + " já possui uma entrada ativa.");
 
             mov.setVisitante(novoVisitante);
         }
@@ -428,7 +428,7 @@ public class MovimentacoesService {
         String devolvidaPor = entrega.getFuncionarioComChave() != null
                 ? entrega.getFuncionarioComChave().getNome()
                 : entrega.getVisitanteComChave() != null
-                ? entrega.getVisitanteComChave().getNomeVisitante()
+                ? entrega.getVisitanteComChave().getNome()
                 : "Desconhecido";
 
         entrega.setHoraDevolucao(LocalDateTime.now());

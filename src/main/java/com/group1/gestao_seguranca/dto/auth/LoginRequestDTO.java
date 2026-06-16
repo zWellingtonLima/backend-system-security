@@ -6,16 +6,16 @@ import jakarta.validation.constraints.NotNull;
 public class LoginRequestDTO {
 
     @NotNull(message = "Número do segurança é obrigatório")
-    private Integer numeroSeguranca;
+    private String numeroIdentificacao;
     @NotBlank(message = "Palavra-passe é obrigatória")
     private String password;
 
-    public Integer getNumeroSeguranca() {
-        return numeroSeguranca;
+    public String getNumeroIdentificacao() {
+        return numeroIdentificacao;
     }
 
-    public void setNumeroSeguranca(Integer numeroSeguranca) {
-        this.numeroSeguranca = numeroSeguranca;
+    public void setNumeroIdentificacao(String numeroIdentificacao) {
+        this.numeroIdentificacao = numeroIdentificacao;
     }
 
     public String getPassword() {

@@ -16,7 +16,7 @@ public class VisitantesResponseDTO {
     public static VisitantesResponseDTO from(Visitantes v) {
         VisitantesResponseDTO dto = new VisitantesResponseDTO();
         dto.id = v.getId();
-        dto.nomeVisitante = v.getNomeVisitante();
+        dto.nomeVisitante = v.getNome();
         dto.documentoIdentificacao = v.getDocumentoIdentificacao();
         dto.empresa = v.getEmpresa();
         dto.observacoes = v.getObservacoes();

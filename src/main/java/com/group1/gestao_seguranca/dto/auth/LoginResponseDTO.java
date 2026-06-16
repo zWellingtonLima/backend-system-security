@@ -10,28 +10,4 @@ public class LoginResponseDTO {
         this.idUser = idUser;
         this.nomeUsuario = nomeUsuario;
     }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Integer getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(Integer idUser) {
-        this.idUser = idUser;
-    }
-
-    public String getNomeUsuario() {
-        return nomeUsuario;
-    }
-
-    public void setNomeUsuario(String nomeUsuario) {
-        this.nomeUsuario = nomeUsuario;
-    }
 }

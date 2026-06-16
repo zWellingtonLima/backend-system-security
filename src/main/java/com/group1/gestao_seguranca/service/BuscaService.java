@@ -56,7 +56,7 @@ public class BuscaService {
                 .stream()
                 .map(v -> new BuscaGeralDTO(
                         v.getId(),
-                        v.getNomeVisitante(),
+                        v.getNome(),
                         TipoEntrada.VISITANTE,
                         v.getEmpresa()
                 ))

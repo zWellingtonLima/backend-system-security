@@ -22,6 +22,12 @@ public class User extends Auditable {
     public User() {
     }
 
+    public User(String nome, String numeroIdentificacao, String password) {
+        this.nome = nome;
+        this.numeroIdentificacao = numeroIdentificacao;
+        this.password = password;
+    }
+
     public String getRole() {
         return role.toString();
     }

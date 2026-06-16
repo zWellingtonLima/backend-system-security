@@ -27,16 +27,17 @@ public class AuthController {
         this.usersRepo = usersRepo;
     }
 
+    // TODO: remover register da interface pública e permitir apenas registo através de usuários do tipo admin
     @PostMapping("/register")
     public ResponseEntity<?> userRegister(@Valid @RequestBody RegisterRequestDTO dto) {
 
-        if (usersRepo.findByNumeroSeguranca(dto.getNumeroSeguranca()).isPresent()) {
+        if (usersRepo.findByNumeroIdentificacao(dto.getNumeroIdentificacao()).isPresent()) {
             return ResponseEntity.badRequest().body("Número de segurança já registado.");
         }
 
-        User user = new User(dto.getNomeSeguranca(), dto.getNumeroSeguranca(), dto.getPassword());
+        User user = new User(dto.getNome(), dto.getNumeroIdentificacao(), dto.getPassword());
         user.setCreateDate(LocalDateTime.now());
-        user.setCreateUser(user.getNomeSeguranca());
+        user.setCreateUser(user.getNome());
         usersRepo.save(user);
 
         return ResponseEntity.ok(true);
@@ -45,8 +46,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> userLogin(@Valid @RequestBody LoginRequestDTO loginRequest) {
 
-        Optional<User> optUser = usersRepo.findByNumeroSeguranca(loginRequest.getNumeroSeguranca());
-
+        Optional<User> optUser = usersRepo.findByNumeroIdentificacao(loginRequest.getNumeroIdentificacao());
+        // TODO: trocar loǵica de login -> JWT - auth token e refresh token
         if (optUser.isEmpty() || !optUser.get().getPassword().equals(loginRequest.getPassword())) {
             return ResponseEntity.status(401).body("Número de Segurança ou palavra-passe incorretos.");
         }

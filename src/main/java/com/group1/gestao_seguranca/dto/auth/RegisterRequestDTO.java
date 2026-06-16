@@ -8,26 +8,26 @@ public class RegisterRequestDTO {
 
     @NotBlank(message = "Nome do segurança é obrigatório")
     @Size(max = 150)
-    private String nomeSeguranca;
+    private String nome;
     @NotNull(message = "Número do segurança é obrigatório")
-    private Integer numeroSeguranca;
+    private String numeroIdentificacao;
     @NotBlank(message = "Palavra-passe é obrigatória")
     private String password;
 
-    public Integer getNumeroSeguranca() {
-        return numeroSeguranca;
+    public String getNumeroIdentificacao() {
+        return numeroIdentificacao;
     }
 
-    public void setNumeroSeguranca(Integer numeroSeguranca) {
-        this.numeroSeguranca = numeroSeguranca;
+    public void setNumeroIdentificacao(String numeroIdentificacao) {
+        this.numeroIdentificacao = numeroIdentificacao;
     }
 
-    public String getNomeSeguranca() {
-        return nomeSeguranca;
+    public String getNome() {
+        return nome;
     }
 
-    public void setNomeSeguranca(String nomeSeguranca) {
-        this.nomeSeguranca = nomeSeguranca;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getPassword() {

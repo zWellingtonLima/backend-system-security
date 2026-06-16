@@ -11,7 +11,7 @@ public record VisitanteBuscaDTO(
     public static VisitanteBuscaDTO from(Visitantes v) {
         return new VisitanteBuscaDTO(
                 v.getId(),
-                v.getNomeVisitante(),
+                v.getNome(),
                 v.getEmpresa(),
                 v.getDocumentoIdentificacao()
         );

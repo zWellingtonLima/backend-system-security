@@ -35,7 +35,7 @@ public class VisitantesService {
         User user = getUserAutenticado();
 
         Visitantes visitante = new Visitantes();
-        visitante.setNomeVisitante(dto.getNomeVisitante());
+        visitante.setNome(dto.getNomeVisitante());
         visitante.setDocumentoIdentificacao(dto.getDocumentoIdentificacao());
         visitante.setEmpresa(dto.getEmpresa());
         visitante.setObservacoes(dto.getObservacoes() != null ? dto.getObservacoes() : "");
@@ -78,7 +78,7 @@ public class VisitantesService {
 
         User user = getUserAutenticado();
 
-        visitante.setNomeVisitante(dto.getNomeVisitante());
+        visitante.setNome(dto.getNomeVisitante());
         visitante.setDocumentoIdentificacao(dto.getDocumentoIdentificacao());
         visitante.setEmpresa(dto.getEmpresa());
         visitante.setObservacoes(dto.getObservacoes());

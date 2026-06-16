@@ -36,7 +36,7 @@ public class ChaveEmprestadaDTO {
         if (e.getFuncionarioComChave() != null) {
             dto.nomePessoa = e.getFuncionarioComChave().getNome();
         } else if (e.getVisitanteComChave() != null) {
-            dto.nomePessoa = e.getVisitanteComChave().getNomeVisitante();
+            dto.nomePessoa = e.getVisitanteComChave().getNome();
         }
 
         return dto;
