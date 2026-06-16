@@ -1,7 +1,6 @@
 package com.group1.gestao_seguranca.controller;
 
 import com.group1.gestao_seguranca.dto.movimentacoes.MovimentacaoResponseDTO;
-import com.group1.gestao_seguranca.enums.LabeledEnum;
 import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 import com.group1.gestao_seguranca.enums.TipoConsumoEnum;
 import com.group1.gestao_seguranca.enums.TipoOcorrenciaEnum;
@@ -12,11 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/lists/")
@@ -29,17 +24,17 @@ public class ListagensController {
 
     @GetMapping("/tipos-consumo")
     public ResponseEntity<?> getTiposConsumo() {
-        return ResponseEntity.ok(buildList(TipoConsumoEnum.values()));
+        return ResponseEntity.ok(TipoConsumoEnum.values());
     }
 
     @GetMapping("/tipos-chave")
     public ResponseEntity<?> getTiposChave() {
-        return ResponseEntity.ok(buildList(TipoChaveEnum.values()));
+        return ResponseEntity.ok(TipoChaveEnum.values());
     }
 
     @GetMapping("/tipos-ocorrencia")
     public ResponseEntity<?> getTiposOcorrencia() {
-        return ResponseEntity.ok(buildList(TipoOcorrenciaEnum.values()));
+        return ResponseEntity.ok(TipoOcorrenciaEnum.values());
     }
 
     // Listagens Movimentacoes
@@ -65,16 +60,5 @@ public class ListagensController {
     @GetMapping("movimentacoes/visitante/{id}")
     public ResponseEntity<List<MovimentacaoResponseDTO>> listarPorVisitante(@PathVariable int id) {
         return ResponseEntity.ok(service.listarPorVisitante(id));
-    }
-
-    private <T extends Enum<T>> List<Map<String, String>> buildList(T[] values) {
-        return Arrays.stream(values)
-                .map(v -> {
-                    Map<String, String> item = new LinkedHashMap<>();
-                    item.put("valor", v.name());
-                    item.put("label", ((LabeledEnum) v).getLabel());
-                    return item;
-                })
-                .collect(Collectors.toList());
     }
 }
