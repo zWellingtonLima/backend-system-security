@@ -2,6 +2,48 @@
 
 ---
 
+## Segurança com JWT
+### Criado package Security
+
+Responsabilidades:
+- JwtAuthFilter - Verificar se um token existe na requisição e validá-lo. Se não existir, usa filterChain para passá-lo para o próximo filtro. Se existir, valida-o e injeta o utilizador no contexto.
+  - "Se não existe token neste request, não é problema meu. Passo para a frente."
+- Spring Security - Tem a responsabilidade, de facto, de verificar se uma determinada rota precisa de autenticação e fazer os bloqueios necessários. 
+
+Esse trecho no JwtAuthFilter
+```java
+if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+```
+_SecurityContextHolder_ é onde o Spring Security guarda quem está autenticado neste request. A verificação protege contra processar o token duas vezes se houver múltiplos filtros, ou seja, se já existe autenticação, não faz nada.
+
+_SecurityContextHolder.getContext().setAuthentication(auth)_ regista a autenticação no contexto do request atual. A partir daqui o Security sabe quem é o utilizador e o request pode prosseguir para o controller.
+
+Para poder obter o user.getAuthories() foi preciso implementar na minha entidade User a interface UserDetails do Spring Security que gere os métodos: 
+```java
+    // --------- Metodos da Interface UserDetails do Spring Security -------------
+    @Override
+    @NonNull
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    @NonNull
+    public String getUsername() { // Identificador de Autenticacao
+        return this.numeroIdentificacao;
+    }
+```
+
+
 ## Anotações Usadas
 ### @Transactional
 > Abre uma transação no BD.

@@ -1,4 +1,4 @@
-package com.group1.gestao_seguranca.service;
+package com.group1.gestao_seguranca.security;
 
 import com.group1.gestao_seguranca.entity.User;
 import io.jsonwebtoken.Claims;
