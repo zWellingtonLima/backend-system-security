@@ -1,13 +1,13 @@
 package com.group1.gestao_seguranca.dto.auth;
 
 public class LoginResponseDTO {
-    private String token;
-    private Integer idUser;
-    private String nomeUsuario;
+    private String accessToken;
+    private int userId;
+    private String nome;
 
-    public LoginResponseDTO(String token, Integer idUser, String nomeUsuario) {
-        this.token = token;
-        this.idUser = idUser;
-        this.nomeUsuario = nomeUsuario;
+    public LoginResponseDTO(String accessToken, int userId, String nome) {
+        this.accessToken = accessToken;
+        this.userId = userId;
+        this.nome = nome;
     }
 }

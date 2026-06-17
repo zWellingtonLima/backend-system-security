@@ -29,7 +29,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(JWT_SECRET_KEY));
     }
 
-    public String generateToken(User user) {
+    public String generateAccessToken(User user) {
         return Jwts.builder()
                 .subject(String.valueOf(user.getId()))
                 .claim("nome", user.getNome())

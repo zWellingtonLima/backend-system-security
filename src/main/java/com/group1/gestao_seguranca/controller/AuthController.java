@@ -1,115 +1,76 @@
 package com.group1.gestao_seguranca.controller;
 
+import com.group1.gestao_seguranca.dto.auth.AuthResult;
 import com.group1.gestao_seguranca.dto.auth.LoginRequestDTO;
-import com.group1.gestao_seguranca.dto.auth.LoginResponseDTO;
 import com.group1.gestao_seguranca.dto.auth.RegisterRequestDTO;
-import com.group1.gestao_seguranca.entity.Sessao;
-import com.group1.gestao_seguranca.entity.User;
-import com.group1.gestao_seguranca.repositories.SessaoRepository;
-import com.group1.gestao_seguranca.repositories.UsersRepository;
+import com.group1.gestao_seguranca.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth/")
 public class AuthController {
 
-    private final SessaoRepository sessaoRepo;
-    private final UsersRepository usersRepo;
+    private final AuthService authService;
 
-    public AuthController(SessaoRepository sessaoRepo, UsersRepository usersRepo) {
-        this.sessaoRepo = sessaoRepo;
-        this.usersRepo = usersRepo;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     // TODO: remover register da interface pública e permitir apenas registo através de usuários do tipo admin
     @PostMapping("/register")
-    public ResponseEntity<?> userRegister(@Valid @RequestBody RegisterRequestDTO dto) {
-
-        if (usersRepo.findByNumeroIdentificacao(dto.getNumeroIdentificacao()).isPresent()) {
-            return ResponseEntity.badRequest().body("Número de segurança já registado.");
-        }
-
-        User user = new User(dto.getNome(), dto.getNumeroIdentificacao(), dto.getPassword());
-        user.setCreateDate(LocalDateTime.now());
-        user.setCreateUser(user.getNome());
-        usersRepo.save(user);
-
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO dto) {
+        authService.register(dto);
         return ResponseEntity.ok(true);
     }
 
+    @PostMapping
+    public ResponseEntity<?> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        String refreshedAccessToken = authService.refresh(refreshToken);
+        return ResponseEntity.ok(Map.of("accessToken", refreshedAccessToken));
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<?> userLogin(@Valid @RequestBody LoginRequestDTO loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO dto, HttpServletResponse response) {
+        AuthResult result = authService.login(dto);
 
-        Optional<User> optUser = usersRepo.findByNumeroIdentificacao(loginRequest.getNumeroIdentificacao());
-        // TODO: trocar loǵica de login -> JWT - auth token e refresh token
-        if (optUser.isEmpty() || !optUser.get().getPassword().equals(loginRequest.getPassword())) {
-            return ResponseEntity.status(401).body("Número de Segurança ou palavra-passe incorretos.");
-        }
+        // ------- Camada HTTP -------- Cookie de RefreshToken
+        Cookie cookie = new Cookie("refreshToken", result.refreshToken());
+        cookie.setHttpOnly(true);
+//        cookie.setSecure(true); // Ativar para permitir apenas HTTPS
+        cookie.setPath("/api/auth/refresh");
+        cookie.setMaxAge(24 * 60 * 60); // 1 dia em segundos
+        response.addCookie(cookie);
 
-        User user = optUser.get();
-
-        Optional<Sessao> sessaoAberta = sessaoRepo.findTopByUserAndHoraSaidaIsNullOrderByCreateDateDesc(user);
-        if (sessaoAberta.isPresent()) {
-            Sessao sessaoAnterior = sessaoAberta.get();
-            sessaoAnterior.setHoraSaida(LocalDateTime.now());
-            sessaoAnterior.setModifyDate(LocalDateTime.now());
-            sessaoAnterior.setModifyUser("system");
-            sessaoRepo.save(sessaoAnterior);
-        }
-
-        Sessao sessao = new Sessao(LocalDateTime.now(), user);
-        sessao.setCreateDate(LocalDateTime.now());
-        sessao.setCreateUser(user.getNomeSeguranca());
-        sessao.setToken(UUID.randomUUID().toString());
-        sessaoRepo.save(sessao);
-
-        return ResponseEntity.ok(new LoginResponseDTO(sessao.getToken(), user.getId(), user.getNomeSeguranca()));
+        return ResponseEntity.ok(result.dto());
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("X-Sessao-Id") String token) {
-        Optional<Sessao> optSessao = sessaoRepo.findByToken(token);
-
-        if (optSessao.isEmpty()) {
-            return ResponseEntity.badRequest().body("Sessão não encontrada.");
-        }
-
-        Sessao sessao = optSessao.get();
-
-        if (sessao.getHoraSaida() != null) {
-            return ResponseEntity.badRequest().body("Sessão já foi encerrada.");
-        }
-
-        sessao.setHoraSaida(LocalDateTime.now());
-        sessao.setModifyDate(LocalDateTime.now());
-        sessao.setModifyUser(sessao.getUser().getNomeSeguranca());
-        sessaoRepo.save(sessao);
-
-        return ResponseEntity.ok("Logout efetuado. Sessão encerrada.");
-    }
-
-    // Endpoint para recuperar sessao atual
-    @GetMapping("/sessao")
-    public ResponseEntity<?> getSessao(@RequestHeader("X-Sessao-Id") String token) {
-        Optional<Sessao> optSessao = sessaoRepo.findByToken(token);
-
-        if (optSessao.isEmpty()) {
-            return ResponseEntity.status(404).body("Sessão não encontrada.");
-        }
-
-        Sessao sessao = optSessao.get();
-
-        if (sessao.getHoraSaida() != null) {
-            return ResponseEntity.status(401).body("Sessão expirada.");
-        }
-
-        User user = sessao.getUser();
-        return ResponseEntity.ok(new LoginResponseDTO(sessao.getToken(), user.getId(), user.getNomeSeguranca()));
-    }
+//    @PostMapping("/logout") // TODO: posso incluir aqui uma coluna no User de token_version e incrementar ou simplesmente remover do frontend o token da memória
+//    public ResponseEntity<?> logout(@RequestHeader("X-Sessao-Id") String token) {
+//        Optional<Sessao> optSessao = sessaoRepo.findByToken(token);
+//
+//        if (optSessao.isEmpty()) {
+//            return ResponseEntity.badRequest().body("Sessão não encontrada.");
+//        }
+//
+//        Sessao sessao = optSessao.get();
+//
+//        if (sessao.getHoraSaida() != null) {
+//            return ResponseEntity.badRequest().body("Sessão já foi encerrada.");
+//        }
+//
+//        sessao.setHoraSaida(LocalDateTime.now());
+//        sessao.setModifyDate(LocalDateTime.now());
+//        sessao.setModifyUser(sessao.getUser().getNome());
+//        sessaoRepo.save(sessao);
+//
+//        return ResponseEntity.ok("Logout efetuado. Sessão encerrada.");
+//    }
 }

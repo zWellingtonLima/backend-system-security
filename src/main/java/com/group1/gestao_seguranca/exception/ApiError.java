@@ -5,10 +5,10 @@ import java.util.List;
 
 public class ApiError {
 
-    private int status;
-    private String erro;
-    private List<String> mensagens;
-    private LocalDateTime timestamp;
+    private final int status;
+    private final String erro;
+    private final List<String> mensagens;
+    private final LocalDateTime timestamp;
 
     public ApiError(int status, String erro, List<String> mensagens) {
         this.status = status;

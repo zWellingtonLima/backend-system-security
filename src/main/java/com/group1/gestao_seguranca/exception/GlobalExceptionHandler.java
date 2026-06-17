@@ -14,6 +14,11 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleUnauthorizedException(UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(401, "Não autorizado", ex.getMessage()));
+    }
+
     // Serve para os campos de validacao como (@NotBlank, @NotNull, @Size, etc.)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidacao(MethodArgumentNotValidException ex) {
