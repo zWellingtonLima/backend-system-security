@@ -30,6 +30,11 @@ public class Visitantes extends Auditable {
     public Visitantes() {
     }
 
+    public Visitantes(String nome, String documentoIdentificacao) {
+        this.nome = nome;
+        this.documentoIdentificacao = documentoIdentificacao;
+    }
+
     public boolean isAtivo() {
         return ativo;
     }

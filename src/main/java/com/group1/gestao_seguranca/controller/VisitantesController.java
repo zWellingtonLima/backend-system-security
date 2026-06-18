@@ -4,14 +4,20 @@ import com.group1.gestao_seguranca.dto.visitantes.VisitantesRequestDTO;
 import com.group1.gestao_seguranca.dto.visitantes.VisitantesResponseDTO;
 import com.group1.gestao_seguranca.service.VisitantesService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/visitantes")
+@Validated
 public class VisitantesController {
 
     private final VisitantesService service;
@@ -20,6 +26,7 @@ public class VisitantesController {
         this.service = service;
     }
 
+    // ==================== CREATE ====================
     @PostMapping
     public ResponseEntity<VisitantesResponseDTO> criar(
             @Valid @RequestBody VisitantesRequestDTO dto) {
@@ -27,9 +34,20 @@ public class VisitantesController {
                 .body(service.criar(dto));
     }
 
+    // ==================== LIST | SEARCH ====================
     @GetMapping
-    public ResponseEntity<List<VisitantesResponseDTO>> listarTodos() {
-        return ResponseEntity.ok(service.listarTodos());
+    public ResponseEntity<Page<VisitantesResponseDTO>> listarTodos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "nomeVisitante") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return ResponseEntity.ok(service.listarVisitantesAtivos(pageable));
     }
 
     @GetMapping("/{id}")
@@ -38,7 +56,9 @@ public class VisitantesController {
     }
 
     @GetMapping("/documento/{documento}")
-    public ResponseEntity<VisitantesResponseDTO> buscarPorDocumento(@PathVariable String documento) {
+    public ResponseEntity<VisitantesResponseDTO> buscarPorDocumento(
+            @PathVariable @Size(max = 30) String documento
+    ) {
         return ResponseEntity.ok(service.buscarPorDocumento(documento));
     }
 

@@ -2,58 +2,52 @@ package com.group1.gestao_seguranca.service;
 
 import com.group1.gestao_seguranca.dto.visitantes.VisitantesRequestDTO;
 import com.group1.gestao_seguranca.dto.visitantes.VisitantesResponseDTO;
-import com.group1.gestao_seguranca.entity.User;
 import com.group1.gestao_seguranca.entity.Visitantes;
 import com.group1.gestao_seguranca.repositories.VisitantesRepository;
+import com.group1.gestao_seguranca.security.AuthUtils;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class VisitantesService {
-    private final HttpServletRequest request;
     private final VisitantesRepository repository;
+    private final AuthUtils authUtils;
 
-    public VisitantesService(HttpServletRequest request, VisitantesRepository repository) {
-        this.request = request;
+    public VisitantesService(VisitantesRepository repository, AuthUtils authUtils) {
         this.repository = repository;
+        this.authUtils = authUtils;
     }
 
     // ====================== CREATE ======================
     @Transactional
     public VisitantesResponseDTO criar(VisitantesRequestDTO dto) {
-        if (repository.existsByDocumentoIdentificacao(dto.getDocumentoIdentificacao())) {
+        if (repository.existsByDocumentoIdentificacao(dto.documentoIdentificacao())) {
             throw new IllegalStateException(
-                    "Já existe um visitante com o documento: " + dto.getDocumentoIdentificacao());
+                    "Já existe um visitante com o documento: " + dto.documentoIdentificacao());
         }
 
-        User user = getUserAutenticado();
+        Visitantes visitante = new Visitantes(dto.nome(), dto.documentoIdentificacao());
+        if (dto.empresa() != null) visitante.setEmpresa(dto.empresa());
+        if (dto.observacoes() != null) visitante.setObservacoes(dto.observacoes());
 
-        Visitantes visitante = new Visitantes();
-        visitante.setNome(dto.getNomeVisitante());
-        visitante.setDocumentoIdentificacao(dto.getDocumentoIdentificacao());
-        visitante.setEmpresa(dto.getEmpresa());
-        visitante.setObservacoes(dto.getObservacoes() != null ? dto.getObservacoes() : "");
-        visitante.setCreateUser(user.getNomeSeguranca());
+        visitante.setCreateUser(authUtils.getCurrentUserName());
 
         Visitantes salvo = repository.save(visitante);
         return VisitantesResponseDTO.from(salvo);
     }
 
     // ====================== READ ======================
-    public List<VisitantesResponseDTO> listarTodos() {
-        return repository.findAll().stream()
-                .map(VisitantesResponseDTO::from)
-                .collect(Collectors.toList());
+    public Page<VisitantesResponseDTO> listarVisitantesAtivos(Pageable pageable) {
+        // TODO: Implementar paginação nessas listagens de SELECT *
+        return repository.findAllByAtivoTrue(pageable)
+                .map(VisitantesResponseDTO::from);
     }
 
     public VisitantesResponseDTO buscarPorId(int id) {
-        Visitantes visitante = repository.findById(id)
+        Visitantes visitante = repository.findByIdAndAtivo(id)
                 .orElseThrow(() -> new EntityNotFoundException("Visitante com ID " + id + " não encontrado"));
 
         return VisitantesResponseDTO.from(visitante);
@@ -76,13 +70,12 @@ public class VisitantesService {
             throw new IllegalStateException("Não é possível atualizar um visitante excluído.");
         }
 
-        User user = getUserAutenticado();
+        visitante.setNome(dto.nome());
+        visitante.setDocumentoIdentificacao(dto.documentoIdentificacao());
+        visitante.setEmpresa(dto.empresa());
+        visitante.setObservacoes(dto.observacoes());
 
-        visitante.setNome(dto.getNomeVisitante());
-        visitante.setDocumentoIdentificacao(dto.getDocumentoIdentificacao());
-        visitante.setEmpresa(dto.getEmpresa());
-        visitante.setObservacoes(dto.getObservacoes());
-        visitante.setModifyUser(user.getNomeSeguranca());
+        visitante.setModifyUser(authUtils.getCurrentUserName());
 
         Visitantes atualizado = repository.save(visitante);
         return VisitantesResponseDTO.from(atualizado);
@@ -95,18 +88,11 @@ public class VisitantesService {
                 .orElseThrow(() -> new EntityNotFoundException("Visitante com ID " + id + " não encontrado"));
 
         if (!visitante.isAtivo()) {
-            throw new IllegalStateException("Visitante já foi excluído anteriormente.");
+            throw new IllegalStateException("Visitante já foi excluído.");
         }
 
-        User user = getUserAutenticado();
-
-        visitante.setAtivo(false);
-        visitante.setDataExclusao(LocalDateTime.now());
-        visitante.setModifyUser(user.getNomeSeguranca());
+        visitante.desativar();
+        visitante.setModifyUser(authUtils.getCurrentUserName());
         repository.save(visitante);
-    }
-
-    private User getUserAutenticado() {
-        return (User) request.getAttribute("usuarioAutenticado");
     }
 }

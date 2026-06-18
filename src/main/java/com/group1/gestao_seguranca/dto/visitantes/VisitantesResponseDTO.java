@@ -4,49 +4,23 @@ import com.group1.gestao_seguranca.entity.Visitantes;
 
 import java.time.LocalDateTime;
 
-public class VisitantesResponseDTO {
-
-    private int id;
-    private String nomeVisitante;
-    private String documentoIdentificacao;
-    private String empresa;
-    private String observacoes;
-    private LocalDateTime registadoEm;
+public record VisitantesResponseDTO(
+        Integer id,
+        String nomeVisitante,
+        String documentoIdentificacao,
+        String empresa,
+        String observacoes,
+        LocalDateTime registadoEm
+) {
 
     public static VisitantesResponseDTO from(Visitantes v) {
-        VisitantesResponseDTO dto = new VisitantesResponseDTO();
-        dto.id = v.getId();
-        dto.nomeVisitante = v.getNome();
-        dto.documentoIdentificacao = v.getDocumentoIdentificacao();
-        dto.empresa = v.getEmpresa();
-        dto.observacoes = v.getObservacoes();
-        dto.registadoEm = v.getCreateDate();
-
-        return dto;
+        return new VisitantesResponseDTO(
+                v.getId(),
+                v.getNome(),
+                v.getDocumentoIdentificacao(),
+                v.getEmpresa(),
+                v.getObservacoes(),
+                v.getCreateDate()
+        );
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public LocalDateTime getRegistadoEm() {
-        return registadoEm;
-    }
-
-    public String getNomeVisitante() {
-        return nomeVisitante;
-    }
-
-    public String getDocumentoIdentificacao() {
-        return documentoIdentificacao;
-    }
-
-    public String getEmpresa() {
-        return empresa;
-    }
-
-    public String getObservacoes() {
-        return observacoes;
-    }
-
 }
