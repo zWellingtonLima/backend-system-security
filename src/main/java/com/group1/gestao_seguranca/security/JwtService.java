@@ -57,17 +57,17 @@ public class JwtService {
                 .getPayload();
     }
 
-    public boolean isTokenValid(String token) {
+    public boolean isTokenInvalid(String token) {
         try {
             extractClaims(token);
-            return true;
+            return false;
         } catch (ExpiredJwtException ex) {
             System.out.println("JWT Expired Exception: " + ex); // TODO: Remover log interno
-            return false;
+            return true;
             // Token expirado
         } catch (JwtException ex) {
             System.out.println("JWT Exception: " + ex); // TODO: Remover log interno
-            return false;
+            return true;
             // assinatura mal formatada ou inválida
         }
     }

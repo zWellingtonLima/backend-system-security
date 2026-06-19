@@ -35,7 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7); // Isso é para remover o "Bearer " do authHeader
 
-        if (!jwtService.isTokenValid(token)) {
+        if (jwtService.isTokenInvalid(token)) {
             filterChain.doFilter(request, response);
             return;
         }

@@ -53,7 +53,7 @@ public class AuthService {
     }
 
     public String refresh(String refreshToken) {
-        if (!jwtService.isTokenValid(refreshToken)) {
+        if (jwtService.isTokenInvalid(refreshToken)) {
             throw new UnauthorizedException("Token inválido");
         }
 
