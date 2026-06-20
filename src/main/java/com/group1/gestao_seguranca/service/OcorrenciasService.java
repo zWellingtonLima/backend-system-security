@@ -2,11 +2,15 @@ package com.group1.gestao_seguranca.service;
 
 import com.group1.gestao_seguranca.dto.ocorrencias.OcorrenciasRequestDTO;
 import com.group1.gestao_seguranca.dto.ocorrencias.OcorrenciasResponseDTO;
-import com.group1.gestao_seguranca.entity.*;
+import com.group1.gestao_seguranca.entity.EstadoOcorrencia;
+import com.group1.gestao_seguranca.entity.Ocorrencias;
+import com.group1.gestao_seguranca.entity.TipoOcorrencia;
 import com.group1.gestao_seguranca.enums.EstadoOcorrenciaEnum;
-import com.group1.gestao_seguranca.repositories.*;
+import com.group1.gestao_seguranca.repositories.EstadoOcorrenciaRepository;
+import com.group1.gestao_seguranca.repositories.OcorrenciasRepository;
+import com.group1.gestao_seguranca.repositories.TipoOcorrenciaRepository;
+import com.group1.gestao_seguranca.security.AuthUtils;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,27 +20,19 @@ import java.util.List;
 
 @Service
 public class OcorrenciasService {
-
     private final OcorrenciasRepository ocorrenciasRepo;
     private final TipoOcorrenciaRepository tipoOcorrenciaRepo;
     private final EstadoOcorrenciaRepository estadoOcorrenciaRepo;
-    private final HttpServletRequest request;
+    private final AuthUtils authUtils;
 
-    public OcorrenciasService(OcorrenciasRepository ocorrenciasRepo,
-                              TipoOcorrenciaRepository tipoOcorrenciaRepo,
-                              EstadoOcorrenciaRepository estadoOcorrenciaRepo,
-                              HttpServletRequest request) {
-        this.ocorrenciasRepo    = ocorrenciasRepo;
+    public OcorrenciasService(OcorrenciasRepository ocorrenciasRepo, TipoOcorrenciaRepository tipoOcorrenciaRepo, EstadoOcorrenciaRepository estadoOcorrenciaRepo, AuthUtils authUtils) {
+        this.ocorrenciasRepo = ocorrenciasRepo;
         this.tipoOcorrenciaRepo = tipoOcorrenciaRepo;
         this.estadoOcorrenciaRepo = estadoOcorrenciaRepo;
-        this.request            = request;
+        this.authUtils = authUtils;
     }
 
-    private User getUserAutenticado() {
-        return (User) request.getAttribute("usuarioAutenticado");
-    }
-
-    // ── Listar todas ─────────────────────────────────────────────────────
+    // Listar todas
     @Transactional(readOnly = true)
     public List<OcorrenciasResponseDTO> listarTodos() {
         return ocorrenciasRepo.findAllByOrderByHoraOcorrenciaDesc()
@@ -45,11 +41,11 @@ public class OcorrenciasService {
                 .toList();
     }
 
-    // ── NOVO: Histórico do dia ─────────────────────────────────────────
+    // Histórico do dia
     @Transactional(readOnly = true)
     public List<OcorrenciasResponseDTO> listarDoDia() {
         LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
-        LocalDateTime fimDia    = inicioDia.plusDays(1);
+        LocalDateTime fimDia = inicioDia.plusDays(1);
         return ocorrenciasRepo
                 .findByHoraOcorrenciaBetweenOrderByHoraOcorrenciaDesc(inicioDia, fimDia)
                 .stream()
@@ -67,11 +63,9 @@ public class OcorrenciasService {
         );
     }
 
-    // ── Criar ────────────────────────────────────────────────────────────
+    // ── Criar ───────
     @Transactional
     public OcorrenciasResponseDTO criar(OcorrenciasRequestDTO dto) {
-        User user = getUserAutenticado();
-
         TipoOcorrencia tipo = tipoOcorrenciaRepo
                 .findByTipoOcorrencia(dto.getTipoOcorrencia())
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -84,20 +78,18 @@ public class OcorrenciasService {
 
         Ocorrencias ocorrencia = new Ocorrencias();
         ocorrencia.setOcorrencia(dto.getOcorrencia());
-        ocorrencia.setTipoOcorrencia(tipo);
-        ocorrencia.setEstadoOcorrencia(estado);
+//        ocorrencia.setTipoOcorrencia(tipo);
+//        ocorrencia.setEstadoOcorrencia(estado);
         ocorrencia.setHoraOcorrencia(LocalDateTime.now());
-        ocorrencia.setSeguranca(user);
-        ocorrencia.setCreateUser(user.getNomeSeguranca());
+        ocorrencia.setSeguranca(authUtils.getCurrentUser());
+        ocorrencia.setCreateUser(authUtils.getCurrentUserName());
 
         return OcorrenciasResponseDTO.from(ocorrenciasRepo.save(ocorrencia));
     }
 
-    // ── Atualizar ────────────────────────────────────────────────────────
+    // Atualizar
     @Transactional
     public OcorrenciasResponseDTO atualizar(Integer id, OcorrenciasRequestDTO dto) {
-        User user = getUserAutenticado();
-
         Ocorrencias ocorrencia = ocorrenciasRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Ocorrência não encontrada: id=" + id));
@@ -107,7 +99,7 @@ public class OcorrenciasService {
                     .findByTipoOcorrencia(dto.getTipoOcorrencia())
                     .orElseThrow(() -> new EntityNotFoundException(
                             "Tipo de ocorrência não encontrado."));
-            ocorrencia.setTipoOcorrencia(tipo);
+//            ocorrencia.setTipoOcorrencia(tipo);
         }
 
         if (dto.getEstado() != null) {
@@ -115,22 +107,20 @@ public class OcorrenciasService {
                     .findByEstadoOcorrencia(dto.getEstado())
                     .orElseThrow(() -> new EntityNotFoundException(
                             "Estado de ocorrência não encontrado."));
-            ocorrencia.setEstadoOcorrencia(estado);
+//            ocorrencia.setEstadoOcorrencia(estado);
         }
 
         if (dto.getOcorrencia() != null)
             ocorrencia.setOcorrencia(dto.getOcorrencia());
 
-        ocorrencia.setModifyUser(user.getNomeSeguranca());
+        ocorrencia.setModifyUser(authUtils.getCurrentUserName());
 
         return OcorrenciasResponseDTO.from(ocorrenciasRepo.save(ocorrencia));
     }
 
-    // ── Atualizar estado ─────────────────────────────────────────────────
+    // Atualizar estado
     @Transactional
     public OcorrenciasResponseDTO atualizarEstado(Integer id, EstadoOcorrenciaEnum novoEstado) {
-        User user = getUserAutenticado();
-
         Ocorrencias ocorrencia = ocorrenciasRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Ocorrência não encontrada: id=" + id));
@@ -140,13 +130,9 @@ public class OcorrenciasService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Estado '" + novoEstado + "' não encontrado"));
 
-        ocorrencia.setEstadoOcorrencia(estado);
-        ocorrencia.setModifyUser(user.getNomeSeguranca());
+//        ocorrencia.setEstadoOcorrencia(estado);
+        ocorrencia.setModifyUser(authUtils.getCurrentUserName());
 
         return OcorrenciasResponseDTO.from(ocorrenciasRepo.save(ocorrencia));
     }
-
-    // ── softDelete REMOVIDO intencionalmente ─────────────────────────────
-    // O botão "eliminar" foi retirado conforme requisito.
-    // O endpoint DELETE no controller também foi removido.
 }

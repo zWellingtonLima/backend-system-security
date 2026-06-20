@@ -24,14 +24,11 @@ public class ChaveEmprestadaDTO {
         dto.horaEntrega = e.getHoraEntrega();
         dto.observacoes = e.getObservacoes();
 
-        if (dto.tipo == TipoChaveEnum.CHAVE) {
-            dto.descricao = e.getChave().getCodigoChave();
-            dto.sala = e.getChave().getSala() != null
-                    ? String.valueOf(e.getChave().getSala().getNumeroSala())
-                    : null;
-        } else {
-            dto.descricao = e.getChave().getCodigoMolho();
-        }
+        dto.descricao = e.getChave().getCodigo();
+        dto.sala = e.getChave().getSala() != null
+                ? String.valueOf(e.getChave().getSala().getCodigoSala())
+                : null;
+
 
         if (e.getFuncionarioComChave() != null) {
             dto.nomePessoa = e.getFuncionarioComChave().getNome();

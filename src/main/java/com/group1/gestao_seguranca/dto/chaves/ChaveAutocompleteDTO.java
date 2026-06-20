@@ -13,24 +13,35 @@ public class ChaveAutocompleteDTO {
 
     public static ChaveAutocompleteDTO from(Chaves c) {
         ChaveAutocompleteDTO dto = new ChaveAutocompleteDTO();
-        dto.id     = c.getId();
-        dto.tipo   = c.getTipoChave();
-        dto.status = c.getStatus().name();
+        dto.id = c.getId();
+        dto.tipo = c.getTipoChave();
+//        dto.status = c.getStatus().name();
 
-        if (c.getTipoChave() == TipoChaveEnum.CHAVE) {
-            dto.descricao = c.getCodigoChave();
-            dto.sala = c.getSala() != null
-                    ? String.valueOf(c.getSala().getNumeroSala())
-                    : null;
-        } else {
-            dto.descricao = c.getCodigoMolho();
-        }
+        dto.descricao = c.getCodigo();
+        dto.sala = c.getSala() != null
+                ? String.valueOf(c.getSala().getCodigoSala())
+                : null;
+
         return dto;
     }
 
-    public int getId()           { return id; }
-    public String getDescricao() { return descricao; }
-    public TipoChaveEnum getTipo() { return tipo; }
-    public String getSala()      { return sala; }
-    public String getStatus()    { return status; }
+    public int getId() {
+        return id;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public TipoChaveEnum getTipo() {
+        return tipo;
+    }
+
+    public String getSala() {
+        return sala;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

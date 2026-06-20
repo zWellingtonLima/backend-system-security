@@ -5,8 +5,8 @@ import com.group1.gestao_seguranca.dto.funcionarios.FuncionariosResponseDTO;
 import com.group1.gestao_seguranca.entity.Funcionarios;
 import com.group1.gestao_seguranca.entity.User;
 import com.group1.gestao_seguranca.repositories.FuncionariosRepository;
+import com.group1.gestao_seguranca.security.AuthUtils;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class FuncionariosService {
-    private final HttpServletRequest request;
+    private final AuthUtils authUtils;
     private final FuncionariosRepository funcionariosRepo;
 
-    public FuncionariosService(HttpServletRequest request, FuncionariosRepository repository) {
-        this.request = request;
-        this.funcionariosRepo = repository;
+    public FuncionariosService(AuthUtils authUtils, FuncionariosRepository funcionariosRepo) {
+        this.authUtils = authUtils;
+        this.funcionariosRepo = funcionariosRepo;
     }
 
     // ====================== CREATE ======================
@@ -32,13 +32,11 @@ public class FuncionariosService {
                     "Já existe um funcionário com o número: " + dto.getNumeroFuncionario());
         }
 
-        User user = getUserAutenticado();
-
         Funcionarios funcionario = new Funcionarios();
         funcionario.setNome(dto.getNomeFuncionario());
         funcionario.setNumeroFuncionario(dto.getNumeroFuncionario());
         funcionario.setSetor(dto.getSetor());
-        funcionario.setCreateUser(user.getNomeSeguranca());
+//        funcionario.setCreateUser(user.getNomeSeguranca());
 
         Funcionarios salvo = funcionariosRepo.save(funcionario);
         return FuncionariosResponseDTO.from(salvo);
@@ -82,12 +80,10 @@ public class FuncionariosService {
             throw new IllegalStateException("Não é possível atualizar um funcionário excluído.");
         }
 
-        User user = getUserAutenticado();
-
         funcionario.setNome(dto.getNomeFuncionario());
         funcionario.setNumeroFuncionario(dto.getNumeroFuncionario());
         funcionario.setSetor(dto.getSetor());
-        funcionario.setModifyUser(user.getNomeSeguranca());
+        funcionario.setModifyUser(authUtils.getCurrentUserName());
 
         Funcionarios atualizado = funcionariosRepo.save(funcionario);
         return FuncionariosResponseDTO.from(atualizado);
@@ -96,7 +92,6 @@ public class FuncionariosService {
     // ====================== SOFT DELETE ======================
     @Transactional
     public void softDelete(int id) {
-        User user = getUserAutenticado();
         Funcionarios funcionario = funcionariosRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário com ID " + id + " não encontrado"));
 
@@ -106,11 +101,7 @@ public class FuncionariosService {
 
         funcionario.setAtivo(false);
         funcionario.setDataExclusao(LocalDateTime.now());
-        funcionario.setModifyUser(user.getNomeSeguranca());
+        funcionario.setModifyUser(authUtils.getCurrentUserName());
         funcionariosRepo.save(funcionario);
-    }
-
-    private User getUserAutenticado() {
-        return (User) request.getAttribute("usuarioAutenticado");
     }
 }

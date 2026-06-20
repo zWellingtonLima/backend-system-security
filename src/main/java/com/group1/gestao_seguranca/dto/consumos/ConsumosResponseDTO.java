@@ -21,7 +21,7 @@ public class ConsumosResponseDTO {
         dto.valorLeitura = consumo.getValorLeitura();
         dto.dataRegisto = consumo.getDataRegisto();
         dto.observacao = consumo.getObservacoes();
-        dto.tipoConsumo = consumo.getTipoConsumo().getLabel();
+        dto.tipoConsumo = consumo.getTipoConsumo().name();
         dto.consumoCalculado = consumoCalculado;
         dto.createUser = consumo.getCreateUser();
         dto.createDate = consumo.getCreateDate();

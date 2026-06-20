@@ -19,7 +19,7 @@ public class DevolucaoResponseDTO {
         dto.idEntrega = entrega.getId();
         dto.horaEntrega = entrega.getHoraEntrega();
         dto.horaDevolucao = entrega.getHoraDevolucao();
-        dto.devolvidaPor = entrega.getDevolvidaPor();
+//        dto.devolvidaPor = entrega.getDevolvidaPor();
         dto.observacoes = entrega.getObservacoes();
         dto.tipo = entrega.getChave().getTipoChave();
 

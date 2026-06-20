@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.entity;
 
+import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,13 +11,14 @@ public class TipoChave {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "tipo_chave", length = 15)
-    private String tipoChave; // CHAVE OU MOLHO
+    private TipoChaveEnum tipoChave; // CHAVE OU MOLHO
 
     public TipoChave() {
     }
 
-    public String getTipoChave() {
+    public TipoChaveEnum getTipoChave() {
         return tipoChave;
     }
 

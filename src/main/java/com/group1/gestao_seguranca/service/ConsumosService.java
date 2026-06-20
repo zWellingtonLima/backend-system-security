@@ -69,6 +69,7 @@ public class ConsumosService {
         return resultado;
     }
 
+    // TODO: verificar como trazer as ultimas leituras todas de uma vez inves de fazer 1 query para cada tipo
     public ConsumosUltimasLeiturasDTO getUltimasLeituras() {
         Map<TipoConsumoEnum, Integer> leiturasPorTipo = consumosRepo.findUltimasLeiturasPorTipo()
                 .stream()

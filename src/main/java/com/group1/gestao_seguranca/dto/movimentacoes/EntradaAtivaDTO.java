@@ -4,18 +4,16 @@ import com.group1.gestao_seguranca.entity.Movimentacoes;
 
 public record EntradaAtivaDTO(
         int idMovimentacao,
-        String nomePessoa,
-        String setorDestino
+        String nomePessoa
+//        String setorDestino
 ) {
     public static EntradaAtivaDTO from(Movimentacoes m) {
-        String nome = m.getFuncionario() != null
-                ? m.getFuncionario().getNome()
-                : m.getVisitante().getNomeVisitante();
+        String nome = m.getFuncionario().toString();
 
         return new EntradaAtivaDTO(
                 m.getId(),
-                nome,
-                m.getSetorDestino()
+                nome
+//                m.getSetorDestino()
         );
     }
 }

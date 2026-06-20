@@ -40,6 +40,14 @@ public class Movimentacoes extends Auditable {
     public Movimentacoes() {
     }
 
+    public User getAnuladoPor() {
+        return anuladoPor;
+    }
+
+    public void setAnuladoPor(User anuladoPor) {
+        this.anuladoPor = anuladoPor;
+    }
+
     public boolean isAtivo() {
         return ativo;
     }

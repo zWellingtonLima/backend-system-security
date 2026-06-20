@@ -23,17 +23,14 @@ public class EntregaHistoricoDTO {
         dto.tipo = e.getChave().getTipoChave();
         dto.horaEntrega = e.getHoraEntrega();
         dto.horaDevolucao = e.getHoraDevolucao();
-        dto.devolvidaPor = e.getDevolvidaPor();
+//        dto.devolvidaPor = e.getDevolvidaPor();
         dto.observacoes = e.getObservacoes();
 
-        if (dto.tipo == TipoChaveEnum.CHAVE) {
-            dto.descricao = e.getChave().getCodigoChave();
-            dto.sala = e.getChave().getSala() != null
-                    ? String.valueOf(e.getChave().getSala().getNumeroSala())
-                    : null;
-        } else {
-            dto.descricao = e.getChave().getCodigoMolho();
-        }
+        dto.descricao = e.getChave().getCodigo();
+        dto.sala = e.getChave().getSala() != null
+                ? String.valueOf(e.getChave().getSala().getCodigoSala())
+                : null;
+
 
         if (e.getFuncionarioComChave() != null) {
             dto.nomePessoa = e.getFuncionarioComChave().getNome();

@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.entity;
 
+import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -64,7 +65,7 @@ public class Chaves extends Auditable {
         this.observacoes = observacoes;
     }
 
-    public String getTipoChave() {
+    public TipoChaveEnum getTipoChave() {
         return tipoChave.getTipoChave();
     }
 

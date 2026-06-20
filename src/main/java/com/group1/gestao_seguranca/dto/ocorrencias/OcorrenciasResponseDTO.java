@@ -21,9 +21,9 @@ public class OcorrenciasResponseDTO {
         dto.id = ocorrencia.getId();
         dto.createDate = ocorrencia.getCreateDate();
         dto.createUser = ocorrencia.getCreateUser();
-        dto.tipoOcorrencia = ocorrencia.getTipoOcorrencia();
+//        dto.tipoOcorrencia = ocorrencia.getTipo();
         dto.ocorrencia = ocorrencia.getOcorrencia();
-        dto.estado = ocorrencia.getEstadoOcorrencia();
+//        dto.estado = ocorrencia.getEstadoOcorrencia();
         dto.horaOcorrencia = ocorrencia.getHoraOcorrencia();
         return dto;
     }

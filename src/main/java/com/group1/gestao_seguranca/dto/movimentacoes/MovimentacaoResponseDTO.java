@@ -45,7 +45,7 @@ public class MovimentacaoResponseDTO {
         dto.horaSaida = m.getHoraSaida();
         dto.observacoes = m.getObservacoes();
         dto.ativa = m.getHoraSaida() == null;
-        dto.setorDestino = m.getSetorDestino();
+//        dto.setorDestino = m.getSetorDestino();
 
         // Anulação
 //        dto.ativo = m.isAtivo();
@@ -53,19 +53,19 @@ public class MovimentacaoResponseDTO {
 //        dto.dataAnulacao    = m.getDataAnulacao();
 //        dto.anuladoPor      = m.getAnuladoPor();
 
-        if (m.getFuncionario() != null) {
-            dto.tipoPessoa = TipoEntrada.FUNCIONARIO;
-            dto.idPessoa = m.getFuncionario().getId();
-            dto.nomePessoa = m.getFuncionario().getNome();
-        } else if (m.getVisitante() != null) {
-            dto.tipoPessoa = TipoEntrada.VISITANTE;
-            dto.idPessoa = m.getVisitante().getId();
-            dto.nomePessoa = m.getVisitante().getNomeVisitante();
-            dto.tipoVisita = m.getTipoVisitante();
-
-            if (m.getFuncionarioResponsavel() != null)
-                dto.nomeResponsavel = m.getFuncionarioResponsavel().getNome();
-        }
+//        if (m.getFuncionario() != null) {
+//            dto.tipoPessoa = TipoEntrada.FUNCIONARIO;
+//            dto.idPessoa = m.getFuncionario().getId();
+//            dto.nomePessoa = m.getFuncionario().getNome();
+//        } else if (m.getVisitante() != null) {
+//            dto.tipoPessoa = TipoEntrada.VISITANTE;
+//            dto.idPessoa = m.getVisitante().getId();
+//            dto.nomePessoa = m.getVisitante().getNomeVisitante();
+//            dto.tipoVisita = m.getTipoVisitante();
+//
+//            if (m.getFuncionarioResponsavel() != null)
+//                dto.nomeResponsavel = m.getFuncionarioResponsavel().getNome();
+//        }
 
         return dto;
     }

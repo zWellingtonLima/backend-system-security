@@ -15,7 +15,7 @@ public abstract class Auditable {
     @Column(name = "create_date")
     private LocalDateTime createDate;
     @Column(name = "modify_user")
-    private String modifyUser;
+    private String modifyUser; // TODO: verificar possibilidade de alterar o tipo de String para User
     @Column(name = "modify_date")
     private LocalDateTime modifyDate;
 

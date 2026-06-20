@@ -6,8 +6,8 @@ import com.group1.gestao_seguranca.entity.*;
 import com.group1.gestao_seguranca.enums.StatusChaveEnum;
 import com.group1.gestao_seguranca.enums.TipoChaveEnum;
 import com.group1.gestao_seguranca.repositories.*;
+import com.group1.gestao_seguranca.security.AuthUtils;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,20 +21,20 @@ import java.util.stream.Collectors;
 @Service
 public class MovimentacoesService {
 
-    private final HttpServletRequest request;
     private final MovimentacoesRepository movimentacoesRepo;
     private final FuncionariosRepository funcionariosRepo;
     private final VisitantesRepository visitantesRepo;
     private final ChavesRepository chavesRepo;
     private final EntregaChavesRepository entregaChavesRepo;
+    private final AuthUtils authUtils;
 
-    public MovimentacoesService(HttpServletRequest request,
+    public MovimentacoesService(AuthUtils authUtils,
                                 MovimentacoesRepository movimentacoesRepo,
                                 FuncionariosRepository funcionariosRepo,
                                 VisitantesRepository visitantesRepo,
                                 ChavesRepository chavesRepo,
                                 EntregaChavesRepository entregaChavesRepo) {
-        this.request = request;
+        this.authUtils = authUtils;
         this.movimentacoesRepo = movimentacoesRepo;
         this.funcionariosRepo = funcionariosRepo;
         this.visitantesRepo = visitantesRepo;
@@ -42,20 +42,14 @@ public class MovimentacoesService {
         this.entregaChavesRepo = entregaChavesRepo;
     }
 
-    private User getUserAutenticado() {
-        return (User) request.getAttribute("usuarioAutenticado");
-    }
-
     // ====================== CREATE =========================
     @Transactional
     public MovimentacaoResponseDTO registrarEntrada(MovimentacaoRequestDTO dto) {
-        User user = getUserAutenticado();
         Movimentacoes movimentacao = new Movimentacoes();
 
-        movimentacao.setCreateUser(user.getCreateUser());
+        movimentacao.setCreateUser(authUtils.getCurrentUserName());
         movimentacao.setHoraEntrada(LocalDateTime.now());
         movimentacao.setObservacoes(dto.getObservacoes());
-        movimentacao.setSetorDestino(dto.getSetorDestino());
 
         if (dto.getIdFuncionario() != null) {
             Funcionarios func = funcionariosRepo.findById(dto.getIdFuncionario())
@@ -65,7 +59,6 @@ public class MovimentacoesService {
                 throw new IllegalStateException(
                         "O funcionário " + func.getNome() + " já possui uma entrada ativa.");
 
-            movimentacao.setSetorDestino(func.getSetor());
             movimentacao.setFuncionario(func);
         } else {
             Visitantes visitante = visitantesRepo.findById(dto.getIdVisitante())
@@ -75,15 +68,15 @@ public class MovimentacoesService {
                 throw new IllegalStateException(
                         "O visitante " + visitante.getNome() + " já possui uma entrada ativa.");
 
-            movimentacao.setVisitante(visitante);
-            movimentacao.setTipoVisitante(dto.getTipoVisita());
-            movimentacao.setSetorDestino(dto.getSetorDestino());
+//            movimentacao.setVisitante(visitante);
+//            movimentacao.setTipoVisitante(dto.getTipoVisita());
+//            movimentacao.setSetorDestino(dto.getSetorDestino());
 
             if (dto.getIdFuncionarioResponsavel() != null) {
                 Funcionarios responsavel = funcionariosRepo
                         .findById(dto.getIdFuncionarioResponsavel())
                         .orElseThrow(() -> new EntityNotFoundException("Funcionário não foi encontrado."));
-                movimentacao.setFuncionarioResponsavel(responsavel);
+//                movimentacao.setFuncionarioResponsavel(responsavel);
             }
         }
 
@@ -116,9 +109,7 @@ public class MovimentacoesService {
         return MovimentacaoResponseDTO.from(movimentacao);
     }
 
-    // ─────────────────────────────────────────────────────────────────────
-    // UPDATE — Atualizar campos da movimentação
-    // ─────────────────────────────────────────────────────────────────────
+    // ====================== UPDATE =========================
     @Transactional
     public MovimentacaoResponseDTO atualizar(int id, MovimentacaoUpdateDTO dto) {
         Movimentacoes mov = movimentacoesRepo.findById(id)
@@ -128,10 +119,8 @@ public class MovimentacoesService {
         if (!mov.isAtivo())
             throw new IllegalStateException("Não é possível editar uma movimentação anulada.");
 
-        User user = getUserAutenticado();
         boolean temSaida = mov.getHoraSaida() != null;
 
-        // ─ Campos editáveis sempre ──────────────────────────────────────
         if (dto.getObservacoes() != null)
             mov.setObservacoes(dto.getObservacoes());
 
@@ -148,77 +137,77 @@ public class MovimentacoesService {
                 throw new IllegalStateException(
                         "Esta movimentação já tem saída registada. Apenas as observações podem ser alteradas.");
 
-            mov.setModifyUser(user.getCreateUser());
+            mov.setModifyUser(authUtils.getCurrentUserName());
             return MovimentacaoResponseDTO.from(movimentacoesRepo.save(mov));
         }
 
         // ── Campos editáveis só enquanto ativa ──────────────────────────
-        if (dto.getSetorDestino() != null)
-            mov.setSetorDestino(dto.getSetorDestino());
-
-        if (dto.getTipoVisita() != null) {
-            if (mov.getFuncionario() != null)
-                throw new IllegalArgumentException("Funcionários não têm tipo de visita.");
-            mov.setTipoVisitante(dto.getTipoVisita());
-        }
-
-        if (dto.getIdFuncionarioResponsavel() != null) {
-            if (mov.getFuncionario() != null)
-                throw new IllegalArgumentException("Funcionários não têm funcionário responsável.");
-            Funcionarios responsavel = funcionariosRepo
-                    .findById(dto.getIdFuncionarioResponsavel())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Funcionário não encontrado: id=" + dto.getIdFuncionarioResponsavel()));
-            mov.setFuncionarioResponsavel(responsavel);
-        }
+//        if (dto.getSetorDestino() != null)
+//            mov.setSetorDestino(dto.getSetorDestino());
+//
+//        if (dto.getTipoVisita() != null) {
+//            if (mov.getFuncionario() != null)
+//                throw new IllegalArgumentException("Funcionários não têm tipo de visita.");
+//            mov.setTipoVisitante(dto.getTipoVisita());
+//        }
+//
+//        if (dto.getIdFuncionarioResponsavel() != null) {
+//            if (mov.getFuncionario() != null)
+//                throw new IllegalArgumentException("Funcionários não têm funcionário responsável.");
+//            Funcionarios responsavel = funcionariosRepo
+//                    .findById(dto.getIdFuncionarioResponsavel())
+//                    .orElseThrow(() -> new EntityNotFoundException(
+//                            "Funcionário não encontrado: id=" + dto.getIdFuncionarioResponsavel()));
+//            mov.setFuncionarioResponsavel(responsavel);
+//        }
 
         // ── Trocar pessoa ────────────────────────────────────────────────
-        if (dto.getIdFuncionario() != null) {
-            if (mov.getVisitante() != null)
-                throw new IllegalArgumentException(
-                        "Não é possível trocar visitante por funcionário numa entrada já criada.");
+//        if (dto.getIdFuncionario() != null) {
+//            if (mov.getVisitante() != null)
+//                throw new IllegalArgumentException(
+//                        "Não é possível trocar visitante por funcionário numa entrada já criada.");
+//
+//            Funcionarios novoFunc = funcionariosRepo.findById(dto.getIdFuncionario())
+//                    .orElseThrow(() -> new EntityNotFoundException(
+//                            "Funcionário não encontrado: id=" + dto.getIdFuncionario()));
+//
+//            boolean outraEntradaAtiva = movimentacoesRepo
+//                    .existeEntradaAtiva(novoFunc.getId())
+//                    && novoFunc.getId() != (mov.getFuncionario() != null ? mov.getFuncionario().getId() : -1);
+//
+//            if (outraEntradaAtiva)
+//                throw new IllegalStateException(
+//                        "O funcionário " + novoFunc.getNome() + " já possui uma entrada ativa.");
+//
+//            mov.setFuncionario(novoFunc);
+//            mov.setSetorDestino(novoFunc.getSetor());
+//        }
 
-            Funcionarios novoFunc = funcionariosRepo.findById(dto.getIdFuncionario())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Funcionário não encontrado: id=" + dto.getIdFuncionario()));
+//        if (dto.getIdVisitante() != null) {
+//            if (mov.getFuncionario() != null)
+//                throw new IllegalArgumentException(
+//                        "Não é possível trocar funcionário por visitante numa entrada já criada.");
+//
+//            Visitantes novoVisitante = visitantesRepo.findById(dto.getIdVisitante())
+//                    .orElseThrow(() -> new EntityNotFoundException(
+//                            "Visitante não encontrado: id=" + dto.getIdVisitante()));
+//
+//            boolean outraEntradaAtiva = movimentacoesRepo
+//                    .existeEntradaAtivaVisitante(novoVisitante.getId())
+//                    && novoVisitante.getId() != (mov.getVisitante() != null ? mov.getVisitante().getId() : -1);
+//
+//            if (outraEntradaAtiva)
+//                throw new IllegalStateException(
+//                        "O visitante " + novoVisitante.getNome() + " já possui uma entrada ativa.");
+//
+//            mov.setVisitante(novoVisitante);
+//        }
 
-            boolean outraEntradaAtiva = movimentacoesRepo
-                    .existeEntradaAtiva(novoFunc.getId())
-                    && novoFunc.getId() != (mov.getFuncionario() != null ? mov.getFuncionario().getId() : -1);
-
-            if (outraEntradaAtiva)
-                throw new IllegalStateException(
-                        "O funcionário " + novoFunc.getNome() + " já possui uma entrada ativa.");
-
-            mov.setFuncionario(novoFunc);
-            mov.setSetorDestino(novoFunc.getSetor());
-        }
-
-        if (dto.getIdVisitante() != null) {
-            if (mov.getFuncionario() != null)
-                throw new IllegalArgumentException(
-                        "Não é possível trocar funcionário por visitante numa entrada já criada.");
-
-            Visitantes novoVisitante = visitantesRepo.findById(dto.getIdVisitante())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Visitante não encontrado: id=" + dto.getIdVisitante()));
-
-            boolean outraEntradaAtiva = movimentacoesRepo
-                    .existeEntradaAtivaVisitante(novoVisitante.getId())
-                    && novoVisitante.getId() != (mov.getVisitante() != null ? mov.getVisitante().getId() : -1);
-
-            if (outraEntradaAtiva)
-                throw new IllegalStateException(
-                        "O visitante " + novoVisitante.getNome() + " já possui uma entrada ativa.");
-
-            mov.setVisitante(novoVisitante);
-        }
-
-        mov.setModifyUser(user.getCreateUser());
+        mov.setModifyUser(authUtils.getCurrentUserName());
         return MovimentacaoResponseDTO.from(movimentacoesRepo.save(mov));
     }
 
-    // ============== SOFT DELETE — Anular movimentação =================
+    // ============== SOFT DELETE =================
     @Transactional
     public AnulacaoResponseDTO anular(int id, String motivo) {
         Movimentacoes mov = movimentacoesRepo.findById(id)
@@ -227,8 +216,6 @@ public class MovimentacoesService {
 
         if (!mov.isAtivo())
             throw new IllegalStateException("Esta movimentação já foi anulada.");
-
-        User user = getUserAutenticado();
 
         List<EntregaChaves> pendentes = entregaChavesRepo
                 .findByMovimentacaoAndHoraDevolucaoIsNull(mov);
@@ -239,11 +226,10 @@ public class MovimentacoesService {
 
         if (!pendentes.isEmpty()) persistirDevolucoesEmBatch(pendentes);
 
-        mov.setAtivo(false);
+        mov.anularMovimentacao();
         mov.setMotivoAnulacao(motivo);
-        mov.setDataAnulacao(LocalDateTime.now());
-        mov.setAnuladoPor(user.getCreateUser());
-        mov.setModifyUser(user.getCreateUser());
+        mov.setAnuladoPor(authUtils.getCurrentUser());
+        mov.setModifyUser(authUtils.getCurrentUserName());
 
         MovimentacaoResponseDTO responseDTO = MovimentacaoResponseDTO.from(movimentacoesRepo.save(mov));
 
@@ -292,9 +278,7 @@ public class MovimentacoesService {
         );
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     // Registo de saída simples (avisa se há chaves pendentes)
-    // ─────────────────────────────────────────────────────────────────────
     @Transactional
     public MovimentacaoResponseDTO registrarSaida(int idMovimentacao) {
         Movimentacoes movimentacao = movimentacoesRepo.findById(idMovimentacao)
@@ -318,9 +302,7 @@ public class MovimentacoesService {
         List<EntregaPendenteDTO> pendentesDTO = pendentes.stream()
                 .map(e -> {
                     TipoChaveEnum tipo = e.getChave().getTipoChave();
-                    String descricao = tipo == TipoChaveEnum.CHAVE
-                            ? e.getChave().getCodigoChave()
-                            : e.getChave().getCodigoMolho();
+                    String descricao = e.getChave().getCodigo();
                     return new EntregaPendenteDTO(e.getId(), descricao, tipo, e.getObservacoes());
                 })
                 .toList();
@@ -332,9 +314,7 @@ public class MovimentacoesService {
         );
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     // Devolução individual de chave
-    // ─────────────────────────────────────────────────────────────────────
     @Transactional
     public DevolucaoResponseDTO registrarDevolucao(int idEntrega, String devolvidaPor) {
         EntregaChaves entrega = entregaChavesRepo.findById(idEntrega)
@@ -345,20 +325,17 @@ public class MovimentacoesService {
             throw new IllegalStateException("Esta chave/molho já foi devolvido.");
 
         entrega.setHoraDevolucao(LocalDateTime.now());
-        entrega.setDevolvidaPor(devolvidaPor);
+        entrega.registarDevolucao(authUtils.getCurrentUser());
 
         if (entrega.getChave() != null) {
             Chaves chave = entrega.getChave();
-            chave.setStatusChave(StatusChaveEnum.DISPONIVEL);
             chavesRepo.save(chave);
         }
 
         return DevolucaoResponseDTO.from(entregaChavesRepo.save(entrega));
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     // Listagens
-    // ─────────────────────────────────────────────────────────────────────
     @Transactional(readOnly = true)
     public List<MovimentacaoResponseDTO> listarAtivas() {
         List<Movimentacoes> ativas = movimentacoesRepo.findAtivas();
@@ -380,9 +357,7 @@ public class MovimentacoesService {
                             .stream()
                             .map(e -> {
                                 TipoChaveEnum tipo = e.getChave().getTipoChave();
-                                String descricao = tipo == TipoChaveEnum.CHAVE
-                                        ? e.getChave().getCodigoChave()
-                                        : e.getChave().getCodigoMolho();
+                                String descricao = e.getChave().getCodigo();
                                 return new EntregaPendenteDTO(e.getId(), descricao, tipo, e.getObservacoes());
                             })
                             .toList();
@@ -420,29 +395,18 @@ public class MovimentacoesService {
                 .toList();
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     // Métodos de apoio
-    // ─────────────────────────────────────────────────────────────────────
     // Apenas muta as entidades. O caller é responsável por saveAll em batch.
     private String devolverChaveAutomaticamente(EntregaChaves entrega) {
         String devolvidaPor = entrega.getFuncionarioComChave() != null
                 ? entrega.getFuncionarioComChave().getNome()
                 : entrega.getVisitanteComChave() != null
-                ? entrega.getVisitanteComChave().getNome()
-                : "Desconhecido";
+                  ? entrega.getVisitanteComChave().getNome()
+                  : "Desconhecido";
 
         entrega.setHoraDevolucao(LocalDateTime.now());
-        entrega.setDevolvidaPor(devolvidaPor);
 
-        Chaves chave = entrega.getChave();
-        TipoChaveEnum tipo = chave.getTipoChave();
-        String descricao = tipo == TipoChaveEnum.CHAVE
-                ? chave.getCodigoChave()
-                : chave.getCodigoMolho();
-
-        chave.setStatusChave(StatusChaveEnum.DISPONIVEL);
-
-        return descricao;
+        return entrega.getChave().getCodigo();
     }
 
     private void persistirDevolucoesEmBatch(List<EntregaChaves> pendentes) {
@@ -454,9 +418,9 @@ public class MovimentacoesService {
     }
 
     void processarEntregaChave(Chaves chave, Movimentacoes mov, String observacoes) {
-        if (chave.getStatusChave() != StatusChaveEnum.DISPONIVEL)
-            throw new IllegalStateException(
-                    "A chave " + chave.getCodigoChave() + " não está disponível.");
+//        if (chave.getStatusChave() != StatusChaveEnum.DISPONIVEL)
+//            throw new IllegalStateException(
+//                    "A chave " + chave.getCodigoChave() + " não está disponível.");
 
         EntregaChaves entrega = new EntregaChaves();
         entrega.setMovimentacao(mov);
@@ -464,9 +428,8 @@ public class MovimentacoesService {
         entrega.setHoraEntrega(LocalDateTime.now());
         entrega.setObservacoes(observacoes);
         entrega.setFuncionarioComChave(mov.getFuncionario());
-        entrega.setVisitanteComChave(mov.getVisitante());
+//        entrega.setVisitanteComChave(mov.getVisitante());
 
-        chave.setStatusChave(StatusChaveEnum.EMPRESTADA);
         chavesRepo.save(chave);
         entregaChavesRepo.save(entrega);
     }
