@@ -22,7 +22,7 @@ public interface ConsumosRepository extends JpaRepository<Consumos, Integer> {
 
     Optional<Consumos> findByIdAndAtivoTrue(Integer id);
 
-    @Query("SELECT c FROM Consumos c WHERE c.tipoConsumo.tipoConsumo = :tipo AND c.ativo = true ORDER BY c.dataRegisto DESC LIMIT 1")
+    @Query("SELECT c FROM Consumos c WHERE c.tipoConsumo.tipo = :tipo AND c.ativo = true ORDER BY c.dataRegisto DESC LIMIT 1")
     Optional<Consumos> findUltimaLeituraByTipo(@Param("tipo") TipoConsumoEnum tipo);
 
     @Query("""
@@ -36,11 +36,9 @@ public interface ConsumosRepository extends JpaRepository<Consumos, Integer> {
             """)
     List<Consumos> findUltimasLeiturasPorTipo();
 
-    @Query("SELECT c FROM Consumos c WHERE c.tipoConsumo.tipoConsumo = :tipo AND c.ativo = true AND c.dataRegisto < :data ORDER BY c.dataRegisto DESC LIMIT 1")
+    @Query("SELECT c FROM Consumos c WHERE c.tipoConsumo.tipo = :tipo AND c.ativo = true AND c.dataRegisto < :data ORDER BY c.dataRegisto DESC LIMIT 1")
     Optional<Consumos> findAnteriorByTipo(
             @Param("tipo") TipoConsumoEnum tipo,
             @Param("data") LocalDateTime data
     );
-
-    Optional<Consumos> findTopByTipoConsumoAndAtivoTrueOrderByDataRegistoDesc(TipoConsumoEnum tipoConsumo);
 }

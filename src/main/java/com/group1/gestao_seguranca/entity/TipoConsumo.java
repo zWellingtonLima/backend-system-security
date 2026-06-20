@@ -18,8 +18,8 @@ public class TipoConsumo {
     public TipoConsumo() {
     }
 
-    public String getTipo() {
-        return tipo.toString();
+    public TipoConsumoEnum getTipo() {
+        return tipo;
     }
 
     public void setTipo(TipoConsumoEnum tipo) {

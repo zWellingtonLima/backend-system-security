@@ -1,5 +1,6 @@
 package com.group1.gestao_seguranca.entity;
 
+import com.group1.gestao_seguranca.enums.TipoConsumoEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -62,6 +63,14 @@ public class Consumos extends Auditable {
         this.dataExclusao = null;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public int getValorLeitura() {
         return valorLeitura;
     }
@@ -94,7 +103,7 @@ public class Consumos extends Auditable {
         this.dataExclusao = dataExclusao;
     }
 
-    public String getTipoConsumo() {
-        return tipoConsumo.getTipoConsumo();
+    public TipoConsumoEnum getTipoConsumo() {
+        return tipoConsumo.getTipo();
     }
 }
