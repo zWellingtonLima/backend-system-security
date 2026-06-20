@@ -7,7 +7,10 @@ import com.group1.gestao_seguranca.dto.movimentacoes.EntradaAtivaDTO;
 import com.group1.gestao_seguranca.dto.visitantes.VisitanteBuscaDTO;
 import com.group1.gestao_seguranca.enums.StatusChaveEnum;
 import com.group1.gestao_seguranca.enums.TipoEntrada;
-import com.group1.gestao_seguranca.repositories.*;
+import com.group1.gestao_seguranca.repositories.ChavesRepository;
+import com.group1.gestao_seguranca.repositories.FuncionariosRepository;
+import com.group1.gestao_seguranca.repositories.MovimentacoesRepository;
+import com.group1.gestao_seguranca.repositories.VisitantesRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,6 +95,10 @@ public class BuscaService {
                 .map(EntradaAtivaDTO::from)
                 .toList();
     }
+
+
+    // TODO: No service, antes de passar para o repository
+    // String termoSanitizado = termo.replace("%", "").replace("_", "").trim();
 
     // Normaliza a pesquisa em até 3 tokens, preenchendo com "" os restantes.
     // LIKE '%' + '' + '%' = LIKE '%%' → match universal, não filtra esse token.

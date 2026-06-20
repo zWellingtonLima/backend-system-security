@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(404, "Não encontrado", ex.getMessage()));
     }
 
-    // Regra de negócio violada (saída já registada, chave indisponível, e outros.)
+    // Conflito de dados/estado duplicado (saída já registada, chave indisponível, funcionário/visitante já registado...)
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiError> handleIllegalState(IllegalStateException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiError(409, "Operação inválida", ex.getMessage()));
