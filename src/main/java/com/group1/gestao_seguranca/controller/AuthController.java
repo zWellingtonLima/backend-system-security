@@ -4,13 +4,15 @@ import com.group1.gestao_seguranca.dto.auth.AuthResult;
 import com.group1.gestao_seguranca.dto.auth.LoginRequestDTO;
 import com.group1.gestao_seguranca.dto.auth.RegisterRequestDTO;
 import com.group1.gestao_seguranca.service.AuthService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.Map;
 
 @RestController
@@ -30,10 +32,13 @@ public class AuthController {
         return ResponseEntity.ok(true);
     }
 
-    @PostMapping
-    public ResponseEntity<?> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+    @GetMapping("/refresh")
+    public ResponseEntity<?> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken, HttpServletResponse response) {
         if (refreshToken == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         String refreshedAccessToken = authService.refresh(refreshToken);
+
+        // ------- Camada HTTP -------- Cookie de RefreshToken
+        response.addHeader(HttpHeaders.SET_COOKIE, buildRefreshCookie(refreshedAccessToken).toString());
         return ResponseEntity.ok(Map.of("accessToken", refreshedAccessToken));
     }
 
@@ -42,14 +47,19 @@ public class AuthController {
         AuthResult result = authService.login(dto);
 
         // ------- Camada HTTP -------- Cookie de RefreshToken
-        Cookie cookie = new Cookie("refreshToken", result.refreshToken());
-        cookie.setHttpOnly(true);
-//        cookie.setSecure(true); // Ativar para permitir apenas HTTPS
-        cookie.setPath("/api/auth/refresh");
-        cookie.setMaxAge(24 * 60 * 60); // 1 dia em segundos
-        response.addCookie(cookie);
-
+        response.addHeader(HttpHeaders.SET_COOKIE, buildRefreshCookie(result.refreshToken()).toString());
         return ResponseEntity.ok(result.dto());
+    }
+
+    // TODO: se for preciso do cookie em outro local, criar um arquivo CookieUtils, por exemplo.
+    private ResponseCookie buildRefreshCookie(String refreshToken) {
+        return ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(false)
+                .secure(false) // TODO: Ativar em produção para permitir apenas HTTPS
+                .sameSite("Lax")
+                .path("/") // Alterar depois para api/auth/refresh
+                .maxAge(Duration.ofHours(8))
+                .build();
     }
 
 //    @PostMapping("/logout") // TODO: posso incluir aqui uma coluna no User de token_version e incrementar ou simplesmente remover do frontend o token da memória
