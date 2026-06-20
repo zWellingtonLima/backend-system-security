@@ -9,17 +9,14 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ChavesRepository extends JpaRepository<Chaves, Integer> {
-
+// TODO: criar query para buscar View de Status da chave
     // ── Autocomplete para entrega (chaves disponíveis) ───────────────────
     @Query("""
                 SELECT c FROM Chaves c
                 LEFT JOIN FETCH c.tipoChave
-                WHERE c.status = :status
-                  AND (
-                    LOWER(c.codigoChave) LIKE LOWER(CONCAT('%', :q, '%'))
-                    OR LOWER(c.codigoMolho) LIKE LOWER(CONCAT('%', :q, '%'))
-                  )
-                ORDER BY c.codigoChave, c.codigoMolho
+                WHERE c.ativo = :status
+                  AND LOWER(c.codigo) LIKE LOWER(CONCAT('%', :q, '%'))
+                ORDER BY c.codigo
             """)
     List<Chaves> buscarDisponiveisPorTermo(
             @Param("q") String q,
@@ -30,12 +27,9 @@ public interface ChavesRepository extends JpaRepository<Chaves, Integer> {
     @Query("""
                 SELECT c FROM Chaves c
                 LEFT JOIN FETCH c.tipoChave
-                WHERE c.status = :status
-                  AND (
-                    LOWER(c.codigoChave) LIKE LOWER(CONCAT('%', :q, '%'))
-                    OR LOWER(c.codigoMolho) LIKE LOWER(CONCAT('%', :q, '%'))
-                  )
-                ORDER BY c.codigoChave, c.codigoMolho
+                WHERE c.ativo = true
+                AND LOWER(c.codigo) LIKE LOWER(CONCAT('%', :q, '%'))
+                ORDER BY c.codigo
             """)
     List<Chaves> buscarEmprestadaPorTermo(
             @Param("q") String q,
